@@ -11,7 +11,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "ac")
-public class AC {
+public class AirConditioner {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,11 +32,11 @@ public class AC {
 
 
     //constructor
-    public AC() {
+    public AirConditioner() {
     }
 
 
-    public AC(Long id, Double current_temp, Double target_temp, String mode, String fan_speed, Device device) {
+    public AirConditioner(Long id, Double current_temp, Double target_temp, String mode, String fan_speed, Device device) {
         this.id = id;
         this.current_temp = current_temp;
         this.target_temp = target_temp;
