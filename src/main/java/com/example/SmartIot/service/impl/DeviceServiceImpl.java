@@ -2,13 +2,12 @@ package com.example.SmartIot.service.impl;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.SmartIot.Repository.DeviceRepository;
-import com.example.SmartIot.Repository.RoomRepository;
 import com.example.SmartIot.entity.Device;
 import com.example.SmartIot.entity.Room;
+import com.example.SmartIot.repository.DeviceRepository;
+import com.example.SmartIot.repository.RoomRepository;
 import com.example.SmartIot.service.ifs.DeviceService;
 import com.example.SmartIot.vo.DeviceReq;
 

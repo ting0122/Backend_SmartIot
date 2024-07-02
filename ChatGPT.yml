@@ -1,0 +1,284 @@
+# 拿來問 ChatGPT 的數據
+
+# Vue3
+前端: 
+
+  用戶: 
+
+    設備控制:
+      - 開關控制
+      - 參數調節
+      - 模式選擇
+    即時顯示:
+      - 溫濕度等參數
+      - 設備狀態
+    警報和通知中心: 
+      - 即時警報
+      - 通知中心
+    用戶管理: 
+      - 個人資料管理
+      - 偏好設置
+
+
+  管理員: 
+
+    設備管理: 
+      - 添加設備
+      - 移除設備
+      - 設備配置
+    系統監控: 
+      - 日誌、錯誤日誌
+      - 性能監控
+    系統設置: 
+      - 全局參數設置
+      - 警報規則設置
+      - 自動化規則設置
+    用戶管理: 
+      - 創建
+      - 編輯
+      - 刪除
+      - 權限設置
+      - 全局通知
+
+# Spring Boot:3.3.1, Gradle:8, JAVA_17
+後端: 
+  controller: 
+    - AdminDeviceController
+    - AdminUserController
+    - AirConditionerController
+    - AirPurifierController
+    - AlarmRulesController
+    - AutomationRulesController
+    - DehimidifierController
+    - DeviceController
+    - ErrorController
+    - GlobalNotificationController
+    - GlobalSettingController
+    - HistoryController
+    - LightController
+    - LogController
+    - RoomController
+    - SystemMonitorController
+    - UserController
+  entity: 
+    - Device
+    - Room
+    - AirConditioner
+    - AirPurifier
+    - Dehumidifier
+    - Light
+    - History
+    - Error
+  constant:
+    - ResMsg
+  repository:
+
+  service:
+    ifs:
+
+    impl:
+  
+  vo:
+
+
+# 範例
+# 我現在要做smart office 後端的部分
+# 這是架構:
+# # Vue3
+# 前端: 
+
+#   用戶: 
+
+#     設備控制:
+#       - 開關控制
+#       - 參數調節
+#       - 模式選擇
+#     即時顯示:
+#       - 溫濕度等參數
+#       - 設備狀態
+#     警報和通知中心: 
+#       - 即時警報
+#       - 通知中心
+#     用戶管理: 
+#       - 個人資料管理
+#       - 偏好設置
+
+
+#   管理員: 
+
+#     設備管理: 
+#       - 添加設備
+#       - 移除設備
+#       - 設備配置
+#     系統監控: 
+#       - 日誌、錯誤日誌
+#       - 性能監控
+#     系統設置: 
+#       - 全局參數設置
+#       - 警報規則設置
+#       - 自動化規則設置
+#     用戶管理: 
+#       - 創建
+#       - 編輯
+#       - 刪除
+#       - 權限設置
+#       - 全局通知
+
+# # Spring Boot:3.3.1, Gradle:8, JAVA_17
+# 後端: 
+#   controller: 
+#     - AdminDeviceController
+#     - AdminUserController
+#     - AirConditionerController
+#     - AirPurifierController
+#     - AlarmRulesController
+#     - AutomationRulesController
+#     - DehimidifierController
+#     - DeviceController
+#     - ErrorController
+#     - GlobalNotificationController
+#     - GlobalSettingController
+#     - HistoryController
+#     - LightController
+#     - LogController
+#     - RoomController
+#     - SystemMonitorController
+#     - UserController
+#   entity: 
+#     - Device
+#     - Room
+#     - AirConditioner
+#     - AirPurifier
+#     - Dehumidifier
+#     - Light
+#     - History
+#     - Error
+#   constant:
+#     - ResMsg
+#   repository:
+
+#   service:
+#     ifs:
+
+#     impl:
+  
+#   vo:
+
+# 這是Device Entity:
+# @Entity
+# //this entity mapped to device table , default is class name
+# @Table(name = "device")
+# public class Device {
+    
+#     //primary key
+#     @Id
+#     //primary key auto increment
+#     @GeneratedValue(strategy = GenerationType.IDENTITY)
+#     private Long id;
+
+#     private String name;
+#     private String type;
+#     private Boolean status;
+#     private Timestamp time;
+
+#     //many device for one room
+#     @ManyToOne(fetch = FetchType.LAZY)
+#     //foreign key = room_id
+#     @JoinColumn(name = "room_id")
+#     private Room roomId;
+
+
+#     //constructor
+#     public Device() {
+#     }
+
+
+#     public Device(Long id, String name, String type, Boolean status, Timestamp time, Room roomId) {
+#         this.id = id;
+#         this.name = name;
+#         this.type = type;
+#         this.status = status;
+#         this.time = time;
+#         this.roomId = roomId;
+#     }
+
+#     //getters and setters
+# }
+
+# Room entity:
+# @Entity
+# @Table(name = "room")
+# public class Room {
+    
+#     @Id
+#     @GeneratedValue(strategy = GenerationType.IDENTITY)
+#     private Long id;
+
+#     private String name;
+#     private String area;
+#     private String description;
+
+#     //one room can include mutiple devices
+#     //mappedBy : attribute room in the device class is owner
+#     //it wont create columns, just for define the relation ship
+#     @OneToMany(mappedBy = "roomId")
+#     private Set<Device> devices;
+
+
+#     //constructor
+#     public Room() {
+#     }
+
+
+#     public Room(Long id, String name, String area, String description, Set<Device> devices) {
+#         this.id = id;
+#         this.name = name;
+#         this.area = area;
+#         this.description = description;
+#         this.devices = devices;
+#     }
+
+#     //getters and setters
+# }
+
+# air conditioner entity:
+# @Entity
+# @Table(name = "ac")
+# public class AirConditioner {
+    
+#     @Id
+#     @GeneratedValue(strategy = GenerationType.IDENTITY)
+#     private Long id;
+
+#     private Double current_temp;
+#     private Double target_temp;
+#     private String mode;
+#     private String fan_speed;
+
+#     //one ac mapped one device
+#     @OneToOne
+#     //use primary key as same as foreign key
+#     @MapsId
+#     //as id is equal device id
+#     @JoinColumn(name = "id")
+#     private Device device;
+
+
+#     //constructor
+#     public AirConditioner() {
+#     }
+
+
+#     public AirConditioner(Long id, Double current_temp, Double target_temp, String mode, String fan_speed, Device device) {
+#         this.id = id;
+#         this.current_temp = current_temp;
+#         this.target_temp = target_temp;
+#         this.mode = mode;
+#         this.fan_speed = fan_speed;
+#         this.device = device;
+#     }
+
+#     //getters and setters
+# }
+
+# air conditoner的模組要怎麼做 ?

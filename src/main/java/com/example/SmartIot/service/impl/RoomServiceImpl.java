@@ -1,14 +1,14 @@
 package com.example.SmartIot.service.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.SmartIot.Repository.RoomRepository;
 import com.example.SmartIot.entity.Room;
+import com.example.SmartIot.repository.RoomRepository;
 import com.example.SmartIot.service.ifs.RoomService;
 import com.example.SmartIot.vo.RoomReq;
-
-import java.util.List;
 
 @Service
 public class RoomServiceImpl implements RoomService {
