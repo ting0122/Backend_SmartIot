@@ -1,5 +1,3 @@
-﻿[TOC]
-
 # Backend_SmartIot
 
 [![GitHub stars](https://img.shields.io/github/stars/ting0122/Backend_SmartIot)](https://github.com/ting0122/Backend_SmartIot/stargazers)
