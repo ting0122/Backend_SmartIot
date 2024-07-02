@@ -24,7 +24,7 @@ public class Room {
     //one room can include mutiple devices
     //mappedBy : attribute room in the device class is owner
     //it wont create columns, just for define the relation ship
-    @OneToMany(mappedBy = "room")
+    @OneToMany(mappedBy = "roomId")
     private Set<Device> devices;
 
 

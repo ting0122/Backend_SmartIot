@@ -3,6 +3,7 @@ package com.example.SmartIot.entity;
 import java.sql.Timestamp;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -29,10 +30,10 @@ public class Device {
     private Timestamp time;
 
     //many device for one room
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     //foreign key = room_id
     @JoinColumn(name = "room_id")
-    private Room room;
+    private Room roomId;
 
 
     //constructor
@@ -40,13 +41,13 @@ public class Device {
     }
 
 
-    public Device(Long id, String name, String type, Boolean status, Timestamp time, Room room) {
+    public Device(Long id, String name, String type, Boolean status, Timestamp time, Room roomId) {
         this.id = id;
         this.name = name;
         this.type = type;
         this.status = status;
         this.time = time;
-        this.room = room;
+        this.roomId = roomId;
     }
 
     //getters and setters
@@ -95,11 +96,11 @@ public class Device {
     }
 
     public Room getRoom() {
-        return this.room;
+        return this.roomId;
     }
 
-    public void setRoom(Room room) {
-        this.room = room;
+    public void setRoom(Room roomId) {
+        this.roomId = roomId;
     }
 
 }
