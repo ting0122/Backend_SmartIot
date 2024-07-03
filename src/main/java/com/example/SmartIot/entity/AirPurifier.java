@@ -38,7 +38,7 @@ public class AirPurifier {
         this.device = device;
     }
     
-
+    //getters and setters
     public Long getId() {
         return this.id;
     }
