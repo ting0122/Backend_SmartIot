@@ -1,4 +1,4 @@
-package com.example.SmartIot.Repository;
+package com.example.SmartIot.repository;
 
 import com.example.SmartIot.entity.AirConditioner;
 import org.springframework.data.jpa.repository.JpaRepository;
