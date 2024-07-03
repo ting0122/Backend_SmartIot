@@ -1,13 +1,8 @@
 package com.example.SmartIot.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.MapsId;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import com.example.SmartIot.constant.AirConditionerConstants.Mode;
+import com.example.SmartIot.constant.AirConditionerConstants.FanSpeed;
 
 @Entity
 @Table(name = "ac")
@@ -19,33 +14,34 @@ public class AirConditioner {
 
     private Double current_temp;
     private Double target_temp;
-    private String mode;
-    private String fan_speed;
+    @Enumerated(EnumType.STRING)
+    private Mode mode;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "fan_speed")
+    private FanSpeed fanSpeed;
+
 
     //one ac mapped one device
     @OneToOne
-    //use primary key as same as foreign key
     @MapsId
-    //as id is equal device id
     @JoinColumn(name = "id")
     private Device device;
 
 
-    //constructor
     public AirConditioner() {
     }
 
 
-    public AirConditioner(Long id, Double current_temp, Double target_temp, String mode, String fan_speed, Device device) {
+    public AirConditioner(Long id, Double current_temp, Double target_temp, Mode mode, FanSpeed fanSpeed, Device device) {
         this.id = id;
         this.current_temp = current_temp;
         this.target_temp = target_temp;
         this.mode = mode;
-        this.fan_speed = fan_speed;
+        this.fanSpeed = fanSpeed;
         this.device = device;
     }
 
-    //getters and setters
     public Long getId() {
         return this.id;
     }
@@ -70,20 +66,20 @@ public class AirConditioner {
         this.target_temp = target_temp;
     }
 
-    public String getMode() {
+    public Mode getMode() {
         return this.mode;
     }
 
-    public void setMode(String mode) {
+    public void setMode(Mode mode) {
         this.mode = mode;
     }
 
-    public String getFan_speed() {
-        return this.fan_speed;
+    public FanSpeed getFanSpeed() {
+        return this.fanSpeed;
     }
 
-    public void setFan_speed(String fan_speed) {
-        this.fan_speed = fan_speed;
+    public void setFanSpeed(FanSpeed fanSpeed) {
+        this.fanSpeed = fanSpeed;
     }
 
     public Device getDevice() {
