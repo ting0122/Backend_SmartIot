@@ -3,7 +3,10 @@ package com.example.SmartIot.vo;
 import jakarta.validation.constraints.NotBlank;
 
 public class RoomReq {
+
+    private Long id;
     
+    // 如果字符串為空或只包含空白字符，將會觸發驗證異常
     @NotBlank(message = "Room name is mandatory")
     private String name;
 
@@ -16,13 +19,22 @@ public class RoomReq {
     public RoomReq() {
     }
 
-    public RoomReq(@NotBlank(message = "Room name is mandatory") String name, String area, String type) {
+    public RoomReq(Long id,@NotBlank(message = "Room name is mandatory") String name, String area, String type) {
+        this.id = id;
         this.name = name;
         this.area = area;
         this.type = type;
     }
 
     //getters and setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+    
     public String getName() {
         return name;
     }

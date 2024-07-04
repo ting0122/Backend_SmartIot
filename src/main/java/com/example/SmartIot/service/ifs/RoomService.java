@@ -15,7 +15,5 @@ public interface RoomService {
 
     Room createRoom(@Valid RoomReq roomReq);
 
-    Room updateRoom(Long id, @Valid RoomReq roomReq);
-
     void deleteRoom(Long id);
 }

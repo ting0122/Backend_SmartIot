@@ -14,15 +14,14 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 
-//Jpa instance
+//該實體映射到名為 device 的資料表
 @Entity
-//this entity mapped to device table , default is class name
 @Table(name = "device")
 public class Device {
     
-    //primary key
+    // 主鍵
     @Id
-    //primary key auto increment
+    // 主鍵自動增長
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -31,10 +30,11 @@ public class Device {
     private Boolean status;
     private Timestamp time;
 
-    //many device for one room
+    // 多個設備對應到一個房間(等到您實際訪問 room 屬性時才加載room實體)
     @ManyToOne(fetch = FetchType.LAZY)
-    //foreign key = room_id
+    // 外鍵設置為 room_id
     @JoinColumn(name = "room_id")
+    //序列化時，Device 不會序列化其 room 屬性，從而避免無限遞迴
     @JsonBackReference
     private Room room;
 

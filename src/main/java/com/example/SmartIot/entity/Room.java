@@ -23,10 +23,9 @@ public class Room {
     private String area;
     private String type;
 
-    //one room can include mutiple devices
-    //mappedBy : attribute room in the device class is owner
-    //it wont create columns, just for define the relation ship
+    //一個房間包含多個設備(Device表的room屬性)
     @OneToMany(mappedBy = "room")
+    //設備需要被序列化
     @JsonManagedReference
     private Set<Device> devices;
 
