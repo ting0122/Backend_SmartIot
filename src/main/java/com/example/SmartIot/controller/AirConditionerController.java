@@ -18,7 +18,7 @@ import com.example.SmartIot.vo.AirConditionerReq;
 import com.example.SmartIot.vo.AirConditionerRes;
 
 @RestController
-@RequestMapping("/api/airconditioner")
+@RequestMapping("/airconditioner")
 public class AirConditionerController {
 
     @Autowired
