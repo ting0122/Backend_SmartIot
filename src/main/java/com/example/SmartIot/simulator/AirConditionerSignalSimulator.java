@@ -17,18 +17,19 @@ public class AirConditionerSignalSimulator {
 
     private Random random = new Random();
 
-    @Scheduled(fixedRate = 5000) // 每5秒執行一次
+    @Scheduled(fixedRate = 10000) // 每 5 秒更新一次
     public void simulateSignals() {
         List<AirConditioner> airConditioners = airConditionerRepository.findAll();
 
         for (AirConditioner ac : airConditioners) {
             if (ac.getDevice().getStatus()) { // 如果冷氣是開啟的
+                // 根據模式更新溫度
                 updateTemperature(ac);
             }
 
             // 模擬隨機的環境溫度變化
             simulateEnvironmentTemperature(ac);
-
+            // 更新空調的狀態
             airConditionerRepository.save(ac);
         }
     }

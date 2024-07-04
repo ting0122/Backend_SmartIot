@@ -39,8 +39,11 @@ public class AirConditionerServiceImpl implements AirConditionerService {
             AirConditioner ac = acOptional.get();
             // 更新空調的各項設置
             ac.setTarget_temp(req.getTargetTemp());
+            // 更新空調的運行模式
             ac.setMode(req.getMode());
+            // 更新空調的風速
             ac.setFanSpeed(req.getFanSpeed());
+            // 如果開關狀態為開啟，則更新空調的開關狀態
             ac.getDevice().setStatus(req.isOn());
 
             // 保存更新後的空調並返回結果
@@ -142,6 +145,10 @@ public class AirConditionerServiceImpl implements AirConditionerService {
 
         // 設置風速
         res.setFanSpeed(airConditioner.getFanSpeed());
+
+        // 設置成功響應的代碼和消息
+        res.setCode(AirConditionerResponseMessage.SUCCESS.getCode());
+        res.setMessage(AirConditionerResponseMessage.SUCCESS.getMessage());
 
         return res;
     }

@@ -1,6 +1,7 @@
 package com.example.SmartIot.vo;
 
 import com.example.SmartIot.constant.AirConditionerConstants.Mode;
+import com.example.SmartIot.constant.AirConditionerResponseMessage;
 import com.example.SmartIot.constant.AirConditionerConstants.FanSpeed;
 
 public class AirConditionerRes {
@@ -11,6 +12,32 @@ public class AirConditionerRes {
     private Double targetTemp;
     private Mode mode;
     private FanSpeed fanSpeed;
+    private Integer code;
+    private String message;
+
+    public AirConditionerRes() {
+    }
+
+    public AirConditionerRes(AirConditionerResponseMessage responseMessage) {
+        this.code = responseMessage.getCode();
+        this.message = responseMessage.getMessage();
+    }
+
+    public Integer getCode() {
+        return code;
+    }
+
+    public void setCode(Integer code) {
+        this.code = code;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
 
     public Long getId() {
         return id;
