@@ -19,7 +19,7 @@ public class Room {
 
     private String name;
     private String area;
-    private String description;
+    private String type;
 
     //one room can include mutiple devices
     //mappedBy : attribute room in the device class is owner
@@ -33,11 +33,11 @@ public class Room {
     }
 
 
-    public Room(Long id, String name, String area, String description, Set<Device> devices) {
+    public Room(Long id, String name, String area, String type, Set<Device> devices) {
         this.id = id;
         this.name = name;
         this.area = area;
-        this.description = description;
+        this.type = type;
         this.devices = devices;
     }
 
@@ -66,12 +66,12 @@ public class Room {
         this.area = area;
     }
 
-    public String getDescription() {
-        return this.description;
+    public String getType() {
+        return this.type;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public Set<Device> getDevices() {

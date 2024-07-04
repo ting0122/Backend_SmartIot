@@ -31,7 +31,7 @@ public class History {
     @Lob
     private String detail;
 
-
+    //constructor
     public History() {
     }
 
@@ -44,7 +44,7 @@ public class History {
         this.detail = detail;
     }
 
-
+    //getters and setters
     public Long getId() {
         return this.id;
     }

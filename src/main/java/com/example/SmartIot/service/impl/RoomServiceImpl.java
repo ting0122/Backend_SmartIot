@@ -36,7 +36,7 @@ public class RoomServiceImpl implements RoomService {
         Room room = new Room();
         room.setName(roomReq.getName());
         room.setArea(roomReq.getArea());
-        room.setDescription(roomReq.getDescription());
+        room.setType(roomReq.getType());
         // 可能還有其他屬性需要設置
         return roomRepository.save(room);
     }
@@ -48,7 +48,7 @@ public class RoomServiceImpl implements RoomService {
         
         roomToUpdate.setName(roomReq.getName());
         roomToUpdate.setArea(roomReq.getArea());
-        roomToUpdate.setDescription(roomReq.getDescription());
+        roomToUpdate.setType(roomReq.getType());
         // 可能還有其他屬性需要設置
         
         return roomRepository.save(roomToUpdate);
