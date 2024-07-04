@@ -2,6 +2,8 @@ package com.example.SmartIot.entity;
 
 import java.sql.Timestamp;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -33,7 +35,8 @@ public class Device {
     @ManyToOne(fetch = FetchType.LAZY)
     //foreign key = room_id
     @JoinColumn(name = "room_id")
-    private Room roomId;
+    @JsonBackReference
+    private Room room;
 
 
     //constructor
@@ -41,13 +44,13 @@ public class Device {
     }
 
 
-    public Device(Long id, String name, String type, Boolean status, Timestamp time, Room roomId) {
+    public Device(Long id, String name, String type, Boolean status, Timestamp time, Room room) {
         this.id = id;
         this.name = name;
         this.type = type;
         this.status = status;
         this.time = time;
-        this.roomId = roomId;
+        this.room = room;
     }
 
     //getters and setters
@@ -96,11 +99,11 @@ public class Device {
     }
 
     public Room getRoom() {
-        return this.roomId;
+        return this.room;
     }
 
-    public void setRoom(Room roomId) {
-        this.roomId = roomId;
+    public void setRoom(Room room) {
+        this.room = room;
     }
 
 }

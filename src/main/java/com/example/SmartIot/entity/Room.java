@@ -2,6 +2,8 @@ package com.example.SmartIot.entity;
 
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,7 +26,8 @@ public class Room {
     //one room can include mutiple devices
     //mappedBy : attribute room in the device class is owner
     //it wont create columns, just for define the relation ship
-    @OneToMany(mappedBy = "roomId")
+    @OneToMany(mappedBy = "room")
+    @JsonManagedReference
     private Set<Device> devices;
 
 

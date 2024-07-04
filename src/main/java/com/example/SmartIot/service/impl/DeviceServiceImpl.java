@@ -40,6 +40,13 @@ public class DeviceServiceImpl implements DeviceService {
         device.setType(deviceReq.getType());
         device.setStatus(deviceReq.getStatus());
         device.setTime(deviceReq.getTime());
+        
+        if (deviceReq.getRoomId() != null) {
+            Room room = roomRepository.findById(deviceReq.getRoomId())
+                    .orElseThrow(() -> new RuntimeException("Room not found with id " + deviceReq.getRoomId()));
+            device.setRoom(room);
+        }
+
         return deviceRepository.save(device);
     }
 
@@ -52,8 +59,13 @@ public class DeviceServiceImpl implements DeviceService {
         existingDevice.setStatus(deviceReq.getStatus());
         existingDevice.setTime(deviceReq.getTime());
 
-        Room room = roomRepository.findById(deviceReq.getRoomId()).orElseThrow(() -> new RuntimeException("Room not found"));
-        existingDevice.setRoom(room);
+        if (deviceReq.getRoomId() != null) {
+            Room room = roomRepository.findById(deviceReq.getRoomId())
+                    .orElseThrow(() -> new RuntimeException("Room not found with id " + deviceReq.getRoomId()));
+            existingDevice.setRoom(room);
+        } else {
+            existingDevice.setRoom(null);
+        }
 
         return deviceRepository.save(existingDevice);
     }
