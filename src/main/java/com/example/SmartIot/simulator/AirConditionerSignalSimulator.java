@@ -17,7 +17,7 @@ public class AirConditionerSignalSimulator {
 
     private Random random = new Random();
 
-    @Scheduled(fixedRate = 10000) // 每 5 秒更新一次
+    // @Scheduled(fixedRate = 10000) // 每 5 秒更新一次
     public void simulateSignals() {
         List<AirConditioner> airConditioners = airConditionerRepository.findAll();
 
