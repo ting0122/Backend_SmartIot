@@ -3,6 +3,7 @@ package com.example.SmartIot.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,7 +18,7 @@ import com.example.SmartIot.service.ifs.LightService;
 @RestController
 @RequestMapping("/lights")
 public class LightController {
-    
+
     @Autowired
     private LightService lightService;
 
@@ -32,7 +33,7 @@ public class LightController {
     }
 
     @PostMapping
-    public Light createLight(@RequestBody Light light) {
+    public ResponseEntity<?> saveLight(@RequestBody Light light) {
         return lightService.saveLight(light);
     }
 
