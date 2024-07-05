@@ -17,7 +17,7 @@ public class Dehumidifier {
     private Long id;
 
     private Double current_humidity;
-    private Double targetH_humidity;
+    private Double target_humidity;
     private Double tank_capacity;
 
     @OneToOne
@@ -29,10 +29,10 @@ public class Dehumidifier {
     public Dehumidifier() {
     }
 
-    public Dehumidifier(Long id, Double current_humidity, Double targetH_humidity, Double tank_capacity, Device device) {
+    public Dehumidifier(Long id, Double current_humidity, Double target_humidity, Double tank_capacity, Device device) {
         this.id = id;
         this.current_humidity = current_humidity;
-        this.targetH_humidity = targetH_humidity;
+        this.target_humidity = target_humidity;
         this.tank_capacity = tank_capacity;
         this.device = device;
     }
@@ -54,12 +54,12 @@ public class Dehumidifier {
         this.current_humidity = current_humidity;
     }
 
-    public Double getTargetH_humidity() {
-        return this.targetH_humidity;
+    public Double getTarget_humidity() {
+        return this.target_humidity;
     }
 
-    public void setTargetH_humidity(Double targetH_humidity) {
-        this.targetH_humidity = targetH_humidity;
+    public void setTarget_humidity(Double target_humidity) {
+        this.target_humidity = target_humidity;
     }
 
     public Double getTank_capacity() {
