@@ -1,11 +1,14 @@
 package com.example.SmartIot.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,28 +26,34 @@ public class AirPurifierController {
     @Autowired
     private AirPurifierService airPurifierService;
 
-    //所有空氣清淨機
+    // 獲取所有空氣清潔器
     @GetMapping
     public List<AirPurifier> getAllAirPurifiers() {
         return airPurifierService.getAllAirPurifiers();
     }
 
-    //特定 id 的空氣清淨機
+    // 獲取特定的空氣清潔器
     @GetMapping("/{id}")
     public AirPurifier getAirPurifier(@PathVariable("id") Long id) {
         return airPurifierService.getAirPurifierById(id);
     }
 
-    //新增或修改空氣清淨機
+    // 新增或修改空氣清潔器
     @PostMapping
-    public AirPurifier createAirPurifier(@RequestBody AirPurifier airPurifier) {
-        //save 方法會判定有無id決定創建或修改
+    public ResponseEntity<?> saveAirPurifier(@RequestBody AirPurifier airPurifier) {
+        // save 方法會判定有無id，決定創建或修改
         return airPurifierService.saveAirPurifier(airPurifier);
     }
 
-    //刪除空氣清淨機
+    // 刪除空氣清潔器
     @DeleteMapping("/{id}")
     public void deleteAirPurifier(@PathVariable("id") Long id) {
         airPurifierService.deleteAirPurifier(id);
+    }
+
+    // 部分更新空氣清潔器
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> patchAirPurifier(@PathVariable("id") Long id, @RequestBody Map<String, Object> updates) {
+        return airPurifierService.patchAirPurifier(id, updates);
     }
 }
