@@ -33,7 +33,7 @@ public class DehimidifierController {
 
     //獲取特定除濕機
     @GetMapping("/{id}")
-    public Dehumidifier getDehumidifier(@PathVariable Long id) {
+    public Dehumidifier getDehumidifier(@PathVariable("id") Long id) {
         return dehumidifierService.getDehumidifierById(id);
     }
 
@@ -45,13 +45,13 @@ public class DehimidifierController {
     }
 
     @PatchMapping("/{id}")
-     public Dehumidifier updateDehumidifier(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
+     public Dehumidifier updateDehumidifier(@PathVariable("id") Long id, @RequestBody Map<String, Object> updates) {
         return dehumidifierService.updateDehumidifier(id, updates);
     }
 
     //刪除除濕機
     @DeleteMapping("/{id}")
-    public void deleteDehumidifier(@PathVariable Long id) {
+    public void deleteDehumidifier(@PathVariable("id") Long id) {
         dehumidifierService.deleteDehumidifier(id);
     }
 }

@@ -31,7 +31,7 @@ public class AirPurifierController {
 
     //特定 id 的空氣清淨機
     @GetMapping("/{id}")
-    public AirPurifier getAirPurifier(@PathVariable Long id) {
+    public AirPurifier getAirPurifier(@PathVariable("id") Long id) {
         return airPurifierService.getAirPurifierById(id);
     }
 
@@ -44,7 +44,7 @@ public class AirPurifierController {
 
     //刪除空氣清淨機
     @DeleteMapping("/{id}")
-    public void deleteAirPurifier(@PathVariable Long id) {
+    public void deleteAirPurifier(@PathVariable("id") Long id) {
         airPurifierService.deleteAirPurifier(id);
     }
 }

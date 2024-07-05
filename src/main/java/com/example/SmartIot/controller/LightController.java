@@ -31,7 +31,7 @@ public class LightController {
 
     //獲取特定的燈
     @GetMapping("/{id}")
-    public Light getLight(@PathVariable Long id) {
+    public Light getLight(@PathVariable("id") Long id) {
         return lightService.getLightById(id);
     }
 
@@ -44,7 +44,7 @@ public class LightController {
 
     //刪除燈
     @DeleteMapping("/{id}")
-    public void deleteLight(@PathVariable Long id) {
+    public void deleteLight(@PathVariable("id") Long id) {
         lightService.deleteLight(id);
     }
 }

@@ -31,7 +31,7 @@ public class AirConditionerController {
      * GET:http://localhost:8080/api/airconditioner/1
      */
     @GetMapping("/{id}")
-    public ResponseEntity<AirConditionerRes> getStatus(@PathVariable Long id) {
+    public ResponseEntity<AirConditionerRes> getStatus(@PathVariable("id") Long id) {
         try {
             AirConditionerRes res = airConditionerService.getStatus(id);
             return ResponseEntity.ok(res);
@@ -57,7 +57,7 @@ public class AirConditionerController {
      * POST:http://localhost:8080/api/airconditioner/1/turn-on
      */
     @PostMapping("/{id}/turn-on")
-    public ResponseEntity<AirConditionerRes> turnOn(@PathVariable Long id) {
+    public ResponseEntity<AirConditionerRes> turnOn(@PathVariable("id") Long id) {
         try {
             AirConditionerRes res = airConditionerService.turnOn(id);
             return ResponseEntity.ok(res);
@@ -72,7 +72,7 @@ public class AirConditionerController {
      * POST:http://localhost:8080/api/airconditioner/1/turn-off
      */
     @PostMapping("/{id}/turn-off")
-    public ResponseEntity<AirConditionerRes> turnOff(@PathVariable Long id) {
+    public ResponseEntity<AirConditionerRes> turnOff(@PathVariable("id") Long id) {
         try {
             AirConditionerRes res = airConditionerService.turnOff(id);
             return ResponseEntity.ok(res);
@@ -87,7 +87,7 @@ public class AirConditionerController {
      * POST:http://localhost:8080/api/airconditioner/1/set-temperature?temperature=28
      */
     @PostMapping("/{id}/set-temperature")
-    public ResponseEntity<AirConditionerRes> setTemperature(@PathVariable Long id, @RequestParam Double temperature) {
+    public ResponseEntity<AirConditionerRes> setTemperature(@PathVariable("id") Long id, @RequestParam Double temperature) {
         try {
             AirConditionerRes res = airConditionerService.setTemperature(id, temperature);
             return ResponseEntity.ok(res);
@@ -103,7 +103,7 @@ public class AirConditionerController {
      * POST:http://localhost:8080/api/airconditioner/1/set-mode?mode=COOL
      */
     @PostMapping("/{id}/set-mode")
-    public ResponseEntity<AirConditionerRes> setMode(@PathVariable Long id, @RequestParam Mode mode) {
+    public ResponseEntity<AirConditionerRes> setMode(@PathVariable("id") Long id, @RequestParam Mode mode) {
         try {
             AirConditionerRes res = airConditionerService.setMode(id, mode);
             return ResponseEntity.ok(res);
@@ -118,7 +118,7 @@ public class AirConditionerController {
      * POST:http://localhost:8080/api/airconditioner/1/set-fan-speed?fanSpeed=MEDIUM
      */
     @PostMapping("/{id}/set-fan-speed")
-    public ResponseEntity<AirConditionerRes> setFanSpeed(@PathVariable Long id, @RequestParam FanSpeed fanSpeed) {
+    public ResponseEntity<AirConditionerRes> setFanSpeed(@PathVariable("id") Long id, @RequestParam FanSpeed fanSpeed) {
         try {
             AirConditionerRes res = airConditionerService.setFanSpeed(id, fanSpeed);
             return ResponseEntity.ok(res);
