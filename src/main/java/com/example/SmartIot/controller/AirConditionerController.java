@@ -2,6 +2,7 @@ package com.example.SmartIot.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +18,7 @@ import com.example.SmartIot.service.ifs.AirConditionerService;
 import com.example.SmartIot.vo.AirConditionerReq;
 import com.example.SmartIot.vo.AirConditionerRes;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/api/airconditioner")
 public class AirConditionerController {
