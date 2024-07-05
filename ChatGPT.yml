@@ -13,7 +13,7 @@
       - 溫濕度等參數
       - 設備狀態
     警報和通知中心: 
-      - 即時警報
+      #- 即時警報
       - 通知中心
     用戶管理: 
       - 個人資料管理
@@ -28,17 +28,17 @@
       - 設備配置
     系統監控: 
       - 日誌、錯誤日誌
-      - 性能監控
+      - 性能監控(設備參數)
     系統設置: 
       - 全局參數設置
-      - 警報規則設置
-      - 自動化規則設置
-    用戶管理: 
-      - 創建
-      - 編輯
-      - 刪除
-      - 權限設置
-      - 全局通知
+      #- 警報規則設置
+      #- 自動化規則設置
+    # 用戶管理: 
+    #   - 創建
+    #   - 編輯
+    #   - 刪除
+    #   - 權限設置
+    #   - 全局通知
 
 # Spring Boot:3.3.1, Gradle:8, JAVA_17
 後端: 
@@ -72,7 +72,7 @@
   constant:
     - ResMsg
   repository:
-
+    
   service:
     ifs:
 
@@ -81,90 +81,151 @@
   vo:
 
 
-# 範例
-# 我現在要做smart office 後端的部分
-# 這是架構:
-# # Vue3
-# 前端: 
+# =======================================================
 
-#   用戶: 
+這是 smart office專案
 
-#     設備控制:
-#       - 開關控制
-#       - 參數調節
-#       - 模式選擇
-#     即時顯示:
-#       - 溫濕度等參數
-#       - 設備狀態
-#     警報和通知中心: 
-#       - 即時警報
-#       - 通知中心
-#     用戶管理: 
-#       - 個人資料管理
-#       - 偏好設置
+# Vue3
+前端: 
+每個房間的操作面板
+    設備控制:
+      - 開關控制
+      - 參數調節
+      - 模式選擇
+    即時顯示:
+      - 溫濕度等參數
+      - 設備狀態
+    警報和通知中心: 
+      - 通知中心
+    房間管理: 
+      - 資料管理
+      - 偏好設置
 
 
-#   管理員: 
+  管理室介面: 
 
-#     設備管理: 
-#       - 添加設備
-#       - 移除設備
-#       - 設備配置
-#     系統監控: 
-#       - 日誌、錯誤日誌
-#       - 性能監控
-#     系統設置: 
-#       - 全局參數設置
-#       - 警報規則設置
-#       - 自動化規則設置
-#     用戶管理: 
-#       - 創建
-#       - 編輯
-#       - 刪除
-#       - 權限設置
-#       - 全局通知
+    設備管理: 
+      - 添加設備
+      - 移除設備
+      - 設備配置
+    系統監控: 
+      - 日誌、錯誤日誌
+    系統設置: 
+      - 全局參數設置
+ 
 
-# # Spring Boot:3.3.1, Gradle:8, JAVA_17
-# 後端: 
-#   controller: 
-#     - AdminDeviceController
-#     - AdminUserController
-#     - AirConditionerController
-#     - AirPurifierController
-#     - AlarmRulesController
-#     - AutomationRulesController
-#     - DehimidifierController
-#     - DeviceController
-#     - ErrorController
-#     - GlobalNotificationController
-#     - GlobalSettingController
-#     - HistoryController
-#     - LightController
-#     - LogController
-#     - RoomController
-#     - SystemMonitorController
-#     - UserController
-#   entity: 
-#     - Device
-#     - Room
-#     - AirConditioner
-#     - AirPurifier
-#     - Dehumidifier
-#     - Light
-#     - History
-#     - Error
-#   constant:
-#     - ResMsg
-#   repository:
+# Spring Boot:3.3.1, Gradle:8, JAVA_17
+後端: 
+  controller: 
+    - AdminDeviceController
+    - AdminUserController
+    - AirConditionerController
+    - AirPurifierController
+    - AlarmRulesController
+    - AutomationRulesController
+    - DehimidifierController
+    - DeviceController
+    - ErrorController
+    - GlobalNotificationController
+    - GlobalSettingController
+    - HistoryController
+    - LightController
+    - LogController
+    - RoomController
+    - SystemMonitorController
+    - UserController
+  entity: 
+    - Device
+    - Room
+    - AirConditioner
+    - AirPurifier
+    - Dehumidifier
+    - Light
+    - History
+    - Error
+  constant:
+    - ResMsg
+  repository:
+    
+  service:
+    ifs:
 
-#   service:
-#     ifs:
-
-#     impl:
+    impl:
   
-#   vo:
+  vo:
 
-# 這是Device Entity:
+
+用戶: 
+
+    設備控制:
+      - 開關控制
+      - 參數調節
+      - 模式選擇
+    即時顯示:
+      - 溫濕度等參數
+      - 設備狀態
+    通知中心: 
+     
+      - 通知中心
+    用戶管理: 
+      - 個人資料管理
+      - 偏好設置
+
+
+  管理員: 
+
+    設備管理: 
+      - 添加設備
+      - 移除設備
+      - 設備配置
+    系統監控: 
+      - 日誌、錯誤日誌
+      - 性能監控(設備參數)
+    系統設置: 
+      - 全局參數設置
+
+# Spring Boot:3.3.1, Gradle:8, JAVA_17
+後端: 
+  controller: 
+    - AdminDeviceController
+    - AdminUserController
+    - AirConditionerController
+    - AirPurifierController
+    - AlarmRulesController
+    - AutomationRulesController
+    - DehimidifierController
+    - DeviceController
+    - ErrorController
+    - GlobalNotificationController
+    - GlobalSettingController
+    - HistoryController
+    - LightController
+    - LogController
+    - RoomController
+    - SystemMonitorController
+    - UserController
+  entity: 
+    - Device
+    - Room
+    - AirConditioner
+    - AirPurifier
+    - Dehumidifier
+    - Light
+    - History
+    - Error
+  constant:
+    - ResMsg
+  repository:
+    
+  service:
+    ifs:
+
+    impl:
+  
+  vo:
+
+
+# 這是我的entity:
 # @Entity
 # //this entity mapped to device table , default is class name
 # @Table(name = "device")
@@ -205,7 +266,6 @@
 #     //getters and setters
 # }
 
-# Room entity:
 # @Entity
 # @Table(name = "room")
 # public class Room {
@@ -241,44 +301,72 @@
 #     //getters and setters
 # }
 
-# air conditioner entity:
 # @Entity
-# @Table(name = "ac")
-# public class AirConditioner {
+# @Table(name = "history")
+# public class History {
     
 #     @Id
 #     @GeneratedValue(strategy = GenerationType.IDENTITY)
 #     private Long id;
 
-#     private Double current_temp;
-#     private Double target_temp;
-#     private String mode;
-#     private String fan_speed;
-
-#     //one ac mapped one device
-#     @OneToOne
-#     //use primary key as same as foreign key
-#     @MapsId
-#     //as id is equal device id
-#     @JoinColumn(name = "id")
+#     @ManyToOne
+#     @JoinColumn(name = "device_id")
 #     private Device device;
 
+#     private Timestamp event_time;
+#     private String event_type;
+
+#     @Lob
+#     private String detail;
 
 #     //constructor
-#     public AirConditioner() {
+#     public History() {
 #     }
 
 
-#     public AirConditioner(Long id, Double current_temp, Double target_temp, String mode, String fan_speed, Device device) {
+#     public History(Long id, Device device, Timestamp event_time, String event_type, String detail) {
 #         this.id = id;
-#         this.current_temp = current_temp;
-#         this.target_temp = target_temp;
-#         this.mode = mode;
-#         this.fan_speed = fan_speed;
+#         this.device = device;
+#         this.event_time = event_time;
+#         this.event_type = event_type;
+#         this.detail = detail;
+#     }
+
+#     //getters and setters
+# }
+
+# @Entity
+# @Table(name = "error")
+# public class Error {
+    
+#     @Id
+#     @GeneratedValue(strategy = GenerationType.IDENTITY)
+#     private Long id;
+
+#     private LocalDate timestamp;
+
+#     //Large Object for store JSON
+#     //for example : CLOB = Long text , BLOB = Pics,videos,etc.
+#     @Lob
+#     private String description;
+
+#     @ManyToOne
+#     @JoinColumn(name = "device_id")
+#     private Device device;
+
+#     //constructor
+#     public Error() {
+#     }
+
+
+#     public Error(Long id, LocalDate timestamp, String description, Device device) {
+#         this.id = id;
+#         this.timestamp = timestamp;
+#         this.description = description;
 #         this.device = device;
 #     }
 
 #     //getters and setters
 # }
 
-# air conditoner的模組要怎麼做 ?
+# 請問我資料庫和表的架構哪裡還要改? 不要給我看sql code 只要給我entity

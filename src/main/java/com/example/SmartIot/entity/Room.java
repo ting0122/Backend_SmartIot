@@ -2,6 +2,8 @@ package com.example.SmartIot.entity;
 
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,12 +21,12 @@ public class Room {
 
     private String name;
     private String area;
-    private String description;
+    private String type;
 
-    //one room can include mutiple devices
-    //mappedBy : attribute room in the device class is owner
-    //it wont create columns, just for define the relation ship
-    @OneToMany(mappedBy = "roomId")
+    //一個房間包含多個設備(Device表的room屬性)
+    @OneToMany(mappedBy = "room")
+    //設備需要被序列化
+    @JsonManagedReference
     private Set<Device> devices;
 
 
@@ -33,11 +35,11 @@ public class Room {
     }
 
 
-    public Room(Long id, String name, String area, String description, Set<Device> devices) {
+    public Room(Long id, String name, String area, String type, Set<Device> devices) {
         this.id = id;
         this.name = name;
         this.area = area;
-        this.description = description;
+        this.type = type;
         this.devices = devices;
     }
 
@@ -66,12 +68,12 @@ public class Room {
         this.area = area;
     }
 
-    public String getDescription() {
-        return this.description;
+    public String getType() {
+        return this.type;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public Set<Device> getDevices() {

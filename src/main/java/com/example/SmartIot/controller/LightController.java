@@ -22,21 +22,26 @@ public class LightController {
     @Autowired
     private LightService lightService;
 
+    //獲取所有燈
     @GetMapping
     public List<Light> getAllLights() {
         return lightService.getAllLights();
     }
 
+    //獲取特定的燈
     @GetMapping("/{id}")
     public Light getLight(@PathVariable Long id) {
         return lightService.getLightById(id);
     }
 
+    //新增或修改燈
     @PostMapping
     public ResponseEntity<?> saveLight(@RequestBody Light light) {
+        //save 方法會判定有無id決定創建或修改
         return lightService.saveLight(light);
     }
 
+    //刪除燈
     @DeleteMapping("/{id}")
     public void deleteLight(@PathVariable Long id) {
         lightService.deleteLight(id);

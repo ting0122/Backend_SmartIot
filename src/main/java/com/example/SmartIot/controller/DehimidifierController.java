@@ -21,21 +21,26 @@ public class DehimidifierController {
     @Autowired
     private DehumidifierService dehumidifierService;
 
+    //獲取所有除濕機
     @GetMapping
     public List<Dehumidifier> getAllDehumidifiers() {
         return dehumidifierService.getAllDehumidifiers();
     }
 
+    //獲取特定除濕機
     @GetMapping("/{id}")
     public Dehumidifier getDehumidifier(@PathVariable Long id) {
         return dehumidifierService.getDehumidifierById(id);
     }
 
+    //新增或更新除濕機
     @PostMapping
     public Dehumidifier createDehumidifier(@RequestBody Dehumidifier dehumidifier) {
+        //save 方法會判定有無id決定創建或修改
         return dehumidifierService.saveDehumidifier(dehumidifier);
     }
 
+    //刪除除濕機
     @DeleteMapping("/{id}")
     public void deleteDehumidifier(@PathVariable Long id) {
         dehumidifierService.deleteDehumidifier(id);

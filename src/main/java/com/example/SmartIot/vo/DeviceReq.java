@@ -7,19 +7,26 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public class DeviceReq {
+
+    //沒id就代表新增設備,有id代表要更新設備
+    @Nullable
+    private Long id;
     
+    // 如果字符串為空或只包含空白字符，將會觸發驗證異常，並且異常訊息會顯示為Device name is mandatory。
     @NotBlank(message = "Device name is mandatory")
     private String name;
 
     @NotBlank(message = "Device type is mandatory")
     private String type;
 
+    // 用於驗證字段不能為null。如果字段為null，將會觸發驗證異常，並且異常訊息會顯示為Device status is mandatory。
     @NotNull(message = "Device status is mandatory")
     private Boolean status;
 
     @NotNull(message = "Device time is mandatory")
     private Timestamp time;
 
+    // 用於標記字段可以是null
     @Nullable
     private Long roomId;
 
@@ -27,11 +34,14 @@ public class DeviceReq {
     public DeviceReq() {
     }
 
-    public DeviceReq(@NotBlank(message = "Device name is mandatory") String name,
+    public DeviceReq(
+            Long id,
+            @NotBlank(message = "Device name is mandatory") String name,
             @NotBlank(message = "Device type is mandatory") String type,
             @NotNull(message = "Device status is mandatory") Boolean status,
             @NotNull(message = "Device time is mandatory") Timestamp time,
             Long roomId) {
+        this.id = id;
         this.name = name;
         this.type = type;
         this.status = status;
@@ -40,6 +50,15 @@ public class DeviceReq {
     }
 
     //getters and setters
+
+    public Long getId(){
+        return id;
+    }
+
+    public void setId(Long id){
+        this.id = id;
+    }
+
     public String getName() {
         return name;
     }

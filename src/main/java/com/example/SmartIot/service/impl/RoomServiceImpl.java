@@ -33,25 +33,20 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public Room createRoom(RoomReq roomReq) {
-        Room room = new Room();
+
+        Room room;
+        if (roomReq.getId() != null) {
+            room = roomRepository.findById(roomReq.getId())
+                    .orElseThrow(() -> new RuntimeException("Room not found"));
+        } else {
+            room = new Room();
+        }
+        
         room.setName(roomReq.getName());
         room.setArea(roomReq.getArea());
-        room.setDescription(roomReq.getDescription());
-        // 可能還有其他屬性需要設置
+        room.setType(roomReq.getType());
+        
         return roomRepository.save(room);
-    }
-
-    @Override
-    public Room updateRoom(Long id, RoomReq roomReq) {
-        Room roomToUpdate = roomRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Room not found"));
-        
-        roomToUpdate.setName(roomReq.getName());
-        roomToUpdate.setArea(roomReq.getArea());
-        roomToUpdate.setDescription(roomReq.getDescription());
-        // 可能還有其他屬性需要設置
-        
-        return roomRepository.save(roomToUpdate);
     }
 
     @Override

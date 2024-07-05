@@ -2,6 +2,8 @@ package com.example.SmartIot.entity;
 
 import java.sql.Timestamp;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -12,15 +14,14 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 
-//Jpa instance
+//該實體映射到名為 device 的資料表
 @Entity
-//this entity mapped to device table , default is class name
 @Table(name = "device")
 public class Device {
     
-    //primary key
+    // 主鍵
     @Id
-    //primary key auto increment
+    // 主鍵自動增長
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -29,11 +30,13 @@ public class Device {
     private Boolean status;
     private Timestamp time;
 
-    //many device for one room
+    // 多個設備對應到一個房間(等到您實際訪問 room 屬性時才加載room實體)
     @ManyToOne(fetch = FetchType.LAZY)
-    //foreign key = room_id
+    // 外鍵設置為 room_id
     @JoinColumn(name = "room_id")
-    private Room roomId;
+    //序列化時，Device 不會序列化其 room 屬性，從而避免無限遞迴
+    @JsonBackReference
+    private Room room;
 
 
     //constructor
@@ -41,13 +44,13 @@ public class Device {
     }
 
 
-    public Device(Long id, String name, String type, Boolean status, Timestamp time, Room roomId) {
+    public Device(Long id, String name, String type, Boolean status, Timestamp time, Room room) {
         this.id = id;
         this.name = name;
         this.type = type;
         this.status = status;
         this.time = time;
-        this.roomId = roomId;
+        this.room = room;
     }
 
     //getters and setters
@@ -96,11 +99,11 @@ public class Device {
     }
 
     public Room getRoom() {
-        return this.roomId;
+        return this.room;
     }
 
-    public void setRoom(Room roomId) {
-        this.roomId = roomId;
+    public void setRoom(Room room) {
+        this.room = room;
     }
 
 }

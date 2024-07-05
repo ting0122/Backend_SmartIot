@@ -25,7 +25,7 @@ public class Light {
     @JoinColumn(name = "id")
     private Device device;
 
-
+    //constructor
     public Light() {
     }
 
@@ -37,7 +37,7 @@ public class Light {
         this.device = device;
     }
 
-
+    //getters and setters
     public Long getId() {
         return this.id;
     }
