@@ -14,6 +14,8 @@ import com.example.SmartIot.repository.DeviceRepository;
 import com.example.SmartIot.repository.LightRepository;
 import com.example.SmartIot.service.ifs.LightService;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class LightServiceImpl implements LightService {
 
@@ -33,7 +35,8 @@ public class LightServiceImpl implements LightService {
         return lightRepository.findById(id).orElse(null);
     }
 
-@Override
+    @Override
+    @Transactional
     public ResponseEntity<?> saveLight(Light light) {
         if (light == null || light.getDevice() == null || light.getDevice().getId() == null) {
             return new ResponseEntity<>(ResMsg.BAD_REQUEST.getDescription(), HttpStatus.BAD_REQUEST);
@@ -59,9 +62,20 @@ public class LightServiceImpl implements LightService {
             return new ResponseEntity<>("Color temperature must be between 1000K and 10000K", HttpStatus.BAD_REQUEST);
         }
 
+        // 使用傳入的 Light 對象中的 Device 狀態
+        Boolean newStatus = light.getDevice().getStatus();
+        if (newStatus == null) {
+            return new ResponseEntity<>("Device status cannot be null", HttpStatus.BAD_REQUEST);
+        }
+
         // 更新設備狀態
-        device.setStatus(light.getBrightness() > 0);
-        deviceRepository.save(device);
+        device.setStatus(newStatus);
+        device = deviceRepository.save(device);
+
+        // 如果燈是關閉的，將亮度設為0
+        if (!newStatus) {
+            light.setBrightness(0);
+        }
 
         // 保存燈的設置
         light.setDevice(device);
