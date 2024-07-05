@@ -2,6 +2,7 @@ package com.example.SmartIot.service.impl;
 
 import java.util.List;
 
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -85,5 +86,42 @@ public class LightServiceImpl implements LightService {
     @Override
     public void deleteLight(Long id) {
         lightRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<?> patchLight(Long id, Map<String, Object> updates) {
+        Light light = lightRepository.findById(id).orElse(null);
+        if (light == null) {
+            return new ResponseEntity<>(ResMsg.NOT_FOUND.getDescription(), HttpStatus.NOT_FOUND);
+        }
+
+        if (updates.containsKey("brightness")) {
+            int brightness = (int) updates.get("brightness");
+            if (brightness < 0 || brightness > 100) {
+                return new ResponseEntity<>("Brightness must be between 0 and 100", HttpStatus.BAD_REQUEST);
+            }
+            light.setBrightness(brightness);
+        }
+
+        if (updates.containsKey("color_temp")) {
+            int colorTemp = (int) updates.get("color_temp");
+            if (colorTemp < 1000 || colorTemp > 10000) {
+                return new ResponseEntity<>("Color temperature must be between 1000K and 10000K",
+                        HttpStatus.BAD_REQUEST);
+            }
+            light.setColor_temp(colorTemp);
+        }
+
+        if (updates.containsKey("status")) {
+            boolean status = (boolean) updates.get("status");
+            light.getDevice().setStatus(status);
+            if (!status) {
+                light.setBrightness(0);
+            }
+        }
+
+        Light savedLight = lightRepository.save(light);
+        return new ResponseEntity<>(savedLight, HttpStatus.OK);
     }
 }
