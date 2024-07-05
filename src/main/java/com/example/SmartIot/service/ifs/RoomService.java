@@ -13,6 +13,8 @@ public interface RoomService {
 
     Room getRoomById(Long id);
 
+    List<Room> searchRooms(String name, String type, String area);
+
     Room createRoom(@Valid RoomReq roomReq);
 
     void deleteRoom(Long id);

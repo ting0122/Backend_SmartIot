@@ -10,6 +10,8 @@ import com.example.SmartIot.repository.RoomRepository;
 import com.example.SmartIot.service.ifs.RoomService;
 import com.example.SmartIot.vo.RoomReq;
 
+import jakarta.validation.OverridesAttribute;
+
 @Service
 public class RoomServiceImpl implements RoomService {
     
@@ -29,6 +31,25 @@ public class RoomServiceImpl implements RoomService {
     public Room getRoomById(Long id) {
         return roomRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Room not found"));
+    }
+
+    @Override
+    public List<Room> searchRooms(String name, String type, String area){
+        if (name != null && type != null && area != null) {
+            return roomRepository.findByNameContainingAndTypeAndArea(name, type, area);
+        } else if (name != null && type != null) {
+            return roomRepository.findByNameContainingAndType(name, type);
+        } else if (name != null && area != null) {
+            return roomRepository.findByNameContainingAndArea(name, area);
+        } else if (name != null) {
+            return roomRepository.findByNameContaining(name);
+        } else if (type != null) {
+            return roomRepository.findByTypeContaining(type);
+        } else if (area != null) {
+            return roomRepository.findByAreaContaining(area);
+        } else {
+            return roomRepository.findAll();
+        }
     }
 
     @Override

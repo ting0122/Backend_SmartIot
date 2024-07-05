@@ -3,6 +3,7 @@ package com.example.SmartIot.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.SmartIot.entity.AirPurifier;
 import com.example.SmartIot.service.ifs.AirPurifierService;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/air-purifiers")
 public class AirPurifierController {
@@ -29,7 +31,7 @@ public class AirPurifierController {
 
     //特定 id 的空氣清淨機
     @GetMapping("/{id}")
-    public AirPurifier getAirPurifier(@PathVariable Long id) {
+    public AirPurifier getAirPurifier(@PathVariable("id") Long id) {
         return airPurifierService.getAirPurifierById(id);
     }
 
@@ -42,7 +44,7 @@ public class AirPurifierController {
 
     //刪除空氣清淨機
     @DeleteMapping("/{id}")
-    public void deleteAirPurifier(@PathVariable Long id) {
+    public void deleteAirPurifier(@PathVariable("id") Long id) {
         airPurifierService.deleteAirPurifier(id);
     }
 }

@@ -3,6 +3,7 @@ package com.example.SmartIot.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +16,7 @@ import com.example.SmartIot.entity.Device;
 import com.example.SmartIot.service.ifs.DeviceService;
 import com.example.SmartIot.vo.DeviceReq;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/")
 public class DeviceController {
@@ -30,7 +32,7 @@ public class DeviceController {
 
     //返回特定 id 的設備
     @GetMapping("/devices/{id}")
-    public Device getDeviceById(@PathVariable Long id) {
+    public Device getDeviceById(@PathVariable("id") Long id) {
         return deviceService.getDeviceById(id);
     }
 
@@ -42,7 +44,7 @@ public class DeviceController {
 
     //刪除指定 ID 的設備
     @DeleteMapping("/devices/{id}")
-    public void deleteDevice(@PathVariable Long id) {
+    public void deleteDevice(@PathVariable("id") Long id) {
         deviceService.deleteDevice(id);
     }
 
