@@ -42,7 +42,8 @@ public class LightServiceImpl implements LightService {
             return new ResponseEntity<>(ResMsg.BAD_REQUEST.getDescription(), HttpStatus.BAD_REQUEST);
         }
 
-        Device device = deviceRepository.findById(light.getDevice().getId()).orElse(null);
+        Long deviceId = light.getDevice().getId();
+        Device device = deviceRepository.findById(deviceId).orElse(null);
         if (device == null) {
             return new ResponseEntity<>(ResMsg.NOT_FOUND.getDescription(), HttpStatus.NOT_FOUND);
         }
@@ -68,6 +69,11 @@ public class LightServiceImpl implements LightService {
             return new ResponseEntity<>("Device status cannot be null", HttpStatus.BAD_REQUEST);
         }
 
+        // 如果燈是關閉的，不允許調整亮度和色溫
+        if (!newStatus && (light.getBrightness() > 0 || light.getColor_temp() != 3000)) { // 假設默認色溫為3000K
+            return new ResponseEntity<>("Cannot adjust brightness or color temperature when the light is off", HttpStatus.BAD_REQUEST);
+        }
+
         // 更新設備狀態
         device.setStatus(newStatus);
         device = deviceRepository.save(device);
@@ -77,9 +83,16 @@ public class LightServiceImpl implements LightService {
             light.setBrightness(0);
         }
 
+        // 檢查 Light 表中是否已存在此燈
+        Light existingLight = lightRepository.findById(deviceId).orElse(new Light());
+
+        // 設置或更新 Light 的屬性
+        existingLight.setBrightness(light.getBrightness());
+        existingLight.setColor_temp(light.getColor_temp());
+        existingLight.setDevice(device);  
+
         // 保存燈的設置
-        light.setDevice(device);
-        Light savedLight = lightRepository.save(light);
+        Light savedLight = lightRepository.save(existingLight);
 
         return new ResponseEntity<>(savedLight, HttpStatus.OK);
     }
