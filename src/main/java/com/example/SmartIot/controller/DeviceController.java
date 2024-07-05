@@ -26,7 +26,7 @@ public class DeviceController {
     private DeviceService deviceService;
 
     //返回所有設備的列表
-    @GetMapping("/")
+    @GetMapping("/devices")
     public List<Device> getAllDevices(){
         return deviceService.getAllDevices();
     }
