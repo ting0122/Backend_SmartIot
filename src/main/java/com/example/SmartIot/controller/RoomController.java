@@ -34,7 +34,7 @@ public class RoomController {
 
     //獲取特定房間,  PathVariable 把url裡的{id} 放到 方法裡的參數Long id上
     @GetMapping("/{id}")
-    public Room getRoomById(@PathVariable Long id) {
+    public Room getRoomById(@PathVariable("id") Long id) {
         return roomService.getRoomById(id);
     }
 
@@ -46,7 +46,7 @@ public class RoomController {
 
     //刪除房間
     @DeleteMapping("/{id}")
-    public void deleteRoom(@PathVariable Long id) {
+    public void deleteRoom(@PathVariable("id") Long id) {
         roomService.deleteRoom(id);
     }
 
