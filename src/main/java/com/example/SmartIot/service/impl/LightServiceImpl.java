@@ -96,14 +96,49 @@ public class LightServiceImpl implements LightService {
             return new ResponseEntity<>(ResMsg.NOT_FOUND.getDescription(), HttpStatus.NOT_FOUND);
         }
 
+        // 取得燈的設備
+        Device device = light.getDevice();
+        if (device == null) {
+            return new ResponseEntity<>("Associated device not found", HttpStatus.NOT_FOUND);
+        }
+
+        boolean statusChanged = false;
+        // 開關燈
+        if (updates.containsKey("status")) {
+            Object statusValue = updates.get("status");
+            boolean newStatus;
+            if (statusValue instanceof Integer) {
+                newStatus = ((Integer) statusValue) == 1;
+            } else if (statusValue instanceof Boolean) {
+                newStatus = (Boolean) statusValue;
+            } else {
+                return new ResponseEntity<>("Invalid status value. Use 0, 1, true, or false", HttpStatus.BAD_REQUEST);
+            }
+            device.setStatus(newStatus);
+            statusChanged = true;
+
+            // 如果關閉燈，將亮度設為0
+            if (!newStatus) {
+                light.setBrightness(0);
+            }
+        }
+
+        // 調整亮度
         if (updates.containsKey("brightness")) {
             int brightness = (int) updates.get("brightness");
             if (brightness < 0 || brightness > 100) {
                 return new ResponseEntity<>("Brightness must be between 0 and 100", HttpStatus.BAD_REQUEST);
             }
             light.setBrightness(brightness);
+
+            // 如果調整亮度且燈原本是關閉的，則打開燈
+            if (brightness > 0 && !device.getStatus()) {
+                device.setStatus(true);
+                statusChanged = true;
+            }
         }
 
+        // 調整色調
         if (updates.containsKey("color_temp")) {
             int colorTemp = (int) updates.get("color_temp");
             if (colorTemp < 1000 || colorTemp > 10000) {
@@ -113,12 +148,9 @@ public class LightServiceImpl implements LightService {
             light.setColor_temp(colorTemp);
         }
 
-        if (updates.containsKey("status")) {
-            boolean status = (boolean) updates.get("status");
-            light.getDevice().setStatus(status);
-            if (!status) {
-                light.setBrightness(0);
-            }
+        // 如果狀態有變化，保存 Device
+        if (statusChanged) {
+            deviceRepository.save(device);
         }
 
         Light savedLight = lightRepository.save(light);
