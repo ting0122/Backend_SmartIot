@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.SmartIot.entity.Room;
@@ -36,6 +37,14 @@ public class RoomController {
     @GetMapping("/{id}")
     public Room getRoomById(@PathVariable("id") Long id) {
         return roomService.getRoomById(id);
+    }
+
+    //找房間名或找房間類型 範例:http://localhost:8080/rooms/search?name=房間609
+    @GetMapping("/search")
+    public List<Room> searchRooms(@RequestParam(name = "name",required = false) String name,
+                                  @RequestParam(name = "type",required = false) String type,
+                                  @RequestParam(name = "area",required = false) String area){
+        return roomService.searchRooms(name, type, area);
     }
 
     //創建或更新房間, RequestBody將JSON轉為RoomReq, Valid要求驗證entity裡 寫的驗證註解,如:NotBlank

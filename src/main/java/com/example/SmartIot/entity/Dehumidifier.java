@@ -14,7 +14,6 @@ import jakarta.persistence.Table;
 public class Dehumidifier {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private Double current_humidity;

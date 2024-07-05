@@ -44,6 +44,7 @@ public class DehimidifierController {
         return dehumidifierService.saveDehumidifier(dehumidifier);
     }
 
+    //更改除濕機參數
     @PatchMapping("/{id}")
      public Dehumidifier updateDehumidifier(@PathVariable("id") Long id, @RequestBody Map<String, Object> updates) {
         return dehumidifierService.updateDehumidifier(id, updates);
