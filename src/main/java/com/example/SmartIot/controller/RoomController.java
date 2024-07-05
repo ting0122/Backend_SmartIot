@@ -39,7 +39,9 @@ public class RoomController {
         return roomService.getRoomById(id);
     }
 
-    //找房間名或找房間類型 範例:http://localhost:8080/rooms/search?name=房間609
+    //找房間名或找房間類型
+    //範例1: http://localhost:8080/rooms/search?name=房間609
+    //範例2: http://localhost:8080/rooms/search?name=個人工作室&area=房間609 多筆要加&
     @GetMapping("/search")
     public List<Room> searchRooms(@RequestParam(name = "name",required = false) String name,
                                   @RequestParam(name = "type",required = false) String type,
