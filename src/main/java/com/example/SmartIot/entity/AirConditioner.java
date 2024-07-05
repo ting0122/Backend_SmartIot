@@ -7,7 +7,7 @@ import com.example.SmartIot.constant.AirConditionerConstants.FanSpeed;
 @Entity
 @Table(name = "ac")
 public class AirConditioner {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -17,23 +17,21 @@ public class AirConditioner {
     @Enumerated(EnumType.STRING)
     private Mode mode;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "fan_speed")
+    @Enumerated(EnumType.STRING)
     private FanSpeed fanSpeed;
 
-
-    //one ac mapped one device
+    // one ac mapped one device
     @OneToOne
     @MapsId
     @JoinColumn(name = "id")
     private Device device;
 
-
     public AirConditioner() {
     }
 
-
-    public AirConditioner(Long id, Double current_temp, Double target_temp, Mode mode, FanSpeed fanSpeed, Device device) {
+    public AirConditioner(Long id, Double current_temp, Double target_temp, Mode mode, FanSpeed fanSpeed,
+            Device device) {
         this.id = id;
         this.current_temp = current_temp;
         this.target_temp = target_temp;

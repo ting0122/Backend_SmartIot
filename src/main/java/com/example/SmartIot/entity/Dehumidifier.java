@@ -12,7 +12,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "dehumidifier")
 public class Dehumidifier {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,7 +26,7 @@ public class Dehumidifier {
     @JoinColumn(name = "id")
     private Device device;
 
-    //constructor
+    // constructor
     public Dehumidifier() {
     }
 
@@ -37,8 +37,8 @@ public class Dehumidifier {
         this.tank_capacity = tank_capacity;
         this.device = device;
     }
-    
-    //getters and setters
+
+    // getters and setters
     public Long getId() {
         return this.id;
     }
