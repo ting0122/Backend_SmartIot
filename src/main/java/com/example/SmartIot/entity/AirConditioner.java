@@ -27,6 +27,7 @@ public class AirConditioner {
     @JoinColumn(name = "id")
     private Device device;
 
+    //constructor
     public AirConditioner() {
     }
 

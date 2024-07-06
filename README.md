@@ -35,8 +35,8 @@ Github : [Backend_SmartIot](https://github.com/ting0122/Backend_SmartIot.git)
 7. [Remote Explorer](https://marketplace.visualstudio.com/items?itemName=xyz.remote.explorer)
 
 ## :chart_with_upwards_trend: 更新 - 狀態
-- 目前版本：`v1.0.0`
-- 上次更新日期：`2024-07-02`
+- 目前版本：`無法考究`
+- 上次更新日期：`2024-07-07`
 
 ## :bug: BUGS
 - 如果遇到任何問題，請通過 [GitHub Issues](https://github.com/ting0122/Backend_SmartIot/issues) 回報。
@@ -44,6 +44,12 @@ Github : [Backend_SmartIot](https://github.com/ting0122/Backend_SmartIot.git)
 ## :clipboard: Swagger API
 - [Swagger UI](http://localhost:8080/swagger-ui/index.html)
 
+
+## : 同步資料庫資料操作說明 (目前使用MySQL傾卸檔工具)
+- 打開 MySQL Workbench 切換到 smartiot資料庫,打開一個輸入sql代碼的區域,點擊打開資料檔案,選擇專案內的smartiot-db.sql檔案,按閃電執行代碼。
+- 如要更改預設數據內容及新增內容等，請找。
+
+* 如要使用指令方式執行備份或還原,請使用管理員權限打開CMD,避免使用Power shell會有重導向編碼錯誤
 ---
 
 ## :memo: License
