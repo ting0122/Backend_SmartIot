@@ -1,6 +1,7 @@
 package com.example.SmartIot.entity;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -31,8 +32,8 @@ public class Device {
 
     private String name;
     private String type;
-    private Boolean status;
-    private Timestamp time;
+    private Boolean status = false;
+    private Timestamp time = Timestamp.valueOf(LocalDateTime.now());
 
     // 多個設備對應到一個房間(等到您實際訪問 room 屬性時才加載room實體)
     @ManyToOne(fetch = FetchType.LAZY)

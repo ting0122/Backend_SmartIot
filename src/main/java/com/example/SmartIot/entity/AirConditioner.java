@@ -40,6 +40,7 @@ public class AirConditioner {
         this.device = device;
     }
 
+    //getters and setters
     public Long getId() {
         return this.id;
     }
