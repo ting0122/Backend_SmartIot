@@ -149,6 +149,22 @@ public class DeviceServiceImpl implements DeviceService {
     @Override
     public void deleteDevice(Long id) {
         Device device = deviceRepository.findById(id).orElseThrow(() -> new RuntimeException("Device not found"));
+        switch (device.getType()) {
+            case "air_purifier":
+                airPurifierRepository.deleteById(id);
+                break;
+            case "dehumidifier":
+                dehumidifierRepository.deleteById(id);
+                break;
+            case "light":
+                lightRepository.deleteById(id);
+                break;
+            case "air_conditioner":
+                airConditionerRepository.deleteById(id);
+                break;
+            default:
+                throw new RuntimeException("Unsupported device type: " + device.getType());
+        }
         deviceRepository.delete(device);
     }
 }
