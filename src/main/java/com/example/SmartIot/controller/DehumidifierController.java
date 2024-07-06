@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,37 +21,37 @@ import com.example.SmartIot.service.ifs.DehumidifierService;
 @CrossOrigin
 @RestController
 @RequestMapping("/dehumidifiers")
-public class DehimidifierController {
+public class DehumidifierController {
     
     @Autowired
     private DehumidifierService dehumidifierService;
 
-    //獲取所有除濕機
+    // 获取所有除湿机
     @GetMapping
     public List<Dehumidifier> getAllDehumidifiers() {
         return dehumidifierService.getAllDehumidifiers();
     }
 
-    //獲取特定除濕機
+    // 获取特定除湿机
     @GetMapping("/{id}")
     public Dehumidifier getDehumidifier(@PathVariable("id") Long id) {
         return dehumidifierService.getDehumidifierById(id);
     }
 
-    //新增除濕機
+    // 新增或修改除湿机
     @PostMapping
-    public Dehumidifier createDehumidifier(@RequestBody Dehumidifier dehumidifier) {
-        //save 方法會判定有無id決定創建或修改
+    public ResponseEntity<?> saveDehumidifier(@RequestBody Dehumidifier dehumidifier) {
+        // save 方法会判定有无id决定创建或修改
         return dehumidifierService.saveDehumidifier(dehumidifier);
     }
 
-    //更改除濕機參數
+    // 部分更新除湿机
     @PatchMapping("/{id}")
-     public Dehumidifier updateDehumidifier(@PathVariable("id") Long id, @RequestBody Map<String, Object> updates) {
-        return dehumidifierService.updateDehumidifier(id, updates);
+    public ResponseEntity<?> patchDehumidifier(@PathVariable("id") Long id, @RequestBody Map<String, Object> updates) {
+        return dehumidifierService.patchDehumidifier(id, updates);
     }
 
-    //刪除除濕機
+    // 删除除湿机
     @DeleteMapping("/{id}")
     public void deleteDehumidifier(@PathVariable("id") Long id) {
         dehumidifierService.deleteDehumidifier(id);

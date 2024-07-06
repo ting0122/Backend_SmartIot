@@ -1,17 +1,20 @@
 package com.example.SmartIot.service.ifs;
 
-import com.example.SmartIot.constant.AirConditionerConstants.FanSpeed;
-import com.example.SmartIot.constant.AirConditionerConstants.Mode;
-import com.example.SmartIot.vo.AirConditionerReq;
-import com.example.SmartIot.vo.AirConditionerRes;
+import java.util.List;
+import java.util.Map;
+import org.springframework.http.ResponseEntity;
 
+import com.example.SmartIot.entity.AirConditioner;
 
 public interface AirConditionerService {
-    AirConditionerRes getStatus(Long id);
-    AirConditionerRes updateStatus(AirConditionerReq req);
-    AirConditionerRes turnOn(Long id);
-    AirConditionerRes turnOff(Long id);
-    AirConditionerRes setTemperature(Long id, Double temperature);
-    AirConditionerRes setMode(Long id, Mode mode);
-    AirConditionerRes setFanSpeed(Long id, FanSpeed fanSpeed);
+
+    List<AirConditioner> getAllAirConditioners();
+
+    AirConditioner getAirConditionerById(Long id);
+
+    ResponseEntity<?> saveAirConditioner(AirConditioner airConditioner);
+
+    ResponseEntity<?> patchAirConditioner(Long id, Map<String, Object> updates);
+
+    void deleteAirConditioner(Long id);
 }

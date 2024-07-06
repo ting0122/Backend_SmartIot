@@ -1,18 +1,21 @@
 package com.example.SmartIot.service.impl;
 
-import java.util.Optional;
-
+import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.example.SmartIot.constant.AirConditionerConstants.FanSpeed;
-import com.example.SmartIot.constant.AirConditionerConstants.Mode;
-import com.example.SmartIot.constant.AirConditionerResponseMessage;
+import com.example.SmartIot.constant.ResMsg;
+import com.example.SmartIot.constant.AirConditionerConstants;
+import com.example.SmartIot.entity.Device;
 import com.example.SmartIot.entity.AirConditioner;
+import com.example.SmartIot.repository.DeviceRepository;
 import com.example.SmartIot.repository.AirConditionerRepository;
 import com.example.SmartIot.service.ifs.AirConditionerService;
-import com.example.SmartIot.vo.AirConditionerReq;
-import com.example.SmartIot.vo.AirConditionerRes;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class AirConditionerServiceImpl implements AirConditionerService {
@@ -20,136 +23,134 @@ public class AirConditionerServiceImpl implements AirConditionerService {
     @Autowired
     private AirConditionerRepository airConditionerRepository;
 
+    @Autowired
+    private DeviceRepository deviceRepository;
+
     @Override
-    public AirConditionerRes getStatus(Long id) {
-        // 查找指定ID的空調
-        Optional<AirConditioner> acOptional = airConditionerRepository.findById(id);
-        if (acOptional.isPresent()) {
-            // 如果找到，轉換為回應對象並返回
-            return convertToRes(acOptional.get());
-        }
-        throw new RuntimeException(AirConditionerResponseMessage.NOT_FOUND.getMessage());
+    public List<AirConditioner> getAllAirConditioners() {
+        return airConditionerRepository.findAll();
     }
 
     @Override
-    public AirConditionerRes updateStatus(AirConditionerReq req) {
-        // 查找指定ID的空調
-        Optional<AirConditioner> acOptional = airConditionerRepository.findById(req.getId());
-        if (acOptional.isPresent()) {
-            AirConditioner ac = acOptional.get();
-            // 更新空調的各項設置
-            ac.setTarget_temp(req.getTargetTemp());
-            // 更新空調的運行模式
-            ac.setMode(req.getMode());
-            // 更新空調的風速
-            ac.setFanSpeed(req.getFanSpeed());
-            // 如果開關狀態為開啟，則更新空調的開關狀態
-            ac.getDevice().setStatus(req.isOn());
-
-            // 保存更新後的空調並返回結果
-            AirConditioner updatedAc = airConditionerRepository.save(ac);
-            return convertToRes(updatedAc);
-        }
-        throw new RuntimeException(AirConditionerResponseMessage.NOT_FOUND.getMessage());
+    public AirConditioner getAirConditionerById(Long id) {
+        return airConditionerRepository.findById(id).orElse(null);
     }
 
     @Override
-    public AirConditionerRes turnOn(Long id) {
-        // 查找指定ID的空調
-        Optional<AirConditioner> acOptional = airConditionerRepository.findById(id);
-        if (acOptional.isPresent()) {
-            AirConditioner ac = acOptional.get();
-            // 打開空調
-            ac.getDevice().setStatus(true);
-            // 保存更新並返回結果
-            AirConditioner updatedAc = airConditionerRepository.save(ac);
-            return convertToRes(updatedAc);
+    @Transactional
+    public ResponseEntity<?> saveAirConditioner(AirConditioner airConditioner) {
+        if (airConditioner == null || airConditioner.getDevice() == null
+                || airConditioner.getDevice().getId() == null) {
+            return new ResponseEntity<>(ResMsg.BAD_REQUEST.getDescription(), HttpStatus.BAD_REQUEST);
         }
-        throw new RuntimeException(AirConditionerResponseMessage.NOT_FOUND.getMessage());
+
+        Long deviceId = airConditioner.getDevice().getId();
+        Device device = deviceRepository.findById(deviceId).orElse(null);
+        if (device == null) {
+            return new ResponseEntity<>(ResMsg.NOT_FOUND.getDescription(), HttpStatus.NOT_FOUND);
+        }
+
+        // 檢查設備是否為空調機
+        if (!"ac".equalsIgnoreCase(device.getType())) {
+            return new ResponseEntity<>("This device is not an air conditioner", HttpStatus.BAD_REQUEST);
+        }
+
+        // 使用傳入的 AirConditioner 物件中的 Device 狀態
+        Boolean newStatus = airConditioner.getDevice().getStatus();
+        if (newStatus == null) {
+            return new ResponseEntity<>("Device status cannot be null", HttpStatus.BAD_REQUEST);
+        }
+
+        // 更新設備狀態
+        device.setStatus(newStatus);
+        device = deviceRepository.save(device);
+
+        // 檢查 AirConditioner 表中是否已存在此空調機
+        AirConditioner existingAirConditioner = airConditionerRepository.findById(deviceId)
+                .orElse(new AirConditioner());
+
+        // 設定或更新 AirConditioner 的屬性
+        existingAirConditioner.setCurrent_temp(airConditioner.getCurrent_temp());
+        existingAirConditioner.setTarget_temp(airConditioner.getTarget_temp());
+        existingAirConditioner.setMode(airConditioner.getMode());
+        existingAirConditioner.setFanSpeed(airConditioner.getFanSpeed());
+        existingAirConditioner.setDevice(device);
+
+        // 保存空調機的設定
+        AirConditioner savedAirConditioner = airConditionerRepository.save(existingAirConditioner);
+
+        return new ResponseEntity<>(savedAirConditioner, HttpStatus.OK);
     }
 
     @Override
-    public AirConditionerRes turnOff(Long id) {
-        // 查找指定ID的空調
-        Optional<AirConditioner> acOptional = airConditionerRepository.findById(id);
-        if (acOptional.isPresent()) {
-            AirConditioner ac = acOptional.get();
-            // 關閉空調
-            ac.getDevice().setStatus(false);
-            // 保存更新並返回結果
-            AirConditioner updatedAc = airConditionerRepository.save(ac);
-            return convertToRes(updatedAc);
+    @Transactional
+    public ResponseEntity<?> patchAirConditioner(Long id, Map<String, Object> updates) {
+        AirConditioner airConditioner = airConditionerRepository.findById(id).orElse(null);
+        if (airConditioner == null) {
+            return new ResponseEntity<>(ResMsg.NOT_FOUND.getDescription(), HttpStatus.NOT_FOUND);
         }
-        throw new RuntimeException(AirConditionerResponseMessage.NOT_FOUND.getMessage());
+
+        Device device = airConditioner.getDevice();
+        if (device == null) {
+            return new ResponseEntity<>("Associated device not found", HttpStatus.NOT_FOUND);
+        }
+
+        boolean statusChanged = false;
+
+        // 開關空調機
+        if (updates.containsKey("status")) {
+            Object statusValue = updates.get("status");
+            boolean newStatus;
+            if (statusValue instanceof Integer) {
+                newStatus = ((Integer) statusValue) == 1;
+            } else if (statusValue instanceof Boolean) {
+                newStatus = (Boolean) statusValue;
+            } else {
+                return new ResponseEntity<>("Invalid status value. Use 0, 1, true, or false", HttpStatus.BAD_REQUEST);
+            }
+            device.setStatus(newStatus);
+            statusChanged = true;
+        }
+
+        // 更新當前溫度
+        if (updates.containsKey("current_temp")) {
+            airConditioner.setCurrent_temp((Double) updates.get("current_temp"));
+        }
+
+        // 更新目標溫度
+        if (updates.containsKey("target_temp")) {
+            airConditioner.setTarget_temp((Double) updates.get("target_temp"));
+        }
+
+        // 更新模式
+        if (updates.containsKey("mode")) {
+            try {
+                airConditioner.setMode(AirConditionerConstants.Mode.valueOf((String) updates.get("mode")));
+            } catch (IllegalArgumentException e) {
+                return new ResponseEntity<>("Invalid mode value", HttpStatus.BAD_REQUEST);
+            }
+        }
+
+        // 更新風速
+        if (updates.containsKey("fanSpeed")) {
+            try {
+                airConditioner.setFanSpeed(AirConditionerConstants.FanSpeed.valueOf((String) updates.get("fanSpeed")));
+            } catch (IllegalArgumentException e) {
+                return new ResponseEntity<>("Invalid fan speed value", HttpStatus.BAD_REQUEST);
+            }
+        }
+
+        // 如果狀態有變化，保存 Device
+        if (statusChanged) {
+            deviceRepository.save(device);
+        }
+
+        AirConditioner savedAirConditioner = airConditionerRepository.save(airConditioner);
+        return new ResponseEntity<>(savedAirConditioner, HttpStatus.OK);
     }
 
     @Override
-    public AirConditionerRes setTemperature(Long id, Double temperature) {
-        Optional<AirConditioner> acOptional = airConditionerRepository.findById(id);
-        if (acOptional.isPresent()) {
-            AirConditioner ac = acOptional.get();
-            // 設置目標溫度
-            ac.setTarget_temp(temperature);
-            // 保存更新並返回結果
-            AirConditioner updatedAc = airConditionerRepository.save(ac);
-            return convertToRes(updatedAc);
-        }
-        throw new RuntimeException(AirConditionerResponseMessage.NOT_FOUND.getMessage());
-    }
-
-    @Override
-    public AirConditionerRes setMode(Long id, Mode mode) {
-        Optional<AirConditioner> acOptional = airConditionerRepository.findById(id);
-        if (acOptional.isPresent()) {
-            AirConditioner ac = acOptional.get();
-            // 設置冷氣模式
-            ac.setMode(mode);
-            // 保存更新並返回結果
-            AirConditioner updatedAc = airConditionerRepository.save(ac);
-            return convertToRes(updatedAc);
-        }
-        throw new RuntimeException(AirConditionerResponseMessage.NOT_FOUND.getMessage());
-    }
-
-    @Override
-    public AirConditionerRes setFanSpeed(Long id, FanSpeed fanSpeed) {
-        Optional<AirConditioner> acOptional = airConditionerRepository.findById(id);
-        if (acOptional.isPresent()) {
-            AirConditioner ac = acOptional.get();
-            // 設置風速
-            ac.setFanSpeed(fanSpeed);
-            AirConditioner updatedAc = airConditionerRepository.save(ac);
-            return convertToRes(updatedAc);
-        }
-        throw new RuntimeException(AirConditionerResponseMessage.NOT_FOUND.getMessage());
-    }
-
-    private AirConditionerRes convertToRes(AirConditioner airConditioner) {
-        // 創建一個新的 AirConditionerRes 對象來存儲轉換後的數據
-        AirConditionerRes res = new AirConditionerRes();
-
-        // 設置空調的唯一標識符
-        res.setId(airConditioner.getId());
-
-        // 設置空調的開關狀態，這裡通過 Device 對象獲取
-        res.setOn(airConditioner.getDevice().getStatus());
-
-        // 設置當前溫度
-        res.setCurrentTemp(airConditioner.getCurrent_temp());
-
-        // 設置目標溫度
-        res.setTargetTemp(airConditioner.getTarget_temp());
-
-        // 設置運行模式（如製冷、製熱等）
-        res.setMode(airConditioner.getMode());
-
-        // 設置風速
-        res.setFanSpeed(airConditioner.getFanSpeed());
-
-        // 設置成功響應的代碼和消息
-        res.setCode(AirConditionerResponseMessage.SUCCESS.getCode());
-        res.setMessage(AirConditionerResponseMessage.SUCCESS.getMessage());
-
-        return res;
+    public void deleteAirConditioner(Long id) {
+        airConditionerRepository.deleteById(id);
     }
 }

@@ -1,6 +1,8 @@
 package com.example.SmartIot.service.ifs;
 
 import java.util.List;
+import java.util.Map;
+import org.springframework.http.ResponseEntity;
 
 import com.example.SmartIot.entity.AirPurifier;
 
@@ -10,7 +12,9 @@ public interface AirPurifierService {
 
     AirPurifier getAirPurifierById(Long id);
 
-    AirPurifier saveAirPurifier(AirPurifier airPurifier);
+    ResponseEntity<?> saveAirPurifier(AirPurifier airPurifier);
+
+    ResponseEntity<?> patchAirPurifier(Long id, Map<String, Object> updates);
 
     void deleteAirPurifier(Long id);
 }

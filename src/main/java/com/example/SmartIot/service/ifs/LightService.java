@@ -2,6 +2,9 @@ package com.example.SmartIot.service.ifs;
 
 import java.util.List;
 
+import java.util.Map;
+import org.springframework.http.ResponseEntity;
+
 import com.example.SmartIot.entity.Light;
 
 public interface LightService {
@@ -10,7 +13,9 @@ public interface LightService {
 
     Light getLightById(Long id);
 
-    Light saveLight(Light light);
+    ResponseEntity<?> saveLight(Light light);
+
+    ResponseEntity<?> patchLight(Long id, Map<String, Object> updates);
 
     void deleteLight(Long id);
 }
