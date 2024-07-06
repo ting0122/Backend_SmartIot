@@ -56,8 +56,9 @@ public class AirConditionerSignalSimulator {
                 return Math.min(baseChange * fanSpeedMultiplier, targetTemp - currentTemp);
             case DRY:
                 return -baseChange * 0.5; // 除濕模式慢慢降溫
+            case AUTO: 
+                return Math.min(baseChange * fanSpeedMultiplier, 27 - currentTemp); // 自動模式慢慢調整成27度
             case FAN:
-            case AUTO:
             default:
                 return 0; // 風扇模式不改變溫度
         }
