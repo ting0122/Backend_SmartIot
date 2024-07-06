@@ -28,7 +28,7 @@ public class AirConditioner {
     @JoinColumn(name = "id")
     private Device device;
 
-
+    //constructor
     public AirConditioner() {
     }
 
@@ -42,6 +42,7 @@ public class AirConditioner {
         this.device = device;
     }
 
+    //getters and setters
     public Long getId() {
         return this.id;
     }
