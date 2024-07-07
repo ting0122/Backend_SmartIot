@@ -23,11 +23,11 @@ DROP TABLE IF EXISTS `ac`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `ac` (
-  `id` bigint NOT NULL,
   `current_temp` double DEFAULT NULL,
+  `target_temp` double DEFAULT NULL,
+  `id` bigint NOT NULL,
   `fan_speed` enum('AUTO','HIGH','LOW','MEDIUM') DEFAULT NULL,
   `mode` enum('AUTO','COOL','DRY','FAN','HEAT') DEFAULT NULL,
-  `target_temp` double DEFAULT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `FKf91cnl6kisy6k2dt5l4dvjdsu` FOREIGN KEY (`id`) REFERENCES `device` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -39,7 +39,7 @@ CREATE TABLE `ac` (
 
 LOCK TABLES `ac` WRITE;
 /*!40000 ALTER TABLE `ac` DISABLE KEYS */;
-INSERT INTO `ac` VALUES (27,10.086408785984798,NULL,NULL,0),(28,10,NULL,NULL,0),(29,10.021573065563118,NULL,NULL,0),(30,10.064569697682307,NULL,NULL,0),(31,10.200652985481392,NULL,NULL,0),(32,10.118201729360232,NULL,NULL,0),(33,10,NULL,NULL,0),(34,10.351747326962816,NULL,NULL,0),(35,10,NULL,NULL,0),(36,10.099073013630361,NULL,NULL,0);
+INSERT INTO `ac` VALUES (10.820652411659026,0,1,NULL,NULL),(10.340120740089317,0,2,NULL,NULL),(10.110700832968467,0,3,NULL,NULL),(10.13586976455465,0,4,NULL,NULL),(10.452596101589505,0,5,NULL,NULL),(10,0,6,NULL,NULL),(10.931874327530346,0,7,NULL,NULL),(10.253478970267508,0,8,NULL,NULL),(10.065943714851175,0,9,NULL,NULL),(10.061395588558563,0,10,NULL,NULL);
 /*!40000 ALTER TABLE `ac` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -51,10 +51,10 @@ DROP TABLE IF EXISTS `air_purifier`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `air_purifier` (
-  `id` bigint NOT NULL,
   `air_quality` int NOT NULL,
   `fan_speed` int NOT NULL,
   `operating_time` double DEFAULT NULL,
+  `id` bigint NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `FK6n7gmtpxxwf8bqy7hoig88si5` FOREIGN KEY (`id`) REFERENCES `device` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -66,7 +66,7 @@ CREATE TABLE `air_purifier` (
 
 LOCK TABLES `air_purifier` WRITE;
 /*!40000 ALTER TABLE `air_purifier` DISABLE KEYS */;
-INSERT INTO `air_purifier` VALUES (1,27,0,0),(2,22,0,0),(3,4,0,0),(4,14,0,0),(5,7,0,0),(6,9,0,0),(7,17,0,0),(8,3,0,0),(9,5,0,0),(10,13,0,0);
+INSERT INTO `air_purifier` VALUES (51,0,0,11),(38,0,0,12),(35,0,0,13),(18,0,0,14),(34,0,0,15),(7,0,0,16),(0,0,0,17),(6,0,0,18),(19,0,0,19),(31,0,0,20);
 /*!40000 ALTER TABLE `air_purifier` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -78,10 +78,10 @@ DROP TABLE IF EXISTS `dehumidifier`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `dehumidifier` (
-  `id` bigint NOT NULL,
   `current_humidity` double DEFAULT NULL,
   `tank_capacity` double DEFAULT NULL,
   `target_humidity` double DEFAULT NULL,
+  `id` bigint NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `FK1myqt0cncg0llryf1km3l8oie` FOREIGN KEY (`id`) REFERENCES `device` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -93,7 +93,7 @@ CREATE TABLE `dehumidifier` (
 
 LOCK TABLES `dehumidifier` WRITE;
 /*!40000 ALTER TABLE `dehumidifier` DISABLE KEYS */;
-INSERT INTO `dehumidifier` VALUES (11,1.7721707091640941,0,0),(12,0.49892824525902446,0,0),(13,0.9084057756421882,0,0),(14,1.0084248698156153,0,0),(15,3.0125726364714254,0,0),(16,0.7149379247621281,0,0),(17,0.7308788408902349,0,0);
+INSERT INTO `dehumidifier` VALUES (0.8763083694936835,0,0,21),(0,0,0,22),(0.5802365236394196,0,0,23),(1.622775930595207,0,0,24),(0,0,0,25),(0.7333020002913748,0,0,26),(0.730594646145802,0,0,27),(0.6870613364208195,0,0,28),(0.9472846250569232,0,0,29),(2.828624463422752,0,0,30);
 /*!40000 ALTER TABLE `dehumidifier` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -105,16 +105,16 @@ DROP TABLE IF EXISTS `device`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `device` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) DEFAULT NULL,
   `status` bit(1) DEFAULT NULL,
-  `time` datetime(6) DEFAULT NULL,
-  `type` varchar(255) DEFAULT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
   `room_id` bigint DEFAULT NULL,
+  `time` datetime(6) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `type` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK8nnipnjiephps7atqdnvmfndp` (`room_id`),
   CONSTRAINT `FK8nnipnjiephps7atqdnvmfndp` FOREIGN KEY (`room_id`) REFERENCES `room` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -123,7 +123,7 @@ CREATE TABLE `device` (
 
 LOCK TABLES `device` WRITE;
 /*!40000 ALTER TABLE `device` DISABLE KEYS */;
-INSERT INTO `device` VALUES (1,'空氣清潔器1號',_binary '\0','2024-07-07 01:19:56.381049','air_purifier',NULL),(2,'空氣清潔器2號',_binary '\0','2024-07-07 01:22:27.822441','air_purifier',1),(3,'空氣清潔器3號',_binary '\0','2024-07-07 01:22:37.808787','air_purifier',2),(4,'空氣清潔器4號',_binary '\0','2024-07-07 01:22:46.695272','air_purifier',3),(5,'空氣清潔器5號',_binary '\0','2024-07-07 01:22:59.554689','air_purifier',4),(6,'空氣清潔器6號',_binary '\0','2024-07-07 01:23:12.041976','air_purifier',4),(7,'空氣清潔器7號',_binary '\0','2024-07-07 01:23:18.514475','air_purifier',3),(8,'空氣清潔器8號',_binary '\0','2024-07-07 01:23:25.702109','air_purifier',2),(9,'空氣清潔器9號',_binary '\0','2024-07-07 01:23:31.523020','air_purifier',1),(10,'空氣清潔器10號',_binary '\0','2024-07-07 01:23:45.080298','air_purifier',4),(11,'除濕機1號',_binary '\0','2024-07-07 01:24:06.957912','dehumidifier',2),(12,'除濕機3號',_binary '\0','2024-07-07 01:24:15.785640','dehumidifier',4),(13,'除濕機6號',_binary '\0','2024-07-07 01:24:25.276793','dehumidifier',3),(14,'除濕機7號',_binary '\0','2024-07-07 01:24:30.848115','dehumidifier',1),(15,'除濕機8號',_binary '\0','2024-07-07 01:24:35.319321','dehumidifier',2),(16,'除濕機9號',_binary '\0','2024-07-07 01:24:39.321514','dehumidifier',3),(17,'除濕機10號',_binary '\0','2024-07-07 01:24:44.144283','dehumidifier',4),(18,'燈1號',_binary '\0','2024-07-07 01:25:07.116467','light',1),(19,'燈2號',_binary '\0','2024-07-07 01:25:14.092111','light',3),(20,'燈3號',_binary '\0','2024-07-07 01:25:18.877413','light',4),(21,'燈5號',_binary '\0','2024-07-07 01:25:23.074157','light',1),(22,'燈6號',_binary '\0','2024-07-07 01:25:29.068692','light',3),(23,'燈7號',_binary '\0','2024-07-07 01:25:33.368738','light',2),(24,'燈8號',_binary '\0','2024-07-07 01:25:37.052109','light',4),(25,'燈9號',_binary '\0','2024-07-07 01:25:43.145753','light',1),(26,'燈10號',_binary '\0','2024-07-07 01:25:47.274570','light',3),(27,'冷氣機1號',_binary '\0','2024-07-07 01:26:29.254528','air_conditioner',1),(28,'冷氣機2號',_binary '\0','2024-07-07 01:26:34.717033','air_conditioner',3),(29,'冷氣機3號',_binary '\0','2024-07-07 01:26:40.188287','air_conditioner',4),(30,'冷氣機4號',_binary '\0','2024-07-07 01:26:45.256152','air_conditioner',1),(31,'冷氣機5號',_binary '\0','2024-07-07 01:26:50.101504','air_conditioner',3),(32,'冷氣機6號',_binary '\0','2024-07-07 01:26:53.707437','air_conditioner',2),(33,'冷氣機7號',_binary '\0','2024-07-07 01:26:57.443789','air_conditioner',1),(34,'冷氣機8號',_binary '\0','2024-07-07 01:27:01.594171','air_conditioner',3),(35,'冷氣機9號',_binary '\0','2024-07-07 01:27:06.258630','air_conditioner',4),(36,'冷氣機10號',_binary '\0','2024-07-07 01:27:10.352802','air_conditioner',4);
+INSERT INTO `device` VALUES (_binary '\0',1,1,'2024-07-07 21:35:29.546041','冷氣機01號','冷氣機'),(_binary '\0',2,3,'2024-07-07 21:35:51.793654','冷氣機02號','冷氣機'),(_binary '\0',3,2,'2024-07-07 21:35:58.656135','冷氣機03號','冷氣機'),(_binary '\0',4,5,'2024-07-07 21:36:05.568895','冷氣機04號','冷氣機'),(_binary '\0',5,4,'2024-07-07 21:36:10.475633','冷氣機05號','冷氣機'),(_binary '\0',6,7,'2024-07-07 21:36:16.505876','冷氣機06號','冷氣機'),(_binary '\0',7,6,'2024-07-07 21:36:21.217280','冷氣機07號','冷氣機'),(_binary '\0',8,8,'2024-07-07 21:36:28.156846','冷氣機08號','冷氣機'),(_binary '\0',9,1,'2024-07-07 21:36:41.106331','冷氣機09號','冷氣機'),(_binary '\0',10,2,'2024-07-07 21:36:48.214230','冷氣機10號','冷氣機'),(_binary '\0',11,2,'2024-07-07 21:37:18.216414','空氣清淨機01號','空氣清淨機'),(_binary '\0',12,1,'2024-07-07 21:37:23.843476','空氣清淨機02號','空氣清淨機'),(_binary '\0',13,3,'2024-07-07 21:37:30.938587','空氣清淨機03號','空氣清淨機'),(_binary '\0',14,5,'2024-07-07 21:37:42.913831','空氣清淨機04號','空氣清淨機'),(_binary '\0',15,4,'2024-07-07 21:37:47.556897','空氣清淨機05號','空氣清淨機'),(_binary '\0',16,7,'2024-07-07 21:37:52.253063','空氣清淨機06號','空氣清淨機'),(_binary '\0',17,6,'2024-07-07 21:37:58.803436','空氣清淨機07號','空氣清淨機'),(_binary '\0',18,6,'2024-07-07 21:38:04.305751','空氣清淨機08號','空氣清淨機'),(_binary '\0',19,8,'2024-07-07 21:38:08.749303','空氣清淨機09號','空氣清淨機'),(_binary '\0',20,2,'2024-07-07 21:38:14.855664','空氣清淨機10號','空氣清淨機'),(_binary '\0',21,2,'2024-07-07 21:38:34.035560','除濕機01號','除濕機'),(_binary '\0',22,1,'2024-07-07 21:38:41.701449','除濕機02號','除濕機'),(_binary '\0',23,5,'2024-07-07 21:38:47.226242','除濕機03號','除濕機'),(_binary '\0',24,4,'2024-07-07 21:38:52.096374','除濕機04號','除濕機'),(_binary '\0',25,6,'2024-07-07 21:38:56.410263','除濕機05號','除濕機'),(_binary '\0',26,5,'2024-07-07 21:39:01.488721','除濕機06號','除濕機'),(_binary '\0',27,8,'2024-07-07 21:39:05.639875','除濕機07號','除濕機'),(_binary '\0',28,5,'2024-07-07 21:39:10.255528','除濕機08號','除濕機'),(_binary '\0',29,7,'2024-07-07 21:39:15.804157','除濕機09號','除濕機'),(_binary '\0',30,8,'2024-07-07 21:39:21.239771','除濕機10號','除濕機'),(_binary '\0',31,8,'2024-07-07 21:39:46.938656','燈01號','燈'),(_binary '\0',32,7,'2024-07-07 21:39:52.041869','燈02號','燈'),(_binary '\0',33,6,'2024-07-07 21:39:56.407853','燈03號','燈'),(_binary '\0',34,5,'2024-07-07 21:40:00.555105','燈04號','燈'),(_binary '\0',35,4,'2024-07-07 21:40:04.728001','燈05號','燈'),(_binary '\0',36,3,'2024-07-07 21:40:09.214876','燈06號','燈'),(_binary '\0',37,2,'2024-07-07 21:40:18.999745','燈06號','燈'),(_binary '\0',38,1,'2024-07-07 21:40:23.572877','燈07號','燈'),(_binary '\0',39,2,'2024-07-07 21:40:30.409398','燈08號','燈'),(_binary '\0',40,5,'2024-07-07 21:40:35.384950','燈09號','燈'),(_binary '\0',41,7,'2024-07-07 21:40:40.907092','燈10號','燈');
 /*!40000 ALTER TABLE `device` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -135,10 +135,10 @@ DROP TABLE IF EXISTS `error`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `error` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `description` tinytext,
   `timestamp` date DEFAULT NULL,
   `device_id` bigint DEFAULT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `description` tinytext,
   PRIMARY KEY (`id`),
   KEY `FK1ukfxlobj8kgu8isgp44xhvj6` (`device_id`),
   CONSTRAINT `FK1ukfxlobj8kgu8isgp44xhvj6` FOREIGN KEY (`device_id`) REFERENCES `device` (`id`)
@@ -162,11 +162,11 @@ DROP TABLE IF EXISTS `history`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `history` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `detail` tinytext,
-  `event_time` datetime(6) DEFAULT NULL,
-  `event_type` varchar(255) DEFAULT NULL,
   `device_id` bigint DEFAULT NULL,
+  `event_time` datetime(6) DEFAULT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `event_type` varchar(255) DEFAULT NULL,
+  `detail` tinytext,
   PRIMARY KEY (`id`),
   KEY `FKfjtl9djg0db1cbj1aa260r0fl` (`device_id`),
   CONSTRAINT `FKfjtl9djg0db1cbj1aa260r0fl` FOREIGN KEY (`device_id`) REFERENCES `device` (`id`)
@@ -190,9 +190,9 @@ DROP TABLE IF EXISTS `light`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `light` (
-  `id` bigint NOT NULL,
   `brightness` int NOT NULL,
   `color_temp` int NOT NULL,
+  `id` bigint NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `FKnga41f0gse0cg6vx8amtkx2ah` FOREIGN KEY (`id`) REFERENCES `device` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -204,7 +204,7 @@ CREATE TABLE `light` (
 
 LOCK TABLES `light` WRITE;
 /*!40000 ALTER TABLE `light` DISABLE KEYS */;
-INSERT INTO `light` VALUES (18,0,0),(19,0,0),(20,0,0),(21,0,0),(22,0,0),(23,0,0),(24,0,0),(25,0,0),(26,0,0);
+INSERT INTO `light` VALUES (0,0,31),(0,0,32),(0,0,33),(0,0,34),(0,0,35),(0,0,36),(0,0,37),(0,0,38),(0,0,39),(0,0,40),(0,0,41);
 /*!40000 ALTER TABLE `light` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -216,12 +216,13 @@ DROP TABLE IF EXISTS `room`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `room` (
+  `status` bit(1) DEFAULT NULL,
   `id` bigint NOT NULL AUTO_INCREMENT,
   `area` varchar(255) DEFAULT NULL,
   `name` varchar(255) DEFAULT NULL,
   `type` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -230,7 +231,7 @@ CREATE TABLE `room` (
 
 LOCK TABLES `room` WRITE;
 /*!40000 ALTER TABLE `room` DISABLE KEYS */;
-INSERT INTO `room` VALUES (1,'房間604','永義辦公室','小型會議室'),(2,'房間605','哲宇辦公室','小型會議室'),(3,'房間605','某人辦公室','廁所'),(4,'房間609','傳接球辦公室','豪華辦公室');
+INSERT INTO `room` VALUES (_binary '\0',1,'房間100號','彥宇辦公室','VIP套房'),(_binary '\0',2,'房間101號','紅帽男辦公室','個人閱讀室'),(_binary '\0',3,'大廳沙發區','請假王辦公室','大廳'),(_binary '\0',4,'房間103號','永義辦公室','小型辦公室'),(_binary '\0',5,'房間105號','巧翎訂餐處','小型辦公室'),(_binary '\0',6,'房間106號','男哥辦公室','中型辦公室'),(_binary '\0',7,'房間107號','董卓辦公室','中型辦公室'),(_binary '\0',8,'房間107號','俊傑辦公室','豪華辦公室');
 /*!40000 ALTER TABLE `room` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -243,4 +244,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-07-07  1:34:48
+-- Dump completed on 2024-07-07 21:43:40
