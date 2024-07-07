@@ -1,14 +1,17 @@
 package com.example.SmartIot.entity;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
+import org.apache.tomcat.util.json.JSONFilter;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 
@@ -21,64 +24,88 @@ public class History {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "device_id")
-    private Device device;
+    @Column(name = "event_id")
+    private String eventId;
 
-    private Timestamp event_time;
-    private String event_type;
+    @Column(name = "device_id")
+    private Long deviceId;
+
+    @Column(name = "event_time")
+    private LocalDateTime eventTime;
+
+    @Column(name = "event_type")
+    private String eventType;
 
     @Lob
+    @Column(name = "detail")
     private String detail;
 
     //constructor
     public History() {
     }
 
-
-    public History(Long id, Device device, Timestamp event_time, String event_type, String detail) {
+    public History(Long id, String eventId, Long deviceId, LocalDateTime eventTime, String eventType, String detail) {
         this.id = id;
-        this.device = device;
-        this.event_time = event_time;
-        this.event_type = event_type;
+        this.eventId = eventId;
+        this.deviceId = deviceId;
+        this.eventTime = eventTime;
+        this.eventType = eventType;
         this.detail = detail;
+    }
+
+    @PrePersist
+    public void prePersist() {
+        if (this.eventTime == null) {
+            this.eventTime = LocalDateTime.now();
+        }
+        if (this.eventId == null) {
+            this.eventId = UUID.randomUUID().toString();
+        }
     }
 
     //getters and setters
     public Long getId() {
-        return this.id;
+        return id;
     }
 
     public void setId(Long id) {
         this.id = id;
     }
 
-    public Device getDevice() {
-        return this.device;
+    public String getEventId() {
+        return eventId;
     }
 
-    public void setDevice(Device device) {
-        this.device = device;
+    public void setEventId(String eventId) {
+        this.eventId = eventId;
     }
 
-    public Timestamp getEvent_time() {
-        return this.event_time;
+    public Long getDeviceId() {
+        return deviceId;
     }
 
-    public void setEvent_time(Timestamp event_time) {
-        this.event_time = event_time;
+    public void setDeviceId(Long deviceId) {
+        this.deviceId = deviceId;
     }
 
-    public String getEvent_type() {
-        return this.event_type;
+    public LocalDateTime getEventTime() {
+        return eventTime;
     }
 
-    public void setEvent_type(String event_type) {
-        this.event_type = event_type;
+    public void setEventTime(LocalDateTime eventTime) {
+        this.eventTime = eventTime;
+    }
+
+    public String getEventType() {
+        return eventType;
+    }
+
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     public String getDetail() {
-        return this.detail;
+        return detail;
     }
 
     public void setDetail(String detail) {
@@ -86,4 +113,6 @@ public class History {
     }
 
 
+    
+    
 }

@@ -83,189 +83,67 @@
 
 # =======================================================
 
-這是 smart office專案
-
-# Vue3
-前端: 
-每個房間的操作面板
-    設備控制:
-      - 開關控制
-      - 參數調節
-      - 模式選擇
-    即時顯示:
-      - 溫濕度等參數
-      - 設備狀態
-    警報和通知中心: 
-      - 通知中心
-    房間管理: 
-      - 資料管理
-      - 偏好設置
-
-
-  管理室介面: 
-
-    設備管理: 
-      - 添加設備
-      - 移除設備
-      - 設備配置
-    系統監控: 
-      - 日誌、錯誤日誌
-    系統設置: 
-      - 全局參數設置
- 
-
-# Spring Boot:3.3.1, Gradle:8, JAVA_17
-後端: 
-  controller: 
-    - AdminDeviceController
-    - AdminUserController
-    - AirConditionerController
-    - AirPurifierController
-    - AlarmRulesController
-    - AutomationRulesController
-    - DehimidifierController
-    - DeviceController
-    - ErrorController
-    - GlobalNotificationController
-    - GlobalSettingController
-    - HistoryController
-    - LightController
-    - LogController
-    - RoomController
-    - SystemMonitorController
-    - UserController
-  entity: 
-    - Device
-    - Room
-    - AirConditioner
-    - AirPurifier
-    - Dehumidifier
-    - Light
-    - History
-    - Error
-  constant:
-    - ResMsg
-  repository:
-    
-  service:
-    ifs:
-
-    impl:
-  
-  vo:
-
-
-用戶: 
-
-    設備控制:
-      - 開關控制
-      - 參數調節
-      - 模式選擇
-    即時顯示:
-      - 溫濕度等參數
-      - 設備狀態
-    通知中心: 
-     
-      - 通知中心
-    用戶管理: 
-      - 個人資料管理
-      - 偏好設置
-
-
-  管理員: 
-
-    設備管理: 
-      - 添加設備
-      - 移除設備
-      - 設備配置
-    系統監控: 
-      - 日誌、錯誤日誌
-      - 性能監控(設備參數)
-    系統設置: 
-      - 全局參數設置
-
-# Spring Boot:3.3.1, Gradle:8, JAVA_17
-後端: 
-  controller: 
-    - AdminDeviceController
-    - AdminUserController
-    - AirConditionerController
-    - AirPurifierController
-    - AlarmRulesController
-    - AutomationRulesController
-    - DehimidifierController
-    - DeviceController
-    - ErrorController
-    - GlobalNotificationController
-    - GlobalSettingController
-    - HistoryController
-    - LightController
-    - LogController
-    - RoomController
-    - SystemMonitorController
-    - UserController
-  entity: 
-    - Device
-    - Room
-    - AirConditioner
-    - AirPurifier
-    - Dehumidifier
-    - Light
-    - History
-    - Error
-  constant:
-    - ResMsg
-  repository:
-    
-  service:
-    ifs:
-
-    impl:
-  
-  vo:
-
-
-# 這是我的entity:
+# 我現在用spring boot 做smart office的專案
+# 這是我的entity
+# 總設備表device:
 # @Entity
-# //this entity mapped to device table , default is class name
 # @Table(name = "device")
 # public class Device {
     
-#     //primary key
+#     // 主鍵
 #     @Id
-#     //primary key auto increment
+#     // 主鍵自動增長
 #     @GeneratedValue(strategy = GenerationType.IDENTITY)
 #     private Long id;
 
 #     private String name;
 #     private String type;
-#     private Boolean status;
-#     private Timestamp time;
+#     private Boolean status = false;
+#     private Timestamp time = Timestamp.valueOf(LocalDateTime.now());
 
-#     //many device for one room
+#     // 多個設備對應到一個房間(等到您實際訪問 room 屬性時才加載room實體)
 #     @ManyToOne(fetch = FetchType.LAZY)
-#     //foreign key = room_id
+#     // 外鍵設置為 room_id
 #     @JoinColumn(name = "room_id")
-#     private Room roomId;
+#     //序列化時，Device 不會序列化其 room 屬性，從而避免無限遞迴
+#     @JsonBackReference
+#     private Room room;
 
 
 #     //constructor
 #     public Device() {
+
 #     }
 
 
-#     public Device(Long id, String name, String type, Boolean status, Timestamp time, Room roomId) {
+#     public Device(Long id, String name, String type, Boolean status, Timestamp time, Room room) {
 #         this.id = id;
 #         this.name = name;
 #         this.type = type;
 #         this.status = status;
 #         this.time = time;
-#         this.roomId = roomId;
+#         this.room = room;
+#     }
+
+#     //@PrePersist 註解的方法會在新實體被持久化到數據庫之前被調用。
+#     //@PreUpdate 註解的方法會在現有實體被更新到數據庫之前被調用。
+#     @PrePersist
+#     @PreUpdate
+#     private void ensureDefaults() {
+#         //預設設備為關閉
+#         if (this.status == null) {
+#             this.status = false;
+#         }
+#         //如果沒有時間 預設為當前時間
+#         if (this.time == null) {
+#             this.time = Timestamp.valueOf(LocalDateTime.now());
+#         }
 #     }
 
 #     //getters and setters
 # }
 
+# room表:
 # @Entity
 # @Table(name = "room")
 # public class Room {
@@ -276,12 +154,13 @@
 
 #     private String name;
 #     private String area;
-#     private String description;
+#     private String type;
+#     private Boolean status;
 
-#     //one room can include mutiple devices
-#     //mappedBy : attribute room in the device class is owner
-#     //it wont create columns, just for define the relation ship
-#     @OneToMany(mappedBy = "roomId")
+#     //一個房間包含多個設備(Device表的room屬性)
+#     @OneToMany(mappedBy = "room")
+#     //設備需要被序列化
+#     @JsonManagedReference
 #     private Set<Device> devices;
 
 
@@ -290,83 +169,245 @@
 #     }
 
 
-#     public Room(Long id, String name, String area, String description, Set<Device> devices) {
+#     public Room(Long id, String name, String area, String type,Boolean status, Set<Device> devices) {
 #         this.id = id;
 #         this.name = name;
 #         this.area = area;
-#         this.description = description;
+#         this.type = type;
+#         this.status = status;
 #         this.devices = devices;
 #     }
 
 #     //getters and setters
 # }
 
+# 冷氣表
 # @Entity
-# @Table(name = "history")
-# public class History {
-    
+# @Table(name = "ac")
+# public class AirConditioner {
+
 #     @Id
 #     @GeneratedValue(strategy = GenerationType.IDENTITY)
 #     private Long id;
 
-#     @ManyToOne
-#     @JoinColumn(name = "device_id")
-#     private Device device;
+#     private Double current_temp;
+#     private Double target_temp;
+#     @Enumerated(EnumType.STRING)
+#     private Mode mode;
 
-#     private Timestamp event_time;
-#     private String event_type;
+#     @Column(name = "fan_speed")
+#     @Enumerated(EnumType.STRING)
+#     private FanSpeed fanSpeed;
 
-#     @Lob
-#     private String detail;
-
-#     //constructor
-#     public History() {
-#     }
-
-
-#     public History(Long id, Device device, Timestamp event_time, String event_type, String detail) {
-#         this.id = id;
-#         this.device = device;
-#         this.event_time = event_time;
-#         this.event_type = event_type;
-#         this.detail = detail;
-#     }
-
-#     //getters and setters
-# }
-
-# @Entity
-# @Table(name = "error")
-# public class Error {
-    
-#     @Id
-#     @GeneratedValue(strategy = GenerationType.IDENTITY)
-#     private Long id;
-
-#     private LocalDate timestamp;
-
-#     //Large Object for store JSON
-#     //for example : CLOB = Long text , BLOB = Pics,videos,etc.
-#     @Lob
-#     private String description;
-
-#     @ManyToOne
-#     @JoinColumn(name = "device_id")
+#     // one ac mapped one device
+#     @OneToOne
+#     @MapsId
+#     @JoinColumn(name = "id")
 #     private Device device;
 
 #     //constructor
-#     public Error() {
+#     public AirConditioner() {
 #     }
 
-
-#     public Error(Long id, LocalDate timestamp, String description, Device device) {
+#     public AirConditioner(Long id, Double current_temp, Double target_temp, Mode mode, FanSpeed fanSpeed,
+#             Device device) {
 #         this.id = id;
-#         this.timestamp = timestamp;
-#         this.description = description;
+#         this.current_temp = current_temp;
+#         this.target_temp = target_temp;
+#         this.mode = mode;
+#         this.fanSpeed = fanSpeed;
 #         this.device = device;
 #     }
 
 #     //getters and setters
 # }
 
-# 請問我資料庫和表的架構哪裡還要改? 不要給我看sql code 只要給我entity
+# 空氣清淨機表
+# @Entity
+# @Table(name = "air_purifier")
+# public class AirPurifier {
+    
+#     @Id
+#     @GeneratedValue(strategy = GenerationType.IDENTITY)
+#     private Long id;
+
+#     private int air_quality;
+#     private int fan_speed;
+#     private Double operating_time;
+
+#     @OneToOne
+#     @MapsId
+#     @JoinColumn(name = "id")
+#     private Device device;
+
+#     //constructor
+#     public AirPurifier() {
+#     }
+
+#     public AirPurifier(Long id, int air_quality, int fan_speed, Double operating_time, Device device) {
+#         this.id = id;
+#         this.air_quality = air_quality;
+#         this.fan_speed = fan_speed;
+#         this.operating_time = operating_time;
+#         this.device = device;
+#     }
+    
+#     //getters and setters
+# }
+
+# 除濕機表
+# @Entity
+# @Table(name = "dehumidifier")
+# public class Dehumidifier {
+
+#     @Id
+#     @GeneratedValue(strategy = GenerationType.IDENTITY)
+#     private Long id;
+
+#     private Double current_humidity;
+#     private Double target_humidity;
+#     private Double tank_capacity;
+
+#     @OneToOne
+#     @MapsId
+#     @JoinColumn(name = "id")
+#     private Device device;
+
+#     // constructor
+#     public Dehumidifier() {
+#     }
+
+#     public Dehumidifier(Long id, Double current_humidity, Double target_humidity, Double tank_capacity, Device device) {
+#         this.id = id;
+#         this.current_humidity = current_humidity;
+#         this.target_humidity = target_humidity;
+#         this.tank_capacity = tank_capacity;
+#         this.device = device;
+#     }
+
+#     // getters and setters
+# }
+
+# 燈泡表
+# @Entity
+# @Table(name = "light")
+# public class Light {
+
+#     @Id
+#     @GeneratedValue(strategy = GenerationType.IDENTITY)
+#     private Long id;
+
+#     private int brightness;
+#     private int color_temp;
+
+#     @OneToOne
+#     @MapsId
+#     @JoinColumn(name = "id")
+#     private Device device;
+
+#     //constructor
+#     public Light() {
+#     }
+
+
+#     public Light(Long id, int brightness, int color_temp, Device device) {
+#         this.id = id;
+#         this.brightness = brightness;
+#         this.color_temp = color_temp;
+#         this.device = device;
+#     }
+
+#     //getters and setters
+# }
+
+
+# Device controller
+# @CrossOrigin
+# @RestController
+# @RequestMapping("/")
+# public class DeviceController {
+    
+#     @Autowired
+#     private DeviceService deviceService;
+
+#     //返回所有設備的列表
+#     @GetMapping("/devices")
+#     public List<Device> getAllDevices(){
+#         return deviceService.getAllDevices();
+#     }
+
+#     //返回特定 id 的設備
+#     @GetMapping("/devices/{id}")
+#     public Device getDeviceById(@PathVariable("id") Long id) {
+#         return deviceService.getDeviceById(id);
+#     }
+
+#     //找設備名或找設備類型
+#     //範例1: http://localhost:8080/devices/search?status=1 搜尋啟動中的設備
+#     //範例2: http://localhost:8080/devices/search?name=冷氣機1號&type=冷氣機 多筆要加&
+#     @GetMapping("/devices/search")
+#     public List<Device> searchDevices(@RequestParam(name = "name",required = false) String name,
+#                                       @RequestParam(name = "type",required = false) String type,
+#                                       @RequestParam(name = "status",required = false) Boolean status){
+#         return deviceService.searchDevices(name, type, status);
+#     }
+
+#     //從 Request 中讀取 JSON 資料並創建一個新的設備
+#     @PostMapping("/devices")
+#     public Device create(@RequestBody DeviceReq deviceReq) {
+#         return deviceService.saveDevice(deviceReq);
+#     }
+
+#     //刪除指定 ID 的設備
+#     @DeleteMapping("/devices/{id}")
+#     public void deleteDevice(@PathVariable("id") Long id) {
+#         deviceService.deleteDevice(id);
+#     }
+
+# }
+
+# room controller
+# @CrossOrigin
+# @RestController
+# @RequestMapping("/rooms")
+# public class RoomController {
+    
+#     @Autowired
+#     private RoomService roomService;
+
+#     //獲取所有房間
+#     @GetMapping
+#     public List<Room> getAllRooms(){
+#         return roomService.getAllRooms();
+#     }
+
+#     //獲取特定房間,  PathVariable 把url裡的{id} 放到 方法裡的參數Long id上
+#     @GetMapping("/{id}")
+#     public Room getRoomById(@PathVariable("id") Long id) {
+#         return roomService.getRoomById(id);
+#     }
+
+#     //找房間名或找房間類型
+#     //範例1: http://localhost:8080/rooms/search?name=房間609
+#     //範例2: http://localhost:8080/rooms/search?name=個人工作室&area=房間609 多筆要加&
+#     @GetMapping("/search")
+#     public List<Room> searchRooms(@RequestParam(name = "name",required = false) String name,
+#                                   @RequestParam(name = "type",required = false) String type,
+#                                   @RequestParam(name = "area",required = false) String area,
+#                                   @RequestParam(name = "status",required = false) Boolean status){
+#         return roomService.searchRooms(name, type, area, status);
+#     }
+
+#     //創建或更新房間, RequestBody將JSON轉為RoomReq, Valid要求驗證entity裡 寫的驗證註解,如:NotBlank
+#     @PostMapping
+#     public Room createRoom(@RequestBody @Valid RoomReq roomReq) {
+#         return roomService.createRoom(roomReq);
+#     }
+
+#     //刪除房間
+#     @DeleteMapping("/{id}")
+#     public void deleteRoom(@PathVariable("id") Long id) {
+#         roomService.deleteRoom(id);
+#     }
+
+# }
