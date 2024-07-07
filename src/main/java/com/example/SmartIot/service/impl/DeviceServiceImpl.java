@@ -4,9 +4,17 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.example.SmartIot.entity.AirConditioner;
+import com.example.SmartIot.entity.AirPurifier;
+import com.example.SmartIot.entity.Dehumidifier;
 import com.example.SmartIot.entity.Device;
+import com.example.SmartIot.entity.Light;
 import com.example.SmartIot.entity.Room;
+import com.example.SmartIot.repository.AirConditionerRepository;
+import com.example.SmartIot.repository.AirPurifierRepository;
+import com.example.SmartIot.repository.DehumidifierRepository;
 import com.example.SmartIot.repository.DeviceRepository;
+import com.example.SmartIot.repository.LightRepository;
 import com.example.SmartIot.repository.RoomRepository;
 import com.example.SmartIot.service.ifs.DeviceService;
 import com.example.SmartIot.vo.DeviceReq;
@@ -16,10 +24,18 @@ public class DeviceServiceImpl implements DeviceService {
 
     private final DeviceRepository deviceRepository;
     private final RoomRepository roomRepository;
+    private final AirPurifierRepository airPurifierRepository;
+    private final DehumidifierRepository dehumidifierRepository;
+    private final LightRepository lightRepository;
+    private final AirConditionerRepository airConditionerRepository;
 
-    public DeviceServiceImpl(DeviceRepository deviceRepository,RoomRepository roomRepository) {
+    public DeviceServiceImpl(DeviceRepository deviceRepository,RoomRepository roomRepository,AirPurifierRepository airPurifierRepository,DehumidifierRepository dehumidifierRepository,LightRepository lightRepository,AirConditionerRepository airConditionerRepository) {
         this.deviceRepository = deviceRepository;
         this.roomRepository = roomRepository;
+        this.airPurifierRepository = airPurifierRepository;
+        this.dehumidifierRepository = dehumidifierRepository;
+        this.lightRepository = lightRepository;
+        this.airConditionerRepository = airConditionerRepository;
     }
 
     // 返回所有設備的列表
@@ -32,6 +48,26 @@ public class DeviceServiceImpl implements DeviceService {
     @Override
     public Device getDeviceById(Long id) {
         return deviceRepository.findById(id).orElseThrow(() -> new RuntimeException("Device not found"));
+    }
+
+    // 搜尋設備 名稱及種類 
+    @Override
+    public List<Device> searchDevices(String name, String type, Boolean status){
+        if (name != null && type != null && status != null) {
+            return deviceRepository.findByNameContainingAndTypeAndStatus(name, type, status);
+        } else if (name != null && type != null) {
+            return deviceRepository.findByNameContainingAndType(name, type);
+        } else if (name != null && status != null) {
+            return deviceRepository.findByNameContainingAndStatus(name, status);
+        } else if (name != null) {
+            return deviceRepository.findByNameContaining(name);
+        } else if (type != null) {
+            return deviceRepository.findByTypeContaining(type);
+        } else if (status != null) {
+            return deviceRepository.findByStatus(status);
+        } else {
+            return deviceRepository.findAll();
+        }
     }
 
     // 創建新設備 或 更新設備
@@ -63,13 +99,72 @@ public class DeviceServiceImpl implements DeviceService {
             device.setRoom(null);
         }
 
-        return deviceRepository.save(device);
+        Device savedDevice = deviceRepository.save(device);
+
+        // 根據設備類型在相關表中新增資訊
+        switch(device.getType()) {
+            case "空氣清淨機":
+                AirPurifier airPurifier = new AirPurifier();
+                airPurifier.setDevice(savedDevice);
+                airPurifier.setAir_quality(0);
+                airPurifier.setFan_speed(0);
+                airPurifier.setOperating_time(0.0);
+                airPurifierRepository.save(airPurifier);
+                break;
+
+            case "除濕機":
+                Dehumidifier dehumidifier = new Dehumidifier();
+                dehumidifier.setDevice(savedDevice);
+                dehumidifier.setCurrent_humidity(0.0);
+                dehumidifier.setTarget_humidity(0.0);
+                dehumidifier.setTank_capacity(0.0);
+                dehumidifierRepository.save(dehumidifier);
+                break;
+
+            case "燈":
+                Light light = new Light();
+                light.setDevice(savedDevice);
+                light.setBrightness(0);
+                light.setColor_temp(0);
+                lightRepository.save(light);
+                break;
+
+            case "冷氣機":
+                AirConditioner airConditioner = new AirConditioner();
+                airConditioner.setDevice(savedDevice);
+                airConditioner.setCurrent_temp(0.0);
+                airConditioner.setTarget_temp(0.0);
+                airConditionerRepository.save(airConditioner);
+                break;
+
+            // 可新增其他設備類型
+
+            default:
+                throw new RuntimeException("Unsupported device type: " + device.getType());
+        }
+        return savedDevice;
     }
 
      // 刪除指定 ID 的設備
     @Override
     public void deleteDevice(Long id) {
         Device device = deviceRepository.findById(id).orElseThrow(() -> new RuntimeException("Device not found"));
+        switch (device.getType()) {
+            case "空氣清淨機":
+                airPurifierRepository.deleteById(id);
+                break;
+            case "除濕機":
+                dehumidifierRepository.deleteById(id);
+                break;
+            case "燈":
+                lightRepository.deleteById(id);
+                break;
+            case "冷氣機":
+                airConditionerRepository.deleteById(id);
+                break;
+            default:
+                throw new RuntimeException("Unsupported device type: " + device.getType());
+        }
         deviceRepository.delete(device);
     }
 }

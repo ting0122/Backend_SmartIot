@@ -1,6 +1,7 @@
 package com.example.SmartIot.entity;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -11,7 +12,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
+
 
 
 //該實體映射到名為 device 的資料表
@@ -27,8 +32,8 @@ public class Device {
 
     private String name;
     private String type;
-    private Boolean status;
-    private Timestamp time;
+    private Boolean status = false;
+    private Timestamp time = Timestamp.valueOf(LocalDateTime.now());
 
     // 多個設備對應到一個房間(等到您實際訪問 room 屬性時才加載room實體)
     @ManyToOne(fetch = FetchType.LAZY)
@@ -41,6 +46,7 @@ public class Device {
 
     //constructor
     public Device() {
+
     }
 
 
@@ -51,6 +57,21 @@ public class Device {
         this.status = status;
         this.time = time;
         this.room = room;
+    }
+
+    //@PrePersist 註解的方法會在新實體被持久化到數據庫之前被調用。
+    //@PreUpdate 註解的方法會在現有實體被更新到數據庫之前被調用。
+    @PrePersist
+    @PreUpdate
+    private void ensureDefaults() {
+        //預設設備為關閉
+        if (this.status == null) {
+            this.status = false;
+        }
+        //如果沒有時間 預設為當前時間
+        if (this.time == null) {
+            this.time = Timestamp.valueOf(LocalDateTime.now());
+        }
     }
 
     //getters and setters

@@ -34,9 +34,23 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public List<Room> searchRooms(String name, String type, String area){
-        if (name != null && type != null && area != null) {
-            return roomRepository.findByNameContainingAndTypeAndArea(name, type, area);
+    public List<Room> searchRooms(String name, String type, String area, Boolean status){
+        if (name != null && type != null && area != null && status != null) {
+            return roomRepository.findByNameContainingAndTypeAndAreaAndStatus(name, type, area, status);
+        } else if (name != null && type != null && status != null) {
+            return roomRepository.findByNameContainingAndTypeAndStatus(name, type, status);
+        } else if (name != null && area != null && status != null) {
+            return roomRepository.findByNameContainingAndAreaAndStatus(name, area, status);
+        } else if (name != null && status != null) {
+            return roomRepository.findByNameContainingAndStatus(name, status);
+        } else if (type != null && status != null) {
+            return roomRepository.findByTypeAndStatus(type, status);
+        } else if (area != null && status != null) {
+            return roomRepository.findByAreaAndStatus(area, status);
+        } else if (status != null) {
+            return roomRepository.findByStatus(status);
+        } else if (name != null && type != null && area != null) {
+            return roomRepository.findByNameContainingAndTypeAndArea(name, type, area);  // 呼叫正確的方法
         } else if (name != null && type != null) {
             return roomRepository.findByNameContainingAndType(name, type);
         } else if (name != null && area != null) {
@@ -66,6 +80,7 @@ public class RoomServiceImpl implements RoomService {
         room.setName(roomReq.getName());
         room.setArea(roomReq.getArea());
         room.setType(roomReq.getType());
+        room.setStatus(roomReq.getStatus());
         
         return roomRepository.save(room);
     }
