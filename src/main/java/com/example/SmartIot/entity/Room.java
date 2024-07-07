@@ -22,6 +22,7 @@ public class Room {
     private String name;
     private String area;
     private String type;
+    private Boolean status;
 
     //一個房間包含多個設備(Device表的room屬性)
     @OneToMany(mappedBy = "room")
@@ -35,11 +36,12 @@ public class Room {
     }
 
 
-    public Room(Long id, String name, String area, String type, Set<Device> devices) {
+    public Room(Long id, String name, String area, String type,Boolean status, Set<Device> devices) {
         this.id = id;
         this.name = name;
         this.area = area;
         this.type = type;
+        this.status = status;
         this.devices = devices;
     }
 
@@ -74,6 +76,14 @@ public class Room {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public Boolean getStatus() {
+        return status;
+    }
+
+    public void setStatus(Boolean status) {
+        this.status = status;
     }
 
     public Set<Device> getDevices() {

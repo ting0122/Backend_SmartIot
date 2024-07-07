@@ -23,4 +23,5 @@ public interface DeviceRepository extends JpaRepository<Device, Long>{
     List<Device> findByNameContainingAndStatus(@Param("name") String name, @Param("status") Boolean status);
 
     List<Device> findByNameContainingAndTypeAndStatus(String name, String type, Boolean status);
+
 }

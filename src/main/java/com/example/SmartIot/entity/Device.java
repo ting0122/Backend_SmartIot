@@ -4,7 +4,11 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -12,6 +16,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -22,6 +27,8 @@ import java.time.LocalDateTime;
 //該實體映射到名為 device 的資料表
 @Entity
 @Table(name = "device")
+//這個註解告訴 Jackson（用於將 Java 對象轉換為 JSON 的庫）在序列化或反序列化 JSON 時忽略指定的屬性。
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Device {
     
     // 主鍵
@@ -42,6 +49,28 @@ public class Device {
     //序列化時，Device 不會序列化其 room 屬性，從而避免無限遞迴
     @JsonBackReference
     private Room room;
+
+    //讓搜尋房間時 能同步撈回設備各項參數的值
+    @OneToOne(mappedBy = "device", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
+    @JsonManagedReference
+    //這個註解告訴 Jackson 在序列化為 JSON 時，只包含非 null 的屬性。
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private AirConditioner airConditioner;
+
+    @OneToOne(mappedBy = "device", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
+    @JsonManagedReference
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private AirPurifier airPurifier;
+
+    @OneToOne(mappedBy = "device", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
+    @JsonManagedReference
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Dehumidifier dehumidifier;
+
+    @OneToOne(mappedBy = "device", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
+    @JsonManagedReference
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Light light;
 
 
     //constructor

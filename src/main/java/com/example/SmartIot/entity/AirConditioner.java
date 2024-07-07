@@ -2,6 +2,7 @@ package com.example.SmartIot.entity;
 
 import jakarta.persistence.*;
 import com.example.SmartIot.constant.AirConditionerConstants.Mode;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.example.SmartIot.constant.AirConditionerConstants.FanSpeed;
 
 @Entity
@@ -14,6 +15,7 @@ public class AirConditioner {
 
     private Double current_temp;
     private Double target_temp;
+
     @Enumerated(EnumType.STRING)
     private Mode mode;
 
@@ -25,6 +27,7 @@ public class AirConditioner {
     @OneToOne
     @MapsId
     @JoinColumn(name = "id")
+    @JsonBackReference
     private Device device;
 
     //constructor
