@@ -103,7 +103,7 @@ public class DeviceServiceImpl implements DeviceService {
 
         // 根據設備類型在相關表中新增資訊
         switch(device.getType()) {
-            case "air_purifier":
+            case "空氣清淨機":
                 AirPurifier airPurifier = new AirPurifier();
                 airPurifier.setDevice(savedDevice);
                 airPurifier.setAir_quality(0);
@@ -112,7 +112,7 @@ public class DeviceServiceImpl implements DeviceService {
                 airPurifierRepository.save(airPurifier);
                 break;
 
-            case "dehumidifier":
+            case "除濕機":
                 Dehumidifier dehumidifier = new Dehumidifier();
                 dehumidifier.setDevice(savedDevice);
                 dehumidifier.setCurrent_humidity(0.0);
@@ -121,7 +121,7 @@ public class DeviceServiceImpl implements DeviceService {
                 dehumidifierRepository.save(dehumidifier);
                 break;
 
-            case "light":
+            case "燈":
                 Light light = new Light();
                 light.setDevice(savedDevice);
                 light.setBrightness(0);
@@ -129,7 +129,7 @@ public class DeviceServiceImpl implements DeviceService {
                 lightRepository.save(light);
                 break;
 
-            case "air_conditioner":
+            case "冷氣機":
                 AirConditioner airConditioner = new AirConditioner();
                 airConditioner.setDevice(savedDevice);
                 airConditioner.setCurrent_temp(0.0);
@@ -150,16 +150,16 @@ public class DeviceServiceImpl implements DeviceService {
     public void deleteDevice(Long id) {
         Device device = deviceRepository.findById(id).orElseThrow(() -> new RuntimeException("Device not found"));
         switch (device.getType()) {
-            case "air_purifier":
+            case "空氣清淨機":
                 airPurifierRepository.deleteById(id);
                 break;
-            case "dehumidifier":
+            case "除濕機":
                 dehumidifierRepository.deleteById(id);
                 break;
-            case "light":
+            case "燈":
                 lightRepository.deleteById(id);
                 break;
-            case "air_conditioner":
+            case "冷氣機":
                 airConditionerRepository.deleteById(id);
                 break;
             default:

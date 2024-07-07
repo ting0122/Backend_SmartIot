@@ -14,16 +14,19 @@ public class RoomReq {
     private String area;//room
 
     private String type;
+
+    private Boolean status;
     
     //constructor
     public RoomReq() {
     }
 
-    public RoomReq(Long id,@NotBlank(message = "Room name is mandatory") String name, String area, String type) {
+    public RoomReq(Long id,@NotBlank(message = "Room name is mandatory") String name, String area, String type,Boolean status) {
         this.id = id;
         this.name = name;
         this.area = area;
         this.type = type;
+        this.status = status;
     }
 
     //getters and setters
@@ -57,6 +60,14 @@ public class RoomReq {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public Boolean getStatus() {
+        return this.status;
+    }
+
+    public void setStatus(Boolean status) {
+        this.status = status;
     }
 
 }
