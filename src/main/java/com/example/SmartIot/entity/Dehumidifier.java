@@ -1,6 +1,10 @@
 package com.example.SmartIot.entity;
 
+import com.example.SmartIot.constant.AirConditionerConstants.FanSpeed;
+
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -20,6 +24,8 @@ public class Dehumidifier {
     private Double current_humidity;
     private Double target_humidity;
     private Double tank_capacity;
+    @Enumerated(EnumType.STRING)
+    private FanSpeed fanSpeed;
 
     @OneToOne
     @MapsId
@@ -30,12 +36,14 @@ public class Dehumidifier {
     public Dehumidifier() {
     }
 
-    public Dehumidifier(Long id, Double current_humidity, Double target_humidity, Double tank_capacity, Device device) {
+    public Dehumidifier(Long id, Double current_humidity, Double target_humidity, Double tank_capacity, Device device,
+            FanSpeed fanSpeed) {
         this.id = id;
         this.current_humidity = current_humidity;
         this.target_humidity = target_humidity;
         this.tank_capacity = tank_capacity;
         this.device = device;
+        this.fanSpeed = fanSpeed;
     }
 
     // getters and setters
@@ -77,6 +85,14 @@ public class Dehumidifier {
 
     public void setDevice(Device device) {
         this.device = device;
+    }
+
+    public FanSpeed getFanSpeed() {
+        return this.fanSpeed;
+    }
+
+    public void setFanSpeed(FanSpeed fanSpeed) {
+        this.fanSpeed = fanSpeed;
     }
 
 }
