@@ -49,7 +49,7 @@ public class DeviceController {
                                       @RequestParam(name = "status",required = false) Boolean status){
         List<Device> devices = deviceService.searchDevices(name, type, status);
 
-        // 如果指定了 area 参数，则筛选符合条件的设备
+        // 如果指定了area 回傳符合條件的room
         if (area != null && !area.isEmpty()) {
             devices = devices.stream()
                     .filter(device -> {
@@ -59,7 +59,7 @@ public class DeviceController {
                     .collect(Collectors.toList());
         }
 
-        // 遍历设备列表，设置每个设备的房间区域信息
+        // 找出area
         for (Device device : devices) {
             Room room = device.getRoom();
             if (room != null) {
