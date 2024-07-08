@@ -3,8 +3,6 @@ package com.example.SmartIot.entity;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import org.apache.tomcat.util.json.JSONFilter;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

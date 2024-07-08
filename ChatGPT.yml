@@ -42,23 +42,18 @@
 
 # Spring Boot:3.3.1, Gradle:8, JAVA_17
 後端: 
+  SmartIotApplication
   controller: 
-    - AdminDeviceController
-    - AdminUserController
     - AirConditionerController
     - AirPurifierController
-    - AlarmRulesController
-    - AutomationRulesController
     - DehimidifierController
     - DeviceController
     - ErrorController
     - GlobalNotificationController
-    - GlobalSettingController
     - HistoryController
     - LightController
     - LogController
     - RoomController
-    - SystemMonitorController
     - UserController
   entity: 
     - Device
@@ -68,17 +63,44 @@
     - Dehumidifier
     - Light
     - History
-    - Error
   constant:
     - ResMsg
+    - AirConditionerConstants
+    - AirConditionerResponseMessage
   repository:
-    
+    - AirConditionerRepository
+    - AirPurifierRepository
+    - DehumidifierRepository
+    - DeviceRepository
+    - HistoryRepository
+    - LightRepository
+    - RoomRepository
   service:
     ifs:
-
+      - AirConditionerService
+      - AirPurifierService
+      - DehumidifierService
+      - HistoryService
+      - LightService
+      - RoomService
     impl:
-  
+      - AirConditionerServiceImpl
+      - AirPurifierServiceImpl
+      - DehumidifierServiceImpl
+      - HistoryServiceImpl
+      - LightServiceImpl
+      - RoomServiceImpl
+      - DeviceServiceImpl
   vo:
+    - AirConditionerReq
+    - AirConditionerRes
+    - DeviceReq
+    - RoomReq
+  simulator:
+    - AirConditionerSignalSimulator
+    - AirPurifierSignalSimulator
+    - DehumidifierSignalSimulator
+  
 
 
 # =======================================================

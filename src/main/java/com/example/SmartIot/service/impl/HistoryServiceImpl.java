@@ -39,4 +39,5 @@ public class HistoryServiceImpl implements HistoryService {
     public History createHistory(History history) {
         return historyRepository.save(history);
     }
+
 }

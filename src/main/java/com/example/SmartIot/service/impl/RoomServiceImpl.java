@@ -41,43 +41,44 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public List<Room> searchRooms(String name, String type, String area, Boolean status) {
-        List<Room> rooms;
-        if (name != null && type != null && area != null && status != null) {
-            rooms = roomRepository.findByNameContainingAndTypeAndAreaAndStatus(name, type, area, status);
-        } else if (name != null && type != null && status != null) {
-            rooms = roomRepository.findByNameContainingAndTypeAndStatus(name, type, status);
-        } else if (name != null && area != null && status != null) {
-            rooms = roomRepository.findByNameContainingAndAreaAndStatus(name, area, status);
-        } else if (name != null && status != null) {
-            rooms = roomRepository.findByNameContainingAndStatus(name, status);
-        } else if (type != null && status != null) {
-            rooms = roomRepository.findByTypeAndStatus(type, status);
-        } else if (area != null && status != null) {
-            rooms = roomRepository.findByAreaAndStatus(area, status);
-        } else if (status != null) {
-            rooms = roomRepository.findByStatus(status);
-        } else if (name != null && type != null && area != null) {
-            rooms = roomRepository.findByNameContainingAndTypeAndArea(name, type, area);
+        if (name != null && type != null && status != null) {
+            // 根據名稱模糊查詢、類型查詢和狀態查詢
+            return roomRepository.findByNameContainingAndTypeAndStatus(name, type, status);
         } else if (name != null && type != null) {
-            rooms = roomRepository.findByNameContainingAndType(name, type);
-        } else if (name != null && area != null) {
-            rooms = roomRepository.findByNameContainingAndArea(name, area);
+            // 根據名稱模糊查詢和類型查詢
+            return roomRepository.findByNameContainingAndType(name, type);
+        } else if (name != null && status != null) {
+            // 根據名稱模糊查詢和狀態查詢
+            return roomRepository.findByNameContainingAndStatus(name, status);
+        } else if (type != null && status != null) {
+            // 根據類型查詢和狀態查詢
+            return roomRepository.findByTypeAndStatus(type, status);
         } else if (name != null) {
-            rooms = roomRepository.findByNameContaining(name);
+            // 根據名稱模糊查詢
+            return roomRepository.findByNameContaining(name);
         } else if (type != null) {
-            rooms = roomRepository.findByTypeContaining(type);
+            // 根據類型查詢
+            return roomRepository.findByTypeContaining(type);
         } else if (area != null) {
-            rooms = roomRepository.findByAreaContaining(area);
+            // 根據區域查詢唯一 Room
+            return Arrays.asList(roomRepository.findByArea(area));
+        } else if (status != null) {
+            // 根據狀態查詢所有 Room
+            return roomRepository.findByStatus(status);
         } else {
-            rooms = roomRepository.findAll();
+            // 返回空列表或者根據具體業務邏輯處理
+            return Collections.emptyList();
         }
-        rooms.forEach(this::sortAndGroupDevices);
-        return rooms;
-}
+    }
 
 
     @Override
     public Room createRoom(RoomReq roomReq) {
+
+        Room existingRoom = roomRepository.findByArea(roomReq.getArea());
+            if (existingRoom != null) {
+                throw new RuntimeException("Room with this name already exists");
+            }
 
         Room room;
         if (roomReq.getId() != null) {
