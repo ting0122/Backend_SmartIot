@@ -16,7 +16,6 @@ import java.util.List;
 import com.example.SmartIot.entity.History;
 import com.example.SmartIot.service.ifs.HistoryService;
 
-import java.util.Map;
 import java.util.UUID;
 
 @RestController

@@ -10,9 +10,11 @@ import org.springframework.stereotype.Service;
 
 import com.example.SmartIot.constant.ResMsg;
 import com.example.SmartIot.entity.Device;
+import com.example.SmartIot.entity.History;
 import com.example.SmartIot.entity.Light;
 import com.example.SmartIot.repository.DeviceRepository;
 import com.example.SmartIot.repository.LightRepository;
+import com.example.SmartIot.service.ifs.HistoryService;
 import com.example.SmartIot.service.ifs.LightService;
 
 import jakarta.transaction.Transactional;
@@ -25,6 +27,9 @@ public class LightServiceImpl implements LightService {
 
     @Autowired
     private DeviceRepository deviceRepository;
+
+    @Autowired
+    private HistoryService historyService;
 
     @Override
     public List<Light> getAllLights() {
@@ -79,6 +84,13 @@ public class LightServiceImpl implements LightService {
 
         // 保存燈的設置
         Light savedLight = lightRepository.save(existingLight);
+
+        // 創建歷史紀錄
+        History history = new History();
+        history.setDeviceId(deviceId);
+        history.setEventType("設備開關");
+        history.setDetail(Map.of("status", newStatus, "brightness", light.getBrightness(), "color_temp", light.getColor_temp()));
+        historyService.createHistory(history);
 
         return new ResponseEntity<>(savedLight, HttpStatus.OK);
     }

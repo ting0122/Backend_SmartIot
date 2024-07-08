@@ -2,6 +2,8 @@ package com.example.SmartIot.repository;
 
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.example.SmartIot.entity.Room;
@@ -9,21 +11,15 @@ import com.example.SmartIot.entity.Room;
 @Repository
 public interface RoomRepository extends JpaRepository<Room, Long>{
 
-    List<Room> findByNameContaining(String name);
-
-    List<Room> findByTypeContaining(String type);
+    @Query("SELECT r FROM Room r WHERE " +
+            "(:name IS NULL OR r.name LIKE %:name%) AND " +
+            "(:type IS NULL OR r.type LIKE %:type%) AND " +
+            "(:area IS NULL OR r.area LIKE %:area%) AND " +
+            "(:status IS NULL OR r.status = :status)")
+     List<Room> findByCriteria(@Param("name") String name,
+                               @Param("type") String type,
+                               @Param("area") String area,
+                               @Param("status") Boolean status);
 
     Room findByArea(String area);
-
-    List<Room> findByType(String type);
-
-    List<Room> findByNameContainingAndType(String name, String type);
-    
-    List<Room> findByNameContainingAndTypeAndStatus(String name, String type, Boolean status);
-    
-    List<Room> findByNameContainingAndStatus(String name, Boolean status);
-    
-    List<Room> findByTypeAndStatus(String type, Boolean status);
-    
-    List<Room> findByStatus(Boolean status);
 }

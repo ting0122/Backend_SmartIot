@@ -41,34 +41,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public List<Room> searchRooms(String name, String type, String area, Boolean status) {
-        if (name != null && type != null && status != null) {
-            // 根據名稱模糊查詢、類型查詢和狀態查詢
-            return roomRepository.findByNameContainingAndTypeAndStatus(name, type, status);
-        } else if (name != null && type != null) {
-            // 根據名稱模糊查詢和類型查詢
-            return roomRepository.findByNameContainingAndType(name, type);
-        } else if (name != null && status != null) {
-            // 根據名稱模糊查詢和狀態查詢
-            return roomRepository.findByNameContainingAndStatus(name, status);
-        } else if (type != null && status != null) {
-            // 根據類型查詢和狀態查詢
-            return roomRepository.findByTypeAndStatus(type, status);
-        } else if (name != null) {
-            // 根據名稱模糊查詢
-            return roomRepository.findByNameContaining(name);
-        } else if (type != null) {
-            // 根據類型查詢
-            return roomRepository.findByTypeContaining(type);
-        } else if (area != null) {
-            // 根據區域查詢唯一 Room
-            return Arrays.asList(roomRepository.findByArea(area));
-        } else if (status != null) {
-            // 根據狀態查詢所有 Room
-            return roomRepository.findByStatus(status);
-        } else {
-            // 返回空列表或者根據具體業務邏輯處理
-            return Collections.emptyList();
-        }
+        return roomRepository.findByCriteria(name,type,area,status);
     }
 
 
