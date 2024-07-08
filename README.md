@@ -46,7 +46,7 @@ Github : [Backend_SmartIot](https://github.com/ting0122/Backend_SmartIot.git)
 
 
 ## : 同步資料庫資料操作說明 (目前使用MySQL傾卸檔工具)
-- 打開 MySQL Workbench 切換到 smartiot資料庫,打開一個輸入sql代碼的區域,點擊打開資料檔案,選擇專案內的smartiot-db.sql檔案,按閃電執行代碼。
+- 打開 MySQL Workbench 切換到 smartiot資料庫,打開一個輸入sql代碼的區域,點擊打開資料檔案,選擇專案內的smartiot-db.sql檔案,按閃電執行代碼。記得執行完要reflesh。
 - 如要更改預設數據內容及新增內容等，請找。
 
 * 如要使用指令方式執行備份或還原,請使用管理員權限打開CMD,避免使用Power shell會有重導向編碼錯誤

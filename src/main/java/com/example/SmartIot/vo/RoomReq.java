@@ -63,7 +63,7 @@ public class RoomReq {
     }
 
     public Boolean getStatus() {
-        return status;
+        return this.status;
     }
 
     public void setStatus(Boolean status) {

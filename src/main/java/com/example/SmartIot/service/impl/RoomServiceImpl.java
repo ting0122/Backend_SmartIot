@@ -1,6 +1,10 @@
 package com.example.SmartIot.service.impl;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +16,11 @@ import com.example.SmartIot.repository.RoomRepository;
 import com.example.SmartIot.service.ifs.RoomService;
 import com.example.SmartIot.vo.RoomReq;
 
-import jakarta.validation.OverridesAttribute;
+import jakarta.transaction.Transactional;
 
 @Service
 public class RoomServiceImpl implements RoomService {
-    
+
     private final RoomRepository roomRepository;
 
     @Autowired
@@ -26,9 +30,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public List<Room> getAllRooms() {
-        List<Room> rooms = roomRepository.findAll();
-        rooms.forEach(this::sortAndGroupDevices);
-        return rooms;
+        return roomRepository.findAll();
     }
 
     @Override
@@ -40,10 +42,9 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public List<Room> searchRooms(String name, String type, String area, Boolean status) {
-        return roomRepository.findByCriteria(name,type,area,status);
+    public List<Room> searchRooms(String name, String type, String area, Boolean status){
+        return roomRepository.findByCriteria(name, type, area, status);
     }
-
 
     @Override
     public Room createRoom(RoomReq roomReq) {
@@ -60,11 +61,10 @@ public class RoomServiceImpl implements RoomService {
         } else {
             room = new Room();
         }
-        
+
         room.setName(roomReq.getName());
         room.setArea(roomReq.getArea());
         room.setType(roomReq.getType());
-        room.setStatus(roomReq.getStatus());
         
         return roomRepository.save(room);
     }

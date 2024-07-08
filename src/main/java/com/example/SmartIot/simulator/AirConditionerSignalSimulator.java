@@ -17,6 +17,9 @@ public class AirConditionerSignalSimulator {
     private AirConditionerRepository airConditionerRepository;
     private Random random = new Random();
 
+    private static final double MAX_TEMP_CHANGE = 0.5; // 每次最大溫度變化
+    private static final double INERTIA_FACTOR = 0.8; // 溫度變化的慣性因子
+
     @Scheduled(fixedRate = 5000) // 每5秒更新一次
     public void simulateSignals() {
         List<AirConditioner> airConditioners = airConditionerRepository.findAll();
@@ -40,24 +43,31 @@ public class AirConditionerSignalSimulator {
 
         // 根據模式和風速調整溫度
         double tempChange = calculateTempChange(currentTemp, targetTemp, mode, fanSpeed);
+
+        // 慣性因子和最大變化限制
+        tempChange = tempChange * INERTIA_FACTOR;
+        tempChange = Math.max(-MAX_TEMP_CHANGE, Math.min(MAX_TEMP_CHANGE, tempChange));
+
         ac.setCurrent_temp(currentTemp + tempChange);
     }
 
     private double calculateTempChange(double currentTemp, double targetTemp,
             AirConditionerConstants.Mode mode,
             AirConditionerConstants.FanSpeed fanSpeed) {
-        double baseChange = 0.1; // 基溫變化率
+        double baseChange = 0.05; // 基礎溫度變化率
         double fanSpeedMultiplier = getFanSpeedMultiplier(fanSpeed);
+        double tempDifference = targetTemp - currentTemp;
 
         switch (mode) {
             case COOL:
-                return Math.max(-baseChange * fanSpeedMultiplier, targetTemp - currentTemp);
+                return Math.max(-baseChange * fanSpeedMultiplier, tempDifference * 0.1);
             case HEAT:
-                return Math.min(baseChange * fanSpeedMultiplier, targetTemp - currentTemp);
+                return Math.min(baseChange * fanSpeedMultiplier, tempDifference * 0.1);
             case DRY:
-                return -baseChange * 0.5; // 除濕模式慢慢降溫
-            case FAN:
+                return -baseChange * 0.3; // 除濕模式慢慢降溫
             case AUTO:
+                return tempDifference * 0.05; // 自動模式緩慢調整
+            case FAN:
             default:
                 return 0; // 風扇模式不改變溫度
         }
@@ -66,23 +76,22 @@ public class AirConditionerSignalSimulator {
     private double getFanSpeedMultiplier(AirConditionerConstants.FanSpeed fanSpeed) {
         switch (fanSpeed) {
             case LOW:
-                return 1.0;
+                return 0.7;
             case MEDIUM:
-                return 1.5;
+                return 1.0;
             case HIGH:
-                return 2.0;
+                return 1.3;
             case AUTO:
             default:
-                return 1.5; // 自動風速假設為中等
+                return 1.0; // 自動風速假設為中等
         }
     }
 
     private void simulateEnvironmentTemperature(AirConditioner ac) {
         // 模擬環境溫度的微小變化
-        double environmentalChange = (random.nextDouble() - 0.5) * 0.2; // -0.1 到 0.1 之間的隨機值
+        double environmentalChange = (random.nextDouble() - 0.5) * 0.1; // -0.05 到 0.05 之間的隨機值
         double newTemp = ac.getCurrent_temp() + environmentalChange;
         // 確保溫度在合理範圍內，例如 10 到 40 度
         ac.setCurrent_temp(Math.max(10, Math.min(40, newTemp)));
     }
-
 }

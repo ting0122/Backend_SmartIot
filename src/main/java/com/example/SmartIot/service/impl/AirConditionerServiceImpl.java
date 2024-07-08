@@ -132,11 +132,11 @@ public class AirConditionerServiceImpl implements AirConditionerService {
         }
 
         // 更新風速
-        if (updates.containsKey("fanSpeed")) {
+        if (updates.containsKey("fan_speed")) {
             try {
-                airConditioner.setFanSpeed(AirConditionerConstants.FanSpeed.valueOf((String) updates.get("fanSpeed")));
+                airConditioner.setFanSpeed(AirConditionerConstants.FanSpeed.valueOf((String) updates.get("fan_speed")));
             } catch (IllegalArgumentException e) {
-                return new ResponseEntity<>("Invalid fan speed value", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>("Invalid fan_speed value", HttpStatus.BAD_REQUEST);
             }
         }
 

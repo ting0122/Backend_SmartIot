@@ -130,10 +130,16 @@ public class DeviceServiceImpl implements DeviceService {
                 break;
 
             case "冷氣機":
-                AirConditioner airConditioner = new AirConditioner();
+                AirConditioner airConditioner;
+                if (deviceReq.getId() != null) {
+                    airConditioner = airConditionerRepository.findById(deviceReq.getId())
+                        .orElseThrow(() -> new RuntimeException("AirConditioner not found"));
+                } else {
+                    airConditioner = new AirConditioner();
+                }
                 airConditioner.setDevice(savedDevice);
-                airConditioner.setCurrent_temp(0.0);
-                airConditioner.setTarget_temp(0.0);
+                airConditioner.setCurrent_temp(airConditioner.getCurrent_temp() != null ? airConditioner.getCurrent_temp() : 0.0);
+                airConditioner.setTarget_temp(airConditioner.getTarget_temp() != null ? airConditioner.getTarget_temp() : 0.0);
                 airConditionerRepository.save(airConditioner);
                 break;
 

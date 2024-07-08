@@ -69,6 +69,15 @@ public class LightServiceImpl implements LightService {
         device.setStatus(newStatus);
         device = deviceRepository.save(device);
 
+         // 創建歷史紀錄 - 開關燈事件
+        // if (light.getDevice().getStatusChanged()) {
+        //     History switchEvent = new History();
+        //     switchEvent.setDeviceId(deviceId);
+        //     switchEvent.setEventType("設備開關");
+        //     switchEvent.setDetail(Map.of("status", newStatus));
+        //     historyService.createHistory(switchEvent);
+        // }
+
         // 如果燈是關閉的，將亮度設為0
         if (!newStatus) {
             light.setBrightness(0);
@@ -85,12 +94,7 @@ public class LightServiceImpl implements LightService {
         // 保存燈的設置
         Light savedLight = lightRepository.save(existingLight);
 
-        // 創建歷史紀錄
-        History history = new History();
-        history.setDeviceId(deviceId);
-        history.setEventType("設備開關");
-        history.setDetail(Map.of("status", newStatus, "brightness", light.getBrightness(), "color_temp", light.getColor_temp()));
-        historyService.createHistory(history);
+        
 
         return new ResponseEntity<>(savedLight, HttpStatus.OK);
     }

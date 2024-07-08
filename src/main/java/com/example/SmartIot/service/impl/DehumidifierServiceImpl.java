@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import com.example.SmartIot.constant.AirConditionerConstants;
 import com.example.SmartIot.constant.ResMsg;
 import com.example.SmartIot.entity.Dehumidifier;
 import com.example.SmartIot.entity.Device;
@@ -18,7 +20,7 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class DehumidifierServiceImpl implements DehumidifierService {
-    
+
     @Autowired
     private DehumidifierRepository dehumidifierRepository;
 
@@ -70,6 +72,7 @@ public class DehumidifierServiceImpl implements DehumidifierService {
         existingDehumidifier.setCurrent_humidity(dehumidifier.getCurrent_humidity());
         existingDehumidifier.setTarget_humidity(dehumidifier.getTarget_humidity());
         existingDehumidifier.setTank_capacity(dehumidifier.getTank_capacity());
+        existingDehumidifier.setFanSpeed(dehumidifier.getFanSpeed());
         existingDehumidifier.setDevice(device);
 
         // 保存除濕機的設定
@@ -97,7 +100,7 @@ public class DehumidifierServiceImpl implements DehumidifierService {
         }
 
         boolean statusChanged = false;
-        
+
         // 開關除濕機
         if (updates.containsKey("status")) {
             Object statusValue = updates.get("status");
@@ -138,6 +141,15 @@ public class DehumidifierServiceImpl implements DehumidifierService {
                 return new ResponseEntity<>("Tank capacity cannot be negative", HttpStatus.BAD_REQUEST);
             }
             dehumidifier.setTank_capacity(tankCapacity);
+        }
+
+        // 更新風速
+        if (updates.containsKey("fan_speed")) {
+            try {
+                dehumidifier.setFanSpeed(AirConditionerConstants.FanSpeed.valueOf((String) updates.get("fan_speed")));
+            } catch (IllegalArgumentException e) {
+                return new ResponseEntity<>("Invalid fan_speed value", HttpStatus.BAD_REQUEST);
+            }
         }
 
         // 如果狀態有變化，保存 Device
