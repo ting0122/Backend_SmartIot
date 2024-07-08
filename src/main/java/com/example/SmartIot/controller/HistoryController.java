@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import com.example.SmartIot.entity.History;
 import com.example.SmartIot.service.ifs.HistoryService;
-import com.example.SmartIot.utility.JsonConverter;
 
 import java.util.Map;
 import java.util.UUID;
@@ -47,13 +46,8 @@ public class HistoryController {
     }
 
     @PostMapping
-    public ResponseEntity<History> createHistory(@RequestBody String historyJson) {
+    public ResponseEntity<History> createHistory(@RequestBody History history) {
         try {
-            History history = JsonConverter.fromJson(historyJson, History.class);
-            if (history == null) {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
-
             // Set default values if not provided
             if (history.getEventTime() == null) {
                 history.setEventTime(LocalDateTime.now());

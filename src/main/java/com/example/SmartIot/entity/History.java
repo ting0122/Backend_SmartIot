@@ -1,9 +1,13 @@
 package com.example.SmartIot.entity;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.UUID;
 
+import com.example.SmartIot.utility.HashMapConverter;
+
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -34,31 +38,22 @@ public class History {
     @Column(name = "event_type")
     private String eventType;
 
-    @Lob
+    @Convert(converter = HashMapConverter.class)
     @Column(name = "detail")
-    private String detail;
+    private Map<String, Object> detail;
 
     //constructor
     public History() {
     }
 
-    public History(Long id, String eventId, Long deviceId, LocalDateTime eventTime, String eventType, String detail) {
+    public History(Long id, String eventId, Long deviceId, LocalDateTime eventTime, String eventType,
+            Map<String, Object> detail) {
         this.id = id;
         this.eventId = eventId;
         this.deviceId = deviceId;
         this.eventTime = eventTime;
         this.eventType = eventType;
         this.detail = detail;
-    }
-
-    @PrePersist
-    public void prePersist() {
-        if (this.eventTime == null) {
-            this.eventTime = LocalDateTime.now();
-        }
-        if (this.eventId == null) {
-            this.eventId = UUID.randomUUID().toString();
-        }
     }
 
     //getters and setters
@@ -102,15 +97,13 @@ public class History {
         this.eventType = eventType;
     }
 
-    public String getDetail() {
+    public Map<String, Object> getDetail() {
         return detail;
     }
 
-    public void setDetail(String detail) {
+    public void setDetail(Map<String, Object> detail) {
         this.detail = detail;
     }
 
-
-    
     
 }
