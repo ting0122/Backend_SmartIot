@@ -16,6 +16,8 @@ public class Announcement {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private Long roomId;
+
     private String title;
 
     private String content;
@@ -26,8 +28,9 @@ public class Announcement {
     public Announcement() {
     }
 
-    public Announcement(Long id, String title, String content, LocalDate publish_time) {
+    public Announcement(Long id, Long roomId, String title, String content, LocalDate publish_time) {
         this.id = id;
+        this.roomId = roomId;
         this.title = title;
         this.content = content;
         this.publish_time = publish_time;
@@ -40,6 +43,14 @@ public class Announcement {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getRoomId() {
+        return roomId;
+    }
+
+    public void setRoomId(Long roomId) {
+        this.roomId = roomId;
     }
 
     public String getTitle() {
@@ -65,7 +76,5 @@ public class Announcement {
     public void setPublish_time(LocalDate publish_time) {
         this.publish_time = publish_time;
     }
-
-    
 
 }
