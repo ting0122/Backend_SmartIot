@@ -18,7 +18,7 @@ public interface DeviceService {
     Device saveDevice(DeviceReq deviceReq);
 
     //搜尋特定設備
-    List<Device> searchDevices(String name, String type, Boolean status);
+    List<Device> searchDevices(String name, String type, String area, Boolean status);
 
     //刪除設備
     void deleteDevice(Long id);

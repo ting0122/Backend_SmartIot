@@ -47,27 +47,7 @@ public class DeviceController {
                                       @RequestParam(name = "type",required = false) String type,
                                       @RequestParam(name = "area",required = false) String area,
                                       @RequestParam(name = "status",required = false) Boolean status){
-        List<Device> devices = deviceService.searchDevices(name, type, status);
-
-        // 如果指定了area 回傳符合條件的room
-        if (area != null && !area.isEmpty()) {
-            devices = devices.stream()
-                    .filter(device -> {
-                        Room room = device.getRoom();
-                        return room != null && room.getArea().equals(area);
-                    })
-                    .collect(Collectors.toList());
-        }
-
-        // 找出area
-        for (Device device : devices) {
-            Room room = device.getRoom();
-            if (room != null) {
-                device.setArea(room.getArea());
-            }
-        }
-
-        return devices;
+        return deviceService.searchDevices(name, type, area, status);
     }
 
     //從 Request 中讀取 JSON 資料並創建一個新的設備

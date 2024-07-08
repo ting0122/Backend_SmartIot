@@ -52,8 +52,18 @@ public class DeviceServiceImpl implements DeviceService {
 
     // 搜尋設備 名稱及種類 
     @Override
-    public List<Device> searchDevices(String name, String type, Boolean status){
-        return deviceRepository.findByCriteria(name, type, status);
+    public List<Device> searchDevices(String name, String type, String area, Boolean status){
+        List<Device> devices = deviceRepository.findByCriteria(name, type, area, status);
+
+        // 設置每個設備的房間的區域
+        for (Device device : devices) {
+            Room room = device.getRoom();
+            if (room != null) {
+                device.setArea(room.getArea());
+            }
+        }
+
+        return devices;
     }
 
     // 創建新設備 或 更新設備
