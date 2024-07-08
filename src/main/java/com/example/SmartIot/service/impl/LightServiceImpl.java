@@ -72,12 +72,12 @@ public class LightServiceImpl implements LightService {
 
 
         // 創建歷史紀錄 - 開關燈事件
-        if (light.getDevice().isStatusChanged()) {
-            History switchEvent = new History();
-            switchEvent.setDeviceId(deviceId);
-            switchEvent.setEventType("設備開關");
-            switchEvent.setDetail(Map.of("status", newStatus));
-            historyService.createHistory(switchEvent);
+        if (device.isStatusChanged()) {
+            History history = new History();
+            history.setDeviceId(deviceId);
+            history.setEventType("設備開關");
+            history.setDetail(Map.of("status", newStatus));
+            historyService.createHistory(history);
         }
 
         // 如果燈是關閉的，將亮度設為0

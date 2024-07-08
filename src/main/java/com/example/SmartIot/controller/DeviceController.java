@@ -1,6 +1,7 @@
 package com.example.SmartIot.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.SmartIot.entity.Device;
+import com.example.SmartIot.entity.Room;
 import com.example.SmartIot.service.ifs.DeviceService;
 import com.example.SmartIot.vo.DeviceReq;
 
@@ -43,8 +45,29 @@ public class DeviceController {
     @GetMapping("/devices/search")
     public List<Device> searchDevices(@RequestParam(name = "name",required = false) String name,
                                       @RequestParam(name = "type",required = false) String type,
+                                      @RequestParam(name = "area",required = false) String area,
                                       @RequestParam(name = "status",required = false) Boolean status){
-        return deviceService.searchDevices(name, type, status);
+        List<Device> devices = deviceService.searchDevices(name, type, status);
+
+        // 如果指定了 area 参数，则筛选符合条件的设备
+        if (area != null && !area.isEmpty()) {
+            devices = devices.stream()
+                    .filter(device -> {
+                        Room room = device.getRoom();
+                        return room != null && room.getArea().equals(area);
+                    })
+                    .collect(Collectors.toList());
+        }
+
+        // 遍历设备列表，设置每个设备的房间区域信息
+        for (Device device : devices) {
+            Room room = device.getRoom();
+            if (room != null) {
+                device.setArea(room.getArea());
+            }
+        }
+
+        return devices;
     }
 
     //從 Request 中讀取 JSON 資料並創建一個新的設備
