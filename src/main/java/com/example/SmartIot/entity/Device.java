@@ -20,6 +20,8 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+
 import java.time.LocalDateTime;
 
 
@@ -77,16 +79,21 @@ public class Device {
     public Device() {
 
     }
-
-
-    public Device(Long id, String name, String type, Boolean status, Timestamp time, Room room) {
+    
+    public Device(Long id, String name, String type, Boolean status, Timestamp time, Room room,
+            AirConditioner airConditioner, AirPurifier airPurifier, Dehumidifier dehumidifier, Light light) {
         this.id = id;
         this.name = name;
         this.type = type;
         this.status = status;
         this.time = time;
         this.room = room;
+        this.airConditioner = airConditioner;
+        this.airPurifier = airPurifier;
+        this.dehumidifier = dehumidifier;
+        this.light = light;
     }
+
 
     //@PrePersist 註解的方法會在新實體被持久化到數據庫之前被調用。
     //@PreUpdate 註解的方法會在現有實體被更新到數據庫之前被調用。
@@ -137,6 +144,10 @@ public class Device {
     }
 
     public void setStatus(Boolean status) {
+        // Track status change
+        if (this.status == null || !this.status.equals(status)) {
+            this.statusChanged = true;
+        }
         this.status = status;
     }
 
@@ -154,6 +165,18 @@ public class Device {
 
     public void setRoom(Room room) {
         this.room = room;
+    }
+
+    //紀錄設備更改狀態
+    @Transient
+    private boolean statusChanged = false;
+
+    public boolean isStatusChanged() {
+        return statusChanged;
+    }
+
+    public void setStatusChanged(boolean statusChanged) {
+        this.statusChanged = statusChanged;
     }
 
 }

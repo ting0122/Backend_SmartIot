@@ -53,21 +53,7 @@ public class DeviceServiceImpl implements DeviceService {
     // 搜尋設備 名稱及種類 
     @Override
     public List<Device> searchDevices(String name, String type, Boolean status){
-        if (name != null && type != null && status != null) {
-            return deviceRepository.findByNameContainingAndTypeAndStatus(name, type, status);
-        } else if (name != null && type != null) {
-            return deviceRepository.findByNameContainingAndType(name, type);
-        } else if (name != null && status != null) {
-            return deviceRepository.findByNameContainingAndStatus(name, status);
-        } else if (name != null) {
-            return deviceRepository.findByNameContaining(name);
-        } else if (type != null) {
-            return deviceRepository.findByTypeContaining(type);
-        } else if (status != null) {
-            return deviceRepository.findByStatus(status);
-        } else {
-            return deviceRepository.findAll();
-        }
+        return deviceRepository.findByCriteria(name, type, status);
     }
 
     // 創建新設備 或 更新設備

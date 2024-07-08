@@ -1,5 +1,6 @@
 package com.example.SmartIot.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
 
 import java.util.Map;
@@ -69,14 +70,15 @@ public class LightServiceImpl implements LightService {
         device.setStatus(newStatus);
         device = deviceRepository.save(device);
 
-         // 創建歷史紀錄 - 開關燈事件
-        // if (light.getDevice().getStatusChanged()) {
-        //     History switchEvent = new History();
-        //     switchEvent.setDeviceId(deviceId);
-        //     switchEvent.setEventType("設備開關");
-        //     switchEvent.setDetail(Map.of("status", newStatus));
-        //     historyService.createHistory(switchEvent);
-        // }
+
+        // 創建歷史紀錄 - 開關燈事件
+        if (light.getDevice().isStatusChanged()) {
+            History switchEvent = new History();
+            switchEvent.setDeviceId(deviceId);
+            switchEvent.setEventType("設備開關");
+            switchEvent.setDetail(Map.of("status", newStatus));
+            historyService.createHistory(switchEvent);
+        }
 
         // 如果燈是關閉的，將亮度設為0
         if (!newStatus) {
@@ -87,14 +89,29 @@ public class LightServiceImpl implements LightService {
         Light existingLight = lightRepository.findById(deviceId).orElse(new Light());
 
         // 設置或更新 Light 的屬性
+        existingLight.setDevice(device);
+
+        // 僅在亮度或色溫有更改時，創建參數調整事件
+        if(light.getBrightness() != existingLight.getBrightness() || light.getColor_temp() != existingLight.getColor_temp()) {
+            History paramAdjustEvent = new History();
+            paramAdjustEvent.setDeviceId(deviceId);
+            paramAdjustEvent.setEventType("設備參數調整");
+            Map<String, Object> detail = new HashMap<>();
+            if (light.getBrightness() != existingLight.getBrightness()) {
+                detail.put("brightness", light.getBrightness());
+            }
+            if (light.getColor_temp() != existingLight.getColor_temp()) {
+                detail.put("color_temp", light.getColor_temp());
+            }
+            paramAdjustEvent.setDetail(detail);
+            historyService.createHistory(paramAdjustEvent);
+        }
+
         existingLight.setBrightness(light.getBrightness());
         existingLight.setColor_temp(light.getColor_temp());
-        existingLight.setDevice(device);
 
         // 保存燈的設置
         Light savedLight = lightRepository.save(existingLight);
-
-        
 
         return new ResponseEntity<>(savedLight, HttpStatus.OK);
     }
