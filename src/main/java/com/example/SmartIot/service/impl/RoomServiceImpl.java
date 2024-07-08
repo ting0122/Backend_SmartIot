@@ -12,6 +12,8 @@ import com.example.SmartIot.repository.RoomRepository;
 import com.example.SmartIot.service.ifs.RoomService;
 import com.example.SmartIot.vo.RoomReq;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class RoomServiceImpl implements RoomService {
 
@@ -72,7 +74,8 @@ public class RoomServiceImpl implements RoomService {
             return roomRepository.findAll();
         }
     }
-
+    
+    @Transactional
     @Override
     public Room createRoom(RoomReq roomReq) {
 
@@ -88,6 +91,19 @@ public class RoomServiceImpl implements RoomService {
         room.setArea(roomReq.getArea());
         room.setType(roomReq.getType());
         room.setStatus(roomReq.getStatus());
+
+        // 如果房間狀態被設置為關閉，同時關閉所有設備
+        if (Boolean.FALSE.equals(roomReq.getStatus())) {
+            Set<Device> devices = room.getDevices();
+            if (devices != null) {
+                for (Device device : devices) {
+                    device.setStatus(false);
+                }
+            }
+            else{
+                throw new RuntimeException("Devices not found");
+            }
+        }
 
         return roomRepository.save(room);
     }
