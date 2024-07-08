@@ -1,20 +1,20 @@
 package com.example.SmartIot.service.impl;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.SmartIot.entity.Device;
 import com.example.SmartIot.entity.Room;
 import com.example.SmartIot.repository.RoomRepository;
 import com.example.SmartIot.service.ifs.RoomService;
 import com.example.SmartIot.vo.RoomReq;
 
-import jakarta.validation.OverridesAttribute;
-
 @Service
 public class RoomServiceImpl implements RoomService {
-    
+
     private final RoomRepository roomRepository;
 
     @Autowired
@@ -24,7 +24,14 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public List<Room> getAllRooms() {
-        return roomRepository.findAll();
+        List<Room> rooms = roomRepository.findAll();
+        for (Room room : rooms) {
+            Set<Device> devices = room.getDevices();
+            boolean roomStatus = devices.stream().anyMatch(Device::isStatus);
+            room.setStatus(roomStatus);
+        }
+        roomRepository.saveAll(rooms);
+        return rooms;
     }
 
     @Override
@@ -34,7 +41,7 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public List<Room> searchRooms(String name, String type, String area, Boolean status){
+    public List<Room> searchRooms(String name, String type, String area, Boolean status) {
         if (name != null && type != null && area != null && status != null) {
             return roomRepository.findByNameContainingAndTypeAndAreaAndStatus(name, type, area, status);
         } else if (name != null && type != null && status != null) {
@@ -50,7 +57,7 @@ public class RoomServiceImpl implements RoomService {
         } else if (status != null) {
             return roomRepository.findByStatus(status);
         } else if (name != null && type != null && area != null) {
-            return roomRepository.findByNameContainingAndTypeAndArea(name, type, area);  // 呼叫正確的方法
+            return roomRepository.findByNameContainingAndTypeAndArea(name, type, area); // 呼叫正確的方法
         } else if (name != null && type != null) {
             return roomRepository.findByNameContainingAndType(name, type);
         } else if (name != null && area != null) {
@@ -76,12 +83,12 @@ public class RoomServiceImpl implements RoomService {
         } else {
             room = new Room();
         }
-        
+
         room.setName(roomReq.getName());
         room.setArea(roomReq.getArea());
         room.setType(roomReq.getType());
         room.setStatus(roomReq.getStatus());
-        
+
         return roomRepository.save(room);
     }
 
