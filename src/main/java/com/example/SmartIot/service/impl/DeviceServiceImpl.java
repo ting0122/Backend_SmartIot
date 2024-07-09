@@ -1,6 +1,9 @@
 package com.example.SmartIot.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
@@ -8,12 +11,14 @@ import com.example.SmartIot.entity.AirConditioner;
 import com.example.SmartIot.entity.AirPurifier;
 import com.example.SmartIot.entity.Dehumidifier;
 import com.example.SmartIot.entity.Device;
+import com.example.SmartIot.entity.History;
 import com.example.SmartIot.entity.Light;
 import com.example.SmartIot.entity.Room;
 import com.example.SmartIot.repository.AirConditionerRepository;
 import com.example.SmartIot.repository.AirPurifierRepository;
 import com.example.SmartIot.repository.DehumidifierRepository;
 import com.example.SmartIot.repository.DeviceRepository;
+import com.example.SmartIot.repository.HistoryRepository;
 import com.example.SmartIot.repository.LightRepository;
 import com.example.SmartIot.repository.RoomRepository;
 import com.example.SmartIot.service.ifs.DeviceService;
@@ -28,14 +33,16 @@ public class DeviceServiceImpl implements DeviceService {
     private final DehumidifierRepository dehumidifierRepository;
     private final LightRepository lightRepository;
     private final AirConditionerRepository airConditionerRepository;
+    private final HistoryRepository historyRepository;
 
-    public DeviceServiceImpl(DeviceRepository deviceRepository,RoomRepository roomRepository,AirPurifierRepository airPurifierRepository,DehumidifierRepository dehumidifierRepository,LightRepository lightRepository,AirConditionerRepository airConditionerRepository) {
+    public DeviceServiceImpl(DeviceRepository deviceRepository,RoomRepository roomRepository,AirPurifierRepository airPurifierRepository,DehumidifierRepository dehumidifierRepository,LightRepository lightRepository,AirConditionerRepository airConditionerRepository, HistoryRepository historyRepository) {
         this.deviceRepository = deviceRepository;
         this.roomRepository = roomRepository;
         this.airPurifierRepository = airPurifierRepository;
         this.dehumidifierRepository = dehumidifierRepository;
         this.lightRepository = lightRepository;
         this.airConditionerRepository = airConditionerRepository;
+        this.historyRepository = historyRepository;
     }
 
     // 返回所有設備的列表
@@ -96,6 +103,12 @@ public class DeviceServiceImpl implements DeviceService {
         }
 
         Device savedDevice = deviceRepository.save(device);
+
+        //如果開關狀態有更新 就紀錄
+        if (device.isStatusChanged()) {
+            saveHistoryRecord(device, "設備開關", Map.of("status", device.getStatus() ? "開" : "關"));
+            device.setStatusChanged(false);
+        }
 
         // 根據設備類型在相關表中新增資訊
         switch(device.getType()) {
@@ -168,5 +181,15 @@ public class DeviceServiceImpl implements DeviceService {
                 throw new RuntimeException("Unsupported device type: " + device.getType());
         }
         deviceRepository.delete(device);
+    }
+
+    private void saveHistoryRecord(Device device, String eventType, Map<String, Object> detail) {
+        History history = new History();
+        history.setEventId(UUID.randomUUID().toString());
+        history.setDeviceId(device.getId());
+        history.setEventTime(LocalDateTime.now());
+        history.setEventType(eventType);
+        history.setDetail(detail);
+        historyRepository.save(history);
     }
 }

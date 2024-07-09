@@ -52,8 +52,10 @@ public class Device {
     @JsonBackReference
     private Room room;
 
+    @Transient //臨時欄位
+    private String area;
     @Transient
-    private String area; // 临时字段，不持久化到数据库
+    private boolean statusChanged = false;
 
     //讓搜尋房間時 能同步撈回設備各項參數的值
     @OneToOne(mappedBy = "device", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
@@ -177,10 +179,6 @@ public class Device {
     public void setArea(String area) {
         this.area = area;
     }
-
-    //紀錄設備更改狀態
-    @Transient
-    private boolean statusChanged = false;
 
     public boolean isStatusChanged() {
         return statusChanged;

@@ -2,7 +2,6 @@ package com.example.SmartIot.entity;
 
 import java.time.LocalDateTime;
 import java.util.Map;
-import java.util.UUID;
 
 import com.example.SmartIot.utility.HashMapConverter;
 
@@ -12,8 +11,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
-import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 

@@ -1,7 +1,6 @@
 package com.example.SmartIot.controller;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.SmartIot.entity.Device;
-import com.example.SmartIot.entity.Room;
 import com.example.SmartIot.service.ifs.DeviceService;
 import com.example.SmartIot.vo.DeviceReq;
 
