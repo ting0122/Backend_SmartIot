@@ -82,24 +82,40 @@ public class DeviceServiceImpl implements DeviceService {
         if (deviceReq.getId() != null) {
             device = deviceRepository.findById(deviceReq.getId())
                     .orElseThrow(() -> new RuntimeException("Device not found"));
+                if (deviceReq.getName() != null) {
+                    device.setName(deviceReq.getName());
+                }
+                if (deviceReq.getType() != null) {
+                    device.setType(deviceReq.getType());
+                }
+                if (deviceReq.getStatus() != null) {
+                    device.setStatus(deviceReq.getStatus());
+                }
+                if (deviceReq.getTime() != null) {
+                    device.setTime(deviceReq.getTime());
+                }
+                if (deviceReq.getRoomId() != null) {
+                    Room room = roomRepository.findById(deviceReq.getRoomId())
+                            .orElseThrow(() -> new RuntimeException("Room not found with id " + deviceReq.getRoomId()));
+                    device.setRoom(room);
+                }
         } else {
             // 沒 id 就創建新設備
             device = new Device();
-        }
+            device.setName(deviceReq.getName());
+            device.setType(deviceReq.getType());
+            device.setStatus(deviceReq.getStatus());
+            device.setTime(deviceReq.getTime());
 
-        device.setName(deviceReq.getName());
-        device.setType(deviceReq.getType());
-        device.setStatus(deviceReq.getStatus());
-        device.setTime(deviceReq.getTime());
-
-        //是否放在哪個房間
-        if (deviceReq.getRoomId() != null) {
-            Room room = roomRepository.findById(deviceReq.getRoomId())
-                    .orElseThrow(() -> new RuntimeException("Room not found with id " + deviceReq.getRoomId()));
-            device.setRoom(room);
-        } else {
-            //沒有就 null
-            device.setRoom(null);
+            //是否放在哪個房間
+            if(deviceReq.getRoomId() != null) {
+                Room room = roomRepository.findById(deviceReq.getRoomId())
+                        .orElseThrow(() -> new RuntimeException("Room not found with id " + deviceReq.getRoomId()));
+                device.setRoom(room);
+            } else {
+                //沒有就 null
+                device.setRoom(null);
+            }
         }
 
         Device savedDevice = deviceRepository.save(device);
