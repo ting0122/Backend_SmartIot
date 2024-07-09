@@ -32,7 +32,7 @@ public class AnnouncementController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<List<Announcement>> getAnnouncementsByRoomId(@PathVariable Long id) {
+    public ResponseEntity<List<Announcement>> getAnnouncementsByRoomId(@PathVariable("id") Long id) {
         List<Announcement> announcements = announcementService.getAnnouncementsByRoomId(id);
         if (announcements.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(announcements);
@@ -41,7 +41,7 @@ public class AnnouncementController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteAnnouncement(@PathVariable Long id) {
+    public ResponseEntity<String> deleteAnnouncement(@PathVariable("id") Long id) {
         try {
             announcementService.deleteAnnouncement(id);
             return ResponseEntity.ok("公告已成功刪除");
