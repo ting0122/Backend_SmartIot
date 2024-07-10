@@ -16,5 +16,7 @@ public interface AirPurifierService {
 
     ResponseEntity<?> patchAirPurifier(Long id, Map<String, Object> updates);
 
+    ResponseEntity<?> batchPatchAirPurifiers(List<Map<String, Object>> updates);
+
     void deleteAirPurifier(Long id);
 }

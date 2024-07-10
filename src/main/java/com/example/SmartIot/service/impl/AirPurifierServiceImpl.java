@@ -1,24 +1,27 @@
 package com.example.SmartIot.service.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.example.SmartIot.constant.ResMsg;
-import com.example.SmartIot.entity.Device;
 import com.example.SmartIot.entity.AirPurifier;
-import com.example.SmartIot.repository.DeviceRepository;
+import com.example.SmartIot.entity.Device;
 import com.example.SmartIot.repository.AirPurifierRepository;
+import com.example.SmartIot.repository.DeviceRepository;
 import com.example.SmartIot.service.ifs.AirPurifierService;
 
 import jakarta.transaction.Transactional;
 
 @Service
 public class AirPurifierServiceImpl implements AirPurifierService {
-    
+
     @Autowired
     private AirPurifierRepository airPurifierRepository;
 
@@ -98,7 +101,7 @@ public class AirPurifierServiceImpl implements AirPurifierService {
         }
 
         boolean statusChanged = false;
-        
+
         // 開關空氣清潔器
         if (updates.containsKey("status")) {
             Object statusValue = updates.get("status");
@@ -150,5 +153,37 @@ public class AirPurifierServiceImpl implements AirPurifierService {
 
         AirPurifier savedAirPurifier = airPurifierRepository.save(airPurifier);
         return new ResponseEntity<>(savedAirPurifier, HttpStatus.OK);
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<?> batchPatchAirPurifiers(List<Map<String, Object>> updates) {
+        List<AirPurifier> updatedAirPurifiers = new ArrayList<>();
+        List<String> errors = new ArrayList<>();
+
+        for (Map<String, Object> update : updates) {
+            if (!update.containsKey("id")) {
+                errors.add("每個更新項目必須包含 'id' 欄位");
+                continue;
+            }
+
+            Long id = Long.valueOf(update.get("id").toString());
+            Map<String, Object> deviceUpdates = new HashMap<>(update);
+            deviceUpdates.remove("id");
+
+            ResponseEntity<?> response = patchAirPurifier(id, deviceUpdates);
+
+            if (response.getStatusCode() == HttpStatus.OK) {
+                updatedAirPurifiers.add((AirPurifier) response.getBody());
+            } else {
+                errors.add("更新設備 ID " + id + " 失敗: " + response.getBody());
+            }
+        }
+
+        if (!errors.isEmpty()) {
+            return new ResponseEntity<>(errors, HttpStatus.MULTI_STATUS);
+        }
+
+        return new ResponseEntity<>(updatedAirPurifiers, HttpStatus.OK);
     }
 }

@@ -1,18 +1,21 @@
 package com.example.SmartIot.service.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.example.SmartIot.constant.ResMsg;
 import com.example.SmartIot.constant.AirConditionerConstants;
-import com.example.SmartIot.entity.Device;
+import com.example.SmartIot.constant.ResMsg;
 import com.example.SmartIot.entity.AirConditioner;
-import com.example.SmartIot.repository.DeviceRepository;
+import com.example.SmartIot.entity.Device;
 import com.example.SmartIot.repository.AirConditionerRepository;
+import com.example.SmartIot.repository.DeviceRepository;
 import com.example.SmartIot.service.ifs.AirConditionerService;
 
 import jakarta.transaction.Transactional;
@@ -152,5 +155,37 @@ public class AirConditionerServiceImpl implements AirConditionerService {
     @Override
     public void deleteAirConditioner(Long id) {
         airConditionerRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<?> batchPatchAirConditioners(List<Map<String, Object>> updates) {
+        List<AirConditioner> updatedAirConditioners = new ArrayList<>();
+        List<String> errors = new ArrayList<>();
+
+        for (Map<String, Object> update : updates) {
+            if (!update.containsKey("id")) {
+                errors.add("每個更新項目必須包含 'id' 欄位");
+                continue;
+            }
+
+            Long id = Long.valueOf(update.get("id").toString());
+            Map<String, Object> airConditionerUpdates = new HashMap<>(update);
+            airConditionerUpdates.remove("id");
+
+            ResponseEntity<?> response = patchAirConditioner(id, airConditionerUpdates);
+
+            if (response.getStatusCode() == HttpStatus.OK) {
+                updatedAirConditioners.add((AirConditioner) response.getBody());
+            } else {
+                errors.add("更新設備 ID " + id + " 失敗: " + response.getBody());
+            }
+        }
+
+        if (!errors.isEmpty()) {
+            return new ResponseEntity<>(errors, HttpStatus.MULTI_STATUS);
+        }
+
+        return new ResponseEntity<>(updatedAirConditioners, HttpStatus.OK);
     }
 }

@@ -18,5 +18,7 @@ public interface DehumidifierService {
 
     ResponseEntity<?> patchDehumidifier(Long id, Map<String, Object> updates);
 
+    ResponseEntity<?> batchPatchDehumidifiers(List<Map<String, Object>> updates);
+
     void deleteDehumidifier(Long id);
 }

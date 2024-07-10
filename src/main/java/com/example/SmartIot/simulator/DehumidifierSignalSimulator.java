@@ -16,11 +16,15 @@ public class DehumidifierSignalSimulator {
     @Autowired
     private DehumidifierRepository dehumidifierRepository;
     private Random random = new Random();
+    private static final double DEFAULT_HUMIDITY = 80.0; // 預設濕度
 
     @Scheduled(fixedRate = 5000) // 每5秒更新一次
     public void simulateSignals() {
         List<Dehumidifier> dehumidifiers = dehumidifierRepository.findAll();
         for (Dehumidifier dh : dehumidifiers) {
+            if (dh.getCurrent_humidity() == 0) { // 如果當前濕度為0，設置為預設值
+                dh.setCurrent_humidity(DEFAULT_HUMIDITY);
+            }
             if (dh.getDevice().getStatus()) { // 如果除濕機是開啟的
                 // 更新當前濕度
                 updateCurrentHumidity(dh);

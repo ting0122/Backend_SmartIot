@@ -22,38 +22,37 @@ import com.example.SmartIot.service.ifs.DehumidifierService;
 @RestController
 @RequestMapping("/dehumidifiers")
 public class DehumidifierController {
-    
+
     @Autowired
     private DehumidifierService dehumidifierService;
 
-    // 获取所有除湿机
     @GetMapping
     public List<Dehumidifier> getAllDehumidifiers() {
         return dehumidifierService.getAllDehumidifiers();
     }
 
-    // 获取特定除湿机
     @GetMapping("/{id}")
     public Dehumidifier getDehumidifier(@PathVariable("id") Long id) {
         return dehumidifierService.getDehumidifierById(id);
     }
 
-    // 新增或修改除湿机
     @PostMapping
     public ResponseEntity<?> saveDehumidifier(@RequestBody Dehumidifier dehumidifier) {
-        // save 方法会判定有无id决定创建或修改
         return dehumidifierService.saveDehumidifier(dehumidifier);
     }
 
-    // 部分更新除湿机
     @PatchMapping("/{id}")
     public ResponseEntity<?> patchDehumidifier(@PathVariable("id") Long id, @RequestBody Map<String, Object> updates) {
         return dehumidifierService.patchDehumidifier(id, updates);
     }
 
-    // 删除除湿机
     @DeleteMapping("/{id}")
     public void deleteDehumidifier(@PathVariable("id") Long id) {
         dehumidifierService.deleteDehumidifier(id);
+    }
+
+    @PatchMapping("/batch")
+    public ResponseEntity<?> batchPatchDehumidifiers(@RequestBody List<Map<String, Object>> updates) {
+        return dehumidifierService.batchPatchDehumidifiers(updates);
     }
 }

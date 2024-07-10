@@ -17,5 +17,7 @@ public interface LightService {
 
     ResponseEntity<?> patchLight(Long id, Map<String, Object> updates);
 
+    ResponseEntity<?> batchPatchLights(List<Map<String, Object>> updates);
+
     void deleteLight(Long id);
 }

@@ -16,5 +16,7 @@ public interface AirConditionerService {
 
     ResponseEntity<?> patchAirConditioner(Long id, Map<String, Object> updates);
 
+    ResponseEntity<?> batchPatchAirConditioners(List<Map<String, Object>> updates);
+
     void deleteAirConditioner(Long id);
 }

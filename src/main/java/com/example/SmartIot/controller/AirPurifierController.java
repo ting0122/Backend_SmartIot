@@ -56,4 +56,10 @@ public class AirPurifierController {
     public ResponseEntity<?> patchAirPurifier(@PathVariable("id") Long id, @RequestBody Map<String, Object> updates) {
         return airPurifierService.patchAirPurifier(id, updates);
     }
+
+    // 批次更新空氣清潔器
+    @PatchMapping("/batch")
+    public ResponseEntity<?> batchPatchAirPurifiers(@RequestBody List<Map<String, Object>> updates) {
+        return airPurifierService.batchPatchAirPurifiers(updates);
+    }
 }

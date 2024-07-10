@@ -1,5 +1,6 @@
 package com.example.SmartIot.service.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -71,7 +72,6 @@ public class LightServiceImpl implements LightService {
         device.setStatus(newStatus);
         device = deviceRepository.save(device);
 
-
         // 創建歷史紀錄 - 開關燈事件
         if (device.isStatusChanged()) {
             History history = new History();
@@ -93,7 +93,8 @@ public class LightServiceImpl implements LightService {
         existingLight.setDevice(device);
 
         // 僅在亮度或色溫有更改時，創建參數調整事件
-        if(light.getBrightness() != existingLight.getBrightness() || light.getColor_temp() != existingLight.getColor_temp()) {
+        if (light.getBrightness() != existingLight.getBrightness()
+                || light.getColor_temp() != existingLight.getColor_temp()) {
             History paramAdjustEvent = new History();
             paramAdjustEvent.setDeviceId(deviceId);
             paramAdjustEvent.setEventType("設備參數調整");
@@ -166,10 +167,10 @@ public class LightServiceImpl implements LightService {
             light.setBrightness(brightness);
 
             // 如果調整亮度且燈原本是關閉的，則打開燈
-            if (brightness > 0 && !device.getStatus()) {
-                device.setStatus(true);
-                statusChanged = true;
-            }
+            // if (brightness > 0 && !device.getStatus()) {
+            //     device.setStatus(true);
+            //     statusChanged = true;
+            // }
         }
 
         // 調整色調
@@ -205,5 +206,37 @@ public class LightServiceImpl implements LightService {
         }
 
         return new ResponseEntity<>(savedLight, HttpStatus.OK);
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<?> batchPatchLights(List<Map<String, Object>> updates) {
+        List<Light> updatedLights = new ArrayList<>();
+        List<String> errors = new ArrayList<>();
+
+        for (Map<String, Object> update : updates) {
+            if (!update.containsKey("id")) {
+                errors.add("每個更新項目必須包含 'id' 欄位");
+                continue;
+            }
+
+            Long id = Long.valueOf(update.get("id").toString());
+            Map<String, Object> lightUpdates = new HashMap<>(update);
+            lightUpdates.remove("id");
+
+            ResponseEntity<?> response = patchLight(id, lightUpdates);
+
+            if (response.getStatusCode() == HttpStatus.OK) {
+                updatedLights.add((Light) response.getBody());
+            } else {
+                errors.add("更新設備 ID " + id + " 失敗: " + response.getBody());
+            }
+        }
+
+        if (!errors.isEmpty()) {
+            return new ResponseEntity<>(errors, HttpStatus.MULTI_STATUS);
+        }
+
+        return new ResponseEntity<>(updatedLights, HttpStatus.OK);
     }
 }
