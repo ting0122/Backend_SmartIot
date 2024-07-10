@@ -2,7 +2,7 @@ package com.example.SmartIot.entity;
 
 import java.time.LocalDateTime;
 import java.util.Map;
-
+import java.util.UUID;
 import com.example.SmartIot.utility.HashMapConverter;
 
 import jakarta.persistence.Column;
@@ -11,6 +11,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 
@@ -23,16 +24,16 @@ public class History {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "event_id")
+    @Column(name = "event_id", nullable = false, updatable = false)
     private String eventId;
 
-    @Column(name = "device_id")
+    @Column(name = "device_id", nullable = false)
     private Long deviceId;
 
-    @Column(name = "event_time")
+    @Column(name = "event_time", nullable = false, updatable = false)
     private LocalDateTime eventTime;
 
-    @Column(name = "event_type")
+    @Column(name = "event_type", nullable = false)
     private String eventType;
 
     @Convert(converter = HashMapConverter.class)
@@ -102,5 +103,10 @@ public class History {
         this.detail = detail;
     }
 
+    @PrePersist
+    public void prePersist() {
+        this.eventId = UUID.randomUUID().toString();
+        this.eventTime = LocalDateTime.now();
+    }
     
 }

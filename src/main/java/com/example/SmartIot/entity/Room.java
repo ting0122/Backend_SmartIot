@@ -22,7 +22,7 @@ public class Room {
     private String name;
     private String area;
     private String type;
-    private Boolean status;
+    private Boolean status = false;
 
     //一個房間包含多個設備(Device表的room屬性)
     @OneToMany(mappedBy = "room")
