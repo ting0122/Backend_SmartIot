@@ -35,7 +35,10 @@ public class DeviceServiceImpl implements DeviceService {
     private final AirConditionerRepository airConditionerRepository;
     private final HistoryRepository historyRepository;
 
-    public DeviceServiceImpl(DeviceRepository deviceRepository,RoomRepository roomRepository,AirPurifierRepository airPurifierRepository,DehumidifierRepository dehumidifierRepository,LightRepository lightRepository,AirConditionerRepository airConditionerRepository, HistoryRepository historyRepository) {
+    public DeviceServiceImpl(DeviceRepository deviceRepository, RoomRepository roomRepository,
+            AirPurifierRepository airPurifierRepository, DehumidifierRepository dehumidifierRepository,
+            LightRepository lightRepository, AirConditionerRepository airConditionerRepository,
+            HistoryRepository historyRepository) {
         this.deviceRepository = deviceRepository;
         this.roomRepository = roomRepository;
         this.airPurifierRepository = airPurifierRepository;
@@ -51,15 +54,15 @@ public class DeviceServiceImpl implements DeviceService {
         return deviceRepository.findAll();
     }
 
-     // 根據設備 ID 返回相應的設備，如果找不到則拋出異常
+    // 根據設備 ID 返回相應的設備，如果找不到則拋出異常
     @Override
     public Device getDeviceById(Long id) {
         return deviceRepository.findById(id).orElseThrow(() -> new RuntimeException("Device not found"));
     }
 
-    // 搜尋設備 名稱及種類 
+    // 搜尋設備 名稱及種類
     @Override
-    public List<Device> searchDevices(String name, String type, String area, Boolean status){
+    public List<Device> searchDevices(String name, String type, String area, Boolean status) {
         List<Device> devices = deviceRepository.findByCriteria(name, type, area, status);
 
         // 設置每個設備的房間的區域
@@ -67,6 +70,7 @@ public class DeviceServiceImpl implements DeviceService {
             Room room = device.getRoom();
             if (room != null) {
                 device.setArea(room.getArea());
+                device.setRoomId(room.getId()); // Set the roomId
             }
         }
 
@@ -78,27 +82,27 @@ public class DeviceServiceImpl implements DeviceService {
     public Device saveDevice(DeviceReq deviceReq) {
 
         Device device;
-        //如果有 id 就更新設備
+        // 如果有 id 就更新設備
         if (deviceReq.getId() != null) {
             device = deviceRepository.findById(deviceReq.getId())
                     .orElseThrow(() -> new RuntimeException("Device not found"));
-                if (deviceReq.getName() != null) {
-                    device.setName(deviceReq.getName());
-                }
-                if (deviceReq.getType() != null) {
-                    device.setType(deviceReq.getType());
-                }
-                if (deviceReq.getStatus() != null) {
-                    device.setStatus(deviceReq.getStatus());
-                }
-                if (deviceReq.getTime() != null) {
-                    device.setTime(deviceReq.getTime());
-                }
-                if (deviceReq.getRoomId() != null) {
-                    Room room = roomRepository.findById(deviceReq.getRoomId())
-                            .orElseThrow(() -> new RuntimeException("Room not found with id " + deviceReq.getRoomId()));
-                    device.setRoom(room);
-                }
+            if (deviceReq.getName() != null) {
+                device.setName(deviceReq.getName());
+            }
+            if (deviceReq.getType() != null) {
+                device.setType(deviceReq.getType());
+            }
+            if (deviceReq.getStatus() != null) {
+                device.setStatus(deviceReq.getStatus());
+            }
+            if (deviceReq.getTime() != null) {
+                device.setTime(deviceReq.getTime());
+            }
+            if (deviceReq.getRoomId() != null) {
+                Room room = roomRepository.findById(deviceReq.getRoomId())
+                        .orElseThrow(() -> new RuntimeException("Room not found with id " + deviceReq.getRoomId()));
+                device.setRoom(room);
+            }
         } else {
             // 沒 id 就創建新設備
             device = new Device();
@@ -107,27 +111,27 @@ public class DeviceServiceImpl implements DeviceService {
             device.setStatus(deviceReq.getStatus());
             device.setTime(deviceReq.getTime());
 
-            //是否放在哪個房間
-            if(deviceReq.getRoomId() != null) {
+            // 是否放在哪個房間
+            if (deviceReq.getRoomId() != null) {
                 Room room = roomRepository.findById(deviceReq.getRoomId())
                         .orElseThrow(() -> new RuntimeException("Room not found with id " + deviceReq.getRoomId()));
                 device.setRoom(room);
             } else {
-                //沒有就 null
+                // 沒有就 null
                 device.setRoom(null);
             }
         }
 
         Device savedDevice = deviceRepository.save(device);
 
-        //如果開關狀態有更新 就紀錄
+        // 如果開關狀態有更新 就紀錄
         if (device.isStatusChanged()) {
             saveHistoryRecord(device, "設備開關", Map.of("status", device.getStatus() ? "開" : "關"));
             device.setStatusChanged(false);
         }
 
         // 根據設備類型在相關表中新增資訊
-        switch(device.getType()) {
+        switch (device.getType()) {
             case "空氣清淨機":
                 AirPurifier airPurifier = new AirPurifier();
                 airPurifier.setDevice(savedDevice);
@@ -158,13 +162,15 @@ public class DeviceServiceImpl implements DeviceService {
                 AirConditioner airConditioner;
                 if (deviceReq.getId() != null) {
                     airConditioner = airConditionerRepository.findById(deviceReq.getId())
-                        .orElseThrow(() -> new RuntimeException("AirConditioner not found"));
+                            .orElseThrow(() -> new RuntimeException("AirConditioner not found"));
                 } else {
                     airConditioner = new AirConditioner();
                 }
                 airConditioner.setDevice(savedDevice);
-                airConditioner.setCurrent_temp(airConditioner.getCurrent_temp() != null ? airConditioner.getCurrent_temp() : 0.0);
-                airConditioner.setTarget_temp(airConditioner.getTarget_temp() != null ? airConditioner.getTarget_temp() : 0.0);
+                airConditioner.setCurrent_temp(
+                        airConditioner.getCurrent_temp() != null ? airConditioner.getCurrent_temp() : 0.0);
+                airConditioner.setTarget_temp(
+                        airConditioner.getTarget_temp() != null ? airConditioner.getTarget_temp() : 0.0);
                 airConditionerRepository.save(airConditioner);
                 break;
 
@@ -176,7 +182,7 @@ public class DeviceServiceImpl implements DeviceService {
         return savedDevice;
     }
 
-     // 刪除指定 ID 的設備
+    // 刪除指定 ID 的設備
     @Override
     public void deleteDevice(Long id) {
         Device device = deviceRepository.findById(id).orElseThrow(() -> new RuntimeException("Device not found"));

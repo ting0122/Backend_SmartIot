@@ -24,15 +24,13 @@ import jakarta.persistence.Transient;
 
 import java.time.LocalDateTime;
 
-
-
 //該實體映射到名為 device 的資料表
 @Entity
 @Table(name = "device")
-//這個註解告訴 Jackson（用於將 Java 對象轉換為 JSON 的庫）在序列化或反序列化 JSON 時忽略指定的屬性。
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+// 這個註解告訴 Jackson（用於將 Java 對象轉換為 JSON 的庫）在序列化或反序列化 JSON 時忽略指定的屬性。
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Device {
-    
+
     // 主鍵
     @Id
     // 主鍵自動增長
@@ -48,19 +46,19 @@ public class Device {
     @ManyToOne(fetch = FetchType.LAZY)
     // 外鍵設置為 room_id
     @JoinColumn(name = "room_id")
-    //序列化時，Device 不會序列化其 room 屬性，從而避免無限遞迴
+    // 序列化時，Device 不會序列化其 room 屬性，從而避免無限遞迴
     @JsonBackReference
     private Room room;
 
-    @Transient //臨時欄位
+    @Transient // 臨時欄位
     private String area;
     @Transient
     private boolean statusChanged = false;
 
-    //讓搜尋房間時 能同步撈回設備各項參數的值
+    // 讓搜尋房間時 能同步撈回設備各項參數的值
     @OneToOne(mappedBy = "device", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
     @JsonManagedReference
-    //這個註解告訴 Jackson 在序列化為 JSON 時，只包含非 null 的屬性。
+    // 這個註解告訴 Jackson 在序列化為 JSON 時，只包含非 null 的屬性。
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private AirConditioner airConditioner;
 
@@ -79,12 +77,14 @@ public class Device {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Light light;
 
+    @Transient
+    private Long roomId;
 
-    //constructor
+    // constructor
     public Device() {
 
     }
-    
+
     public Device(Long id, String name, String type, Boolean status, Timestamp time, Room room,
             AirConditioner airConditioner, AirPurifier airPurifier, Dehumidifier dehumidifier, Light light) {
         this.id = id;
@@ -99,23 +99,22 @@ public class Device {
         this.light = light;
     }
 
-
-    //@PrePersist 註解的方法會在新實體被持久化到數據庫之前被調用。
-    //@PreUpdate 註解的方法會在現有實體被更新到數據庫之前被調用。
+    // @PrePersist 註解的方法會在新實體被持久化到數據庫之前被調用。
+    // @PreUpdate 註解的方法會在現有實體被更新到數據庫之前被調用。
     @PrePersist
     @PreUpdate
     private void ensureDefaults() {
-        //預設設備為關閉
+        // 預設設備為關閉
         if (this.status == null) {
             this.status = false;
         }
-        //如果沒有時間 預設為當前時間
+        // 如果沒有時間 預設為當前時間
         if (this.time == null) {
             this.time = Timestamp.valueOf(LocalDateTime.now());
         }
     }
 
-    //getters and setters
+    // getters and setters
     public Long getId() {
         return this.id;
     }
@@ -188,4 +187,11 @@ public class Device {
         this.statusChanged = statusChanged;
     }
 
+    public Long getRoomId() {
+        return roomId;
+    }
+
+    public void setRoomId(Long roomId) {
+        this.roomId = roomId;
+    }
 }
