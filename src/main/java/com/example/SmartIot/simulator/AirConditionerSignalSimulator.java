@@ -1,14 +1,15 @@
 package com.example.SmartIot.simulator;
 
-import com.example.SmartIot.entity.AirConditioner;
-import com.example.SmartIot.repository.AirConditionerRepository;
-import com.example.SmartIot.constant.AirConditionerConstants;
+import java.util.List;
+import java.util.Random;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Random;
+import com.example.SmartIot.constant.AirConditionerConstants;
+import com.example.SmartIot.entity.AirConditioner;
+import com.example.SmartIot.repository.AirConditionerRepository;
 
 @Service
 public class AirConditionerSignalSimulator {
@@ -63,8 +64,6 @@ public class AirConditionerSignalSimulator {
                 return Math.max(-baseChange * fanSpeedMultiplier, tempDifference * 0.1);
             case HEAT:
                 return Math.min(baseChange * fanSpeedMultiplier, tempDifference * 0.1);
-            case DRY:
-                return -baseChange * 0.3; // 除濕模式慢慢降溫
             case AUTO:
                 return tempDifference * 0.05; // 自動模式緩慢調整
             case FAN:

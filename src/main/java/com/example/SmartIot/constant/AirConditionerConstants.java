@@ -5,7 +5,6 @@ public class AirConditionerConstants {
     public enum Mode {
         COOL,
         HEAT,
-        DRY,
         FAN,
         AUTO
     }

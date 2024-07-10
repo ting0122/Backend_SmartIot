@@ -1,11 +1,11 @@
 package com.example.SmartIot.controller;
 
 import java.util.List;
-
 import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -52,7 +52,7 @@ public class LightController {
     }
 
     /*
-     *example:
+     * example:
      * {
      * "color_temp": 6500
      * }
@@ -61,5 +61,11 @@ public class LightController {
     @PatchMapping("/{id}")
     public ResponseEntity<?> patchLight(@PathVariable("id") Long id, @RequestBody Map<String, Object> updates) {
         return lightService.patchLight(id, updates);
+    }
+
+    // 批次更新燈光
+    @PatchMapping("/batch")
+    public ResponseEntity<?> batchPatchLights(@RequestBody List<Map<String, Object>> updates) {
+        return lightService.batchPatchLights(updates);
     }
 }

@@ -1,5 +1,7 @@
 package com.example.SmartIot.service.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -159,5 +161,38 @@ public class DehumidifierServiceImpl implements DehumidifierService {
 
         Dehumidifier savedDehumidifier = dehumidifierRepository.save(dehumidifier);
         return new ResponseEntity<>(savedDehumidifier, HttpStatus.OK);
+    }
+
+    // 批次更新除濕機
+    @Override
+    @Transactional
+    public ResponseEntity<?> batchPatchDehumidifiers(List<Map<String, Object>> updates) {
+        List<Dehumidifier> updatedDehumidifiers = new ArrayList<>();
+        List<String> errors = new ArrayList<>();
+
+        for (Map<String, Object> update : updates) {
+            if (!update.containsKey("id")) {
+                errors.add("每個更新項目必須包含 'id' 欄位");
+                continue;
+            }
+
+            Long id = Long.valueOf(update.get("id").toString());
+            Map<String, Object> dehumidifierUpdates = new HashMap<>(update);
+            dehumidifierUpdates.remove("id");
+
+            ResponseEntity<?> response = patchDehumidifier(id, dehumidifierUpdates);
+
+            if (response.getStatusCode() == HttpStatus.OK) {
+                updatedDehumidifiers.add((Dehumidifier) response.getBody());
+            } else {
+                errors.add("更新設備 ID " + id + " 失敗: " + response.getBody());
+            }
+        }
+
+        if (!errors.isEmpty()) {
+            return new ResponseEntity<>(errors, HttpStatus.MULTI_STATUS);
+        }
+
+        return new ResponseEntity<>(updatedDehumidifiers, HttpStatus.OK);
     }
 }
