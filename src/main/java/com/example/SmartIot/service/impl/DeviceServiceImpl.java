@@ -129,7 +129,7 @@ public class DeviceServiceImpl implements DeviceService {
         // 根據設備類型在相關表中新增資訊
         switch(device.getType()) {
             case "空氣清淨機":
-                AirPurifier airPurifier = new AirPurifier();
+                AirPurifier airPurifier = airPurifierRepository.findByDeviceId(savedDevice.getId());
                 airPurifier.setDevice(savedDevice);
                 airPurifier.setAir_quality(0);
                 airPurifier.setFan_speed(0);
@@ -138,7 +138,7 @@ public class DeviceServiceImpl implements DeviceService {
                 break;
 
             case "除濕機":
-                Dehumidifier dehumidifier = new Dehumidifier();
+                Dehumidifier dehumidifier = dehumidifierRepository.findByDeviceId(savedDevice.getId());
                 dehumidifier.setDevice(savedDevice);
                 dehumidifier.setCurrent_humidity(0.0);
                 dehumidifier.setTarget_humidity(0.0);
@@ -147,7 +147,7 @@ public class DeviceServiceImpl implements DeviceService {
                 break;
 
             case "燈":
-                Light light = new Light();
+                Light light = lightRepository.findByDeviceId(savedDevice.getId());
                 light.setDevice(savedDevice);
                 light.setBrightness(0);
                 light.setColor_temp(0);
@@ -155,16 +155,10 @@ public class DeviceServiceImpl implements DeviceService {
                 break;
 
             case "冷氣機":
-                AirConditioner airConditioner;
-                if (deviceReq.getId() != null) {
-                    airConditioner = airConditionerRepository.findById(deviceReq.getId())
-                        .orElseThrow(() -> new RuntimeException("AirConditioner not found"));
-                } else {
-                    airConditioner = new AirConditioner();
-                }
+                AirConditioner airConditioner = airConditionerRepository.findByDeviceId(savedDevice.getId());
                 airConditioner.setDevice(savedDevice);
-                airConditioner.setCurrent_temp(airConditioner.getCurrent_temp() != null ? airConditioner.getCurrent_temp() : 0.0);
-                airConditioner.setTarget_temp(airConditioner.getTarget_temp() != null ? airConditioner.getTarget_temp() : 0.0);
+                airConditioner.setCurrent_temp(0.0);
+                airConditioner.setTarget_temp(0.0);
                 airConditionerRepository.save(airConditioner);
                 break;
 

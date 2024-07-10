@@ -30,6 +30,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public List<Room> getAllRooms() {
+        //找房間所有的電器
         List<Room> rooms = roomRepository.findAll();
         for (Room room : rooms) {
             Set<Device> devices = room.getDevices();
