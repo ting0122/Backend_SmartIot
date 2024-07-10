@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +14,11 @@ import com.example.SmartIot.constant.AirConditionerConstants;
 import com.example.SmartIot.constant.ResMsg;
 import com.example.SmartIot.entity.AirConditioner;
 import com.example.SmartIot.entity.Device;
+import com.example.SmartIot.entity.History;
 import com.example.SmartIot.repository.AirConditionerRepository;
-import com.example.SmartIot.repository.DeviceRepository;
+import com.example.SmartIot.repository.DeviceRepository;    
 import com.example.SmartIot.service.ifs.AirConditionerService;
+import com.example.SmartIot.service.ifs.HistoryService;
 
 import jakarta.transaction.Transactional;
 
@@ -28,6 +30,9 @@ public class AirConditionerServiceImpl implements AirConditionerService {
 
     @Autowired
     private DeviceRepository deviceRepository;
+
+    @Autowired
+    private HistoryService historyService;
 
     @Override
     public List<AirConditioner> getAllAirConditioners() {
@@ -81,6 +86,40 @@ public class AirConditionerServiceImpl implements AirConditionerService {
 
         // 保存空調機的設定
         AirConditioner savedAirConditioner = airConditionerRepository.save(existingAirConditioner);
+
+        // 創建歷史紀錄 - 開關空調機事件
+        if (device.isStatusChanged()) {
+            History history = new History();
+            history.setDeviceId(deviceId);
+            history.setEventType("設備開關");
+            history.setDetail(Map.of("status", newStatus));
+            historyService.createHistory(history);
+        }
+
+        // 僅在溫度、模式或風速有更改時，創建參數調整事件
+        if (!Objects.equals(airConditioner.getCurrent_temp(), existingAirConditioner.getCurrent_temp())
+                || !Objects.equals(airConditioner.getTarget_temp(), existingAirConditioner.getTarget_temp())
+                || airConditioner.getMode() != existingAirConditioner.getMode()
+                || airConditioner.getFanSpeed() != existingAirConditioner.getFanSpeed()) {
+            History paramAdjustEvent = new History();
+            paramAdjustEvent.setDeviceId(deviceId);
+            paramAdjustEvent.setEventType("設備參數調整");
+            Map<String, Object> detail = new HashMap<>();
+            if (!Objects.equals(airConditioner.getCurrent_temp(), existingAirConditioner.getCurrent_temp())) {
+                detail.put("current_temp", airConditioner.getCurrent_temp());
+            }
+            if (!Objects.equals(airConditioner.getTarget_temp(), existingAirConditioner.getTarget_temp())) {
+                detail.put("target_temp", airConditioner.getTarget_temp());
+            }
+            if (airConditioner.getMode() != existingAirConditioner.getMode()) {
+                detail.put("mode", airConditioner.getMode().toString());
+            }
+            if (airConditioner.getFanSpeed() != existingAirConditioner.getFanSpeed()) {
+                detail.put("fan_speed", airConditioner.getFanSpeed().toString());
+            }
+            paramAdjustEvent.setDetail(detail);
+            historyService.createHistory(paramAdjustEvent);
+        }
 
         return new ResponseEntity<>(savedAirConditioner, HttpStatus.OK);
     }
@@ -149,6 +188,22 @@ public class AirConditionerServiceImpl implements AirConditionerService {
         }
 
         AirConditioner savedAirConditioner = airConditionerRepository.save(airConditioner);
+
+        // 記錄歷史紀錄
+        Map<String, Object> changes = new HashMap<>();
+        for (Map.Entry<String, Object> entry : updates.entrySet()) {
+            if (!entry.getKey().equals("status") || statusChanged) {
+                changes.put(entry.getKey(), entry.getValue());
+            }
+        }
+        if (!changes.isEmpty()) {
+            History history = new History();
+            history.setDeviceId(id);
+            history.setEventType("設備參數調整");
+            history.setDetail(changes);
+            historyService.createHistory(history);
+        }
+
         return new ResponseEntity<>(savedAirConditioner, HttpStatus.OK);
     }
 
