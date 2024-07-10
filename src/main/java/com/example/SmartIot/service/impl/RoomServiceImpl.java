@@ -30,7 +30,14 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public List<Room> getAllRooms() {
-        return roomRepository.findAll();
+        List<Room> rooms = roomRepository.findAll();
+        for (Room room : rooms) {
+            Set<Device> devices = room.getDevices();
+            boolean roomStatus = devices.stream().anyMatch(Device::isStatus);
+            room.setStatus(roomStatus);
+        }
+        roomRepository.saveAll(rooms);
+        return rooms;
     }
 
     @Override
@@ -65,6 +72,19 @@ public class RoomServiceImpl implements RoomService {
         room.setName(roomReq.getName());
         room.setArea(roomReq.getArea());
         room.setType(roomReq.getType());
+
+         // 如果房間狀態被設置為關閉，同時關閉所有設備
+         if (Boolean.FALSE.equals(roomReq.getStatus())) {
+            Set<Device> devices = room.getDevices();
+            if (devices != null) {
+                for (Device device : devices) {
+                    device.setStatus(false);
+                }
+            }
+            else{
+                throw new RuntimeException("Devices not found");
+            }
+        }
         
         return roomRepository.save(room);
     }
