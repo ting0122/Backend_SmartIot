@@ -51,6 +51,7 @@ public class LightServiceImpl implements LightService {
         }
 
         Long deviceId = light.getDevice().getId();
+
         Device device = deviceRepository.findById(deviceId).orElse(null);
         if (device == null) {
             return new ResponseEntity<>(ResMsg.NOT_FOUND.getDescription(), HttpStatus.NOT_FOUND);
@@ -188,6 +189,22 @@ public class LightServiceImpl implements LightService {
         }
 
         Light savedLight = lightRepository.save(light);
+
+        // 記錄歷史紀錄
+       Map<String, Object> changes = new HashMap<>();
+        for (Map.Entry<String, Object> entry : updates.entrySet()) {
+            if (!entry.getKey().equals("status") || statusChanged) {
+                changes.put(entry.getKey(), entry.getValue());
+            }
+        }
+        if (!changes.isEmpty()) {
+            History history = new History();
+            history.setDeviceId(id);
+            history.setEventType("設備參數調整");
+            history.setDetail(changes);
+            historyService.createHistory(history);
+        }
+
         return new ResponseEntity<>(savedLight, HttpStatus.OK);
     }
 
