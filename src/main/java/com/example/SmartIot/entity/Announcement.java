@@ -1,7 +1,10 @@
 package com.example.SmartIot.entity;
 
 import java.time.LocalDate;
+import java.util.List;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,27 +19,29 @@ public class Announcement {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long roomId;
+    @ElementCollection
+    private List<Long> roomIds;
 
     private String title;
 
     private String content;
 
-    private LocalDate publish_time;
+    @Column(name = "publish_time")
+    private LocalDate publishTime;
 
-    //constructor
+    // constructor
     public Announcement() {
     }
 
-    public Announcement(Long id, Long roomId, String title, String content, LocalDate publish_time) {
+    public Announcement(Long id, List<Long> roomIds, String title, String content, LocalDate publishTime) {
         this.id = id;
-        this.roomId = roomId;
+        this.roomIds = roomIds;
         this.title = title;
         this.content = content;
-        this.publish_time = publish_time;
+        this.publishTime = publishTime;
     }
 
-    //getters and setters
+    // getters and setters
     public Long getId() {
         return id;
     }
@@ -45,12 +50,12 @@ public class Announcement {
         this.id = id;
     }
 
-    public Long getRoomId() {
-        return roomId;
+    public List<Long> getRoomIds() {
+        return roomIds;
     }
 
-    public void setRoomId(Long roomId) {
-        this.roomId = roomId;
+    public void setRoomIds(List<Long> roomIds) {
+        this.roomIds = roomIds;
     }
 
     public String getTitle() {
@@ -69,12 +74,12 @@ public class Announcement {
         this.content = content;
     }
 
-    public LocalDate getPublish_time() {
-        return publish_time;
+    public LocalDate getPublishTime() {
+        return publishTime;
     }
 
-    public void setPublish_time(LocalDate publish_time) {
-        this.publish_time = publish_time;
+    public void setPublishTime(LocalDate publishTime) {
+        this.publishTime = publishTime;
     }
 
 }
