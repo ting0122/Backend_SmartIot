@@ -27,7 +27,7 @@ public class History {
     @Column(name = "event_id", nullable = false, updatable = false)
     private String eventId;
 
-    @Column(name = "device_id", nullable = false)
+    @Column(name = "device_id", nullable = false, insertable = false, updatable = false)
     private Long deviceId;
 
     @Column(name = "event_time", nullable = false, updatable = false)

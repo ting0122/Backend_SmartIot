@@ -20,4 +20,7 @@ public interface LightService {
     ResponseEntity<?> batchPatchLights(List<Map<String, Object>> updates);
 
     void deleteLight(Long id);
+
+    void deleteLights(List<Long> ids);
+
 }

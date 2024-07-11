@@ -24,6 +24,8 @@ import com.example.SmartIot.repository.RoomRepository;
 import com.example.SmartIot.service.ifs.DeviceService;
 import com.example.SmartIot.vo.DeviceReq;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class DeviceServiceImpl implements DeviceService {
 
@@ -101,6 +103,11 @@ public class DeviceServiceImpl implements DeviceService {
                             .orElseThrow(() -> new RuntimeException("Room not found with id " + deviceReq.getRoomId()));
                     device.setRoom(room);
                 }
+                //如果開關狀態有更新就紀錄
+                if (device.isStatusChanged()) {
+                    //saveHistoryRecord(deviceReq.getId(), "設備開關", Map.of("status", device.getStatus() ? "開" : "關"));
+                    device.setStatusChanged(false);
+                }
         } else {
             // 沒 id 就創建新設備
             device = new Device();
@@ -108,7 +115,6 @@ public class DeviceServiceImpl implements DeviceService {
             device.setType(deviceReq.getType());
             device.setStatus(deviceReq.getStatus());
             device.setTime(deviceReq.getTime());
-
             //是否放在哪個房間
             if(deviceReq.getRoomId() != null) {
                 Room room = roomRepository.findById(deviceReq.getRoomId())
@@ -123,11 +129,6 @@ public class DeviceServiceImpl implements DeviceService {
 
         Device savedDevice = deviceRepository.save(device);
 
-        //如果開關狀態有更新 就紀錄
-        if (device.isStatusChanged()) {
-            saveHistoryRecord(device, "設備開關", Map.of("status", device.getStatus() ? "開" : "關"));
-            device.setStatusChanged(false);
-        }
 
         // 根據設備類型在相關表中新增資訊
         switch(device.getType()) {
@@ -216,10 +217,43 @@ public class DeviceServiceImpl implements DeviceService {
         deviceRepository.delete(device);
     }
 
-    private void saveHistoryRecord(Device device, String eventType, Map<String, Object> detail) {
+    //刪除多台設備
+    @Override
+    @Transactional
+    public void deleteDevices(List<Long> ids) {
+        // 遍歷所有要刪除的設備 ID
+        for (Long id : ids) {
+            Device device = deviceRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Device not found with id: " + id));
+            String deviceType = device.getType();
+
+            // 根據設備類型刪除對應的子表記錄
+            switch (deviceType) {
+                case "空氣清淨機":
+                    airPurifierRepository.deleteById(id);
+                    break;
+                case "除濕機":
+                    dehumidifierRepository.deleteById(id);
+                    break;
+                case "燈":
+                    lightRepository.deleteById(id);
+                    break;
+                case "冷氣機":
+                    airConditionerRepository.deleteById(id);
+                    break;
+                default:
+                    throw new RuntimeException("Unsupported device type: " + deviceType);
+            }
+            // 刪除主設備表中的記錄
+            deviceRepository.delete(device);
+            }
+        }
+
+
+    private void saveHistoryRecord(Long id, String eventType, Map<String, Object> detail) {
         History history = new History();
         history.setEventId(UUID.randomUUID().toString());
-        history.setDeviceId(device.getId());
+        history.setDeviceId(id);
         history.setEventTime(LocalDateTime.now());
         history.setEventType(eventType);
         history.setDetail(detail);

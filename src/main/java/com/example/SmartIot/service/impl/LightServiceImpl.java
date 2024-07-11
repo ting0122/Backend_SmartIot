@@ -124,6 +124,12 @@ public class LightServiceImpl implements LightService {
     }
 
     @Override
+    public void deleteLights(List<Long> ids) {
+        lightRepository.deleteAllByIds(ids);
+    }
+
+
+    @Override
     @Transactional
     public ResponseEntity<?> patchLight(Long id, Map<String, Object> updates) {
         Light light = lightRepository.findById(id).orElse(null);

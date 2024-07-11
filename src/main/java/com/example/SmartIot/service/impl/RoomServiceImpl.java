@@ -56,38 +56,60 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public Room createRoom(RoomReq roomReq) {
-
-        Room existingRoom = roomRepository.findByArea(roomReq.getArea());
-            if (existingRoom != null) {
-                throw new RuntimeException("Room with this name already exists");
-            }
-
         Room room;
         if (roomReq.getId() != null) {
             room = roomRepository.findById(roomReq.getId())
                     .orElseThrow(() -> new RuntimeException("Room not found"));
-        } else {
-            room = new Room();
-        }
 
-        room.setName(roomReq.getName());
-        room.setArea(roomReq.getArea());
-        room.setType(roomReq.getType());
-
-         // 如果房間狀態被設置為關閉，同時關閉所有設備
-         if (Boolean.FALSE.equals(roomReq.getStatus())) {
-            Set<Device> devices = room.getDevices();
-            if (devices != null) {
-                for (Device device : devices) {
-                    device.setStatus(false);
+            // 更新房間狀態
+            room.setStatus(roomReq.getStatus());
+            if (Boolean.FALSE.equals(roomReq.getStatus())) {
+                Set<Device> devices = room.getDevices();
+                if (devices != null) {
+                    for (Device device : devices) {
+                        device.setStatus(false);
+                    }
+                } else {
+                    throw new RuntimeException("Devices not found");
                 }
             }
-            else{
-                throw new RuntimeException("Devices not found");
+        } else {
+            // 再確定area是否存在
+            Room existingRoom = roomRepository.findByArea(roomReq.getArea());
+            if (existingRoom != null) {
+                // 更新现有房间的状态
+                existingRoom.setName(roomReq.getName());
+                existingRoom.setType(roomReq.getType());
+                existingRoom.setStatus(roomReq.getStatus());
+            
+                if (Boolean.FALSE.equals(roomReq.getStatus())) {
+                    Set<Device> devices = existingRoom.getDevices();
+                    if (devices != null) {
+                        for (Device device : devices) {
+                            device.setStatus(false);
+                        }
+                    } else {
+                        throw new RuntimeException("Devices not found");
+                    }
+                }
+                return roomRepository.save(existingRoom);
+            } else {
+                // 創建新房間
+                room = new Room();
+                room.setName(roomReq.getName());
+                room.setArea(roomReq.getArea());
+                room.setType(roomReq.getType());
+                room.setStatus(roomReq.getStatus());
+    
+                // 初始化設備
+                if (room.getDevices() == null) {
+                    room.setDevices(new LinkedHashSet<>());
+                }
             }
         }
-        
+    
         return roomRepository.save(room);
+ 
     }
 
     @Override

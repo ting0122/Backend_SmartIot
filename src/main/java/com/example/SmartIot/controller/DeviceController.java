@@ -61,4 +61,9 @@ public class DeviceController {
         deviceService.deleteDevice(id);
     }
 
+    @DeleteMapping("/devices")
+    public void deleteDevices(@RequestBody List<Long> ids){
+        deviceService.deleteDevices(ids);
+    }
+
 }

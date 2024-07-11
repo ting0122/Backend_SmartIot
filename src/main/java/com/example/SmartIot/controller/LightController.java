@@ -51,6 +51,14 @@ public class LightController {
         lightService.deleteLight(id);
     }
 
+
+    // 刪除一組燈
+    @DeleteMapping
+    public ResponseEntity<Void> deleteLights(@RequestBody List<Long> ids) {
+        lightService.deleteLights(ids);
+        return ResponseEntity.noContent().build();
+    }
+
     /*
      * example:
      * {

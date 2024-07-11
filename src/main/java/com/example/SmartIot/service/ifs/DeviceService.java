@@ -22,4 +22,7 @@ public interface DeviceService {
 
     //刪除設備
     void deleteDevice(Long id);
+
+    //刪除一組設備
+    void deleteDevices(List<Long> ids);
 }
