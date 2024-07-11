@@ -51,6 +51,7 @@ public class DeviceController {
     //從 Request 中讀取 JSON 資料並創建一個新的設備
     @PostMapping("/devices")
     public Device create(@RequestBody DeviceReq deviceReq) {
+        System.out.println(deviceReq);
         return deviceService.saveDevice(deviceReq);
     }
 

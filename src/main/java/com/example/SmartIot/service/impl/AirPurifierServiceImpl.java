@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,9 +13,11 @@ import org.springframework.stereotype.Service;
 import com.example.SmartIot.constant.ResMsg;
 import com.example.SmartIot.entity.AirPurifier;
 import com.example.SmartIot.entity.Device;
+import com.example.SmartIot.entity.History;
 import com.example.SmartIot.repository.AirPurifierRepository;
 import com.example.SmartIot.repository.DeviceRepository;
 import com.example.SmartIot.service.ifs.AirPurifierService;
+import com.example.SmartIot.service.ifs.HistoryService;
 
 import jakarta.transaction.Transactional;
 
@@ -27,6 +29,8 @@ public class AirPurifierServiceImpl implements AirPurifierService {
 
     @Autowired
     private DeviceRepository deviceRepository;
+
+    @Autowired HistoryService historyService;
 
     @Override
     public List<AirPurifier> getAllAirPurifiers() {
@@ -77,6 +81,37 @@ public class AirPurifierServiceImpl implements AirPurifierService {
 
         // 保存空氣清潔器的設定
         AirPurifier savedAirPurifier = airPurifierRepository.save(existingAirPurifier);
+
+        //保存歷史設定
+        if (device.isStatusChanged()) {
+            History history = new History();
+            history.setDeviceId(deviceId);
+            history.setEventType("設備開關");
+            history.setDetail(Map.of("status", newStatus));
+            historyService.createHistory(history);
+        }
+
+        // 創建參數調整事件
+        if (!Objects.equals(airPurifier.getAir_quality(), existingAirPurifier.getAir_quality())
+                || !Objects.equals(airPurifier.getFan_speed(), existingAirPurifier.getFan_speed())
+                || airPurifier.getOperating_time() != existingAirPurifier.getOperating_time()) {
+            History paramAdjustEvent = new History();
+            paramAdjustEvent.setDeviceId(deviceId);
+            paramAdjustEvent.setEventType("設備參數調整");
+            Map<String, Object> detail = new HashMap<>();
+            if (!Objects.equals(airPurifier.getAir_quality(), existingAirPurifier.getAir_quality())) {
+                detail.put("air_quality", airPurifier.getAir_quality());
+            }
+            if (!Objects.equals(airPurifier.getFan_speed(), existingAirPurifier.getFan_speed())) {
+                detail.put("target_temp", airPurifier.getFan_speed());
+            }
+            if (airPurifier.getOperating_time() != existingAirPurifier.getOperating_time()) {
+                detail.put("mode", airPurifier.getOperating_time().toString());
+            }
+            
+            paramAdjustEvent.setDetail(detail);
+            historyService.createHistory(paramAdjustEvent);
+        }
 
         return new ResponseEntity<>(savedAirPurifier, HttpStatus.OK);
     }
@@ -152,6 +187,23 @@ public class AirPurifierServiceImpl implements AirPurifierService {
         }
 
         AirPurifier savedAirPurifier = airPurifierRepository.save(airPurifier);
+
+                // 記錄歷史紀錄
+                Map<String, Object> changes = new HashMap<>();
+                for (Map.Entry<String, Object> entry : updates.entrySet()) {
+                    if (!entry.getKey().equals("status") || statusChanged) {
+                        changes.put(entry.getKey(), entry.getValue());
+                    }
+                }
+                if (!changes.isEmpty()) {
+                    History history = new History();
+                    history.setDeviceId(id);
+                    history.setEventType("設備參數調整");
+                    history.setDetail(changes);
+                    historyService.createHistory(history);
+                }
+        
+
         return new ResponseEntity<>(savedAirPurifier, HttpStatus.OK);
     }
 
