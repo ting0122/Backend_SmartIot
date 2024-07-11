@@ -29,6 +29,7 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
+    @Transactional
     public List<Room> getAllRooms() {
         //找房間所有的電器
         List<Room> rooms = roomRepository.findAll();
@@ -55,6 +56,7 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
+    @Transactional
     public Room createRoom(RoomReq roomReq) {
         Room room;
         if (roomReq.getId() != null) {
@@ -113,6 +115,7 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
+    @Transactional
     public void deleteRoom(Long id) {
         roomRepository.deleteById(id);
     }

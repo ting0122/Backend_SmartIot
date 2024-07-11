@@ -9,6 +9,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
 @Entity
@@ -22,7 +24,7 @@ public class Room {
     private String name;
     private String area;
     private String type;
-    private Boolean status = false;
+    private Boolean status;
 
     //一個房間包含多個設備(Device表的room屬性)
     @OneToMany(mappedBy = "room")
@@ -92,6 +94,15 @@ public class Room {
 
     public void setDevices(Set<Device> devices) {
         this.devices = devices;
+    }
+
+    @PrePersist
+    @PreUpdate
+    private void ensureDefaults() {
+        //預設設備為關閉
+        if (this.status == null) {
+            this.status = false;
+        }
     }
 
 }

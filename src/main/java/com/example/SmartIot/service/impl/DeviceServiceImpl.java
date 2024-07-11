@@ -89,11 +89,13 @@ public class DeviceServiceImpl implements DeviceService {
                 if (deviceReq.getName() != null) {
                     device.setName(deviceReq.getName());
                 }
-                if (deviceReq.getType() != null) {
-                    device.setType(deviceReq.getType());
-                }
+                // if (deviceReq.getType() != null) {
+                //     device.setType(deviceReq.getType());
+                // }
                 if (deviceReq.getStatus() != null) {
                     device.setStatus(deviceReq.getStatus());
+                } else {
+                    device.setStatus(false);
                 }
                 if (deviceReq.getTime() != null) {
                     device.setTime(deviceReq.getTime());
@@ -105,7 +107,7 @@ public class DeviceServiceImpl implements DeviceService {
                 }
                 //如果開關狀態有更新就紀錄
                 if (device.isStatusChanged()) {
-                    //saveHistoryRecord(deviceReq.getId(), "設備開關", Map.of("status", device.getStatus() ? "開" : "關"));
+                    saveHistoryRecord(device.getId(), "設備開關", Map.of("status", device.getStatus() ? "開" : "關"));
                     device.setStatusChanged(false);
                 }
         } else {
@@ -250,13 +252,14 @@ public class DeviceServiceImpl implements DeviceService {
         }
 
 
-    private void saveHistoryRecord(Long id, String eventType, Map<String, Object> detail) {
+    private void saveHistoryRecord(Long deviceId, String eventType, Map<String, Object> detail) {
         History history = new History();
         history.setEventId(UUID.randomUUID().toString());
-        history.setDeviceId(id);
+        history.setDeviceId(deviceId);
         history.setEventTime(LocalDateTime.now());
         history.setEventType(eventType);
         history.setDetail(detail);
+
         historyRepository.save(history);
     }
 }

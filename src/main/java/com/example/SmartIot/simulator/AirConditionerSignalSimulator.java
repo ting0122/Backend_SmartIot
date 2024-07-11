@@ -42,6 +42,11 @@ public class AirConditionerSignalSimulator {
         AirConditionerConstants.Mode mode = ac.getMode();
         AirConditionerConstants.FanSpeed fanSpeed = ac.getFanSpeed();
 
+        // 如果 fanSpeed 為 null，設置一個默認值
+        if (fanSpeed == null) {
+            fanSpeed = AirConditionerConstants.FanSpeed.MEDIUM; // 或其他適合的默認值
+        }
+
         // 根據模式和風速調整溫度
         double tempChange = calculateTempChange(currentTemp, targetTemp, mode, fanSpeed);
 
