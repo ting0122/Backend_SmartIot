@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +14,11 @@ import com.example.SmartIot.constant.AirConditionerConstants;
 import com.example.SmartIot.constant.ResMsg;
 import com.example.SmartIot.entity.Dehumidifier;
 import com.example.SmartIot.entity.Device;
+import com.example.SmartIot.entity.History;
 import com.example.SmartIot.repository.DehumidifierRepository;
 import com.example.SmartIot.repository.DeviceRepository;
 import com.example.SmartIot.service.ifs.DehumidifierService;
+import com.example.SmartIot.service.ifs.HistoryService;
 
 import jakarta.transaction.Transactional;
 
@@ -28,6 +30,8 @@ public class DehumidifierServiceImpl implements DehumidifierService {
 
     @Autowired
     private DeviceRepository deviceRepository;
+
+    @Autowired HistoryService historyService;
 
     @Override
     public List<Dehumidifier> getAllDehumidifiers() {
@@ -79,6 +83,40 @@ public class DehumidifierServiceImpl implements DehumidifierService {
 
         // 保存除濕機的設定
         Dehumidifier savedDehumidifier = dehumidifierRepository.save(existingDehumidifier);
+        
+        // 創建歷史紀錄 - 開關空調機事件
+        if (device.isStatusChanged()) {
+            History history = new History();
+            history.setDeviceId(deviceId);
+            history.setEventType("設備開關");
+            history.setDetail(Map.of("status", newStatus));
+            historyService.createHistory(history);
+        }
+
+        // 僅在溫度、模式或風速有更改時，創建參數調整事件
+        if (!Objects.equals(dehumidifier.getCurrent_humidity(), existingDehumidifier.getCurrent_humidity())
+                || !Objects.equals(dehumidifier.getTarget_humidity(), existingDehumidifier.getTarget_humidity())
+                || dehumidifier.getTank_capacity() != existingDehumidifier.getTank_capacity()
+                || dehumidifier.getFanSpeed() != existingDehumidifier.getFanSpeed()) {
+            History paramAdjustEvent = new History();
+            paramAdjustEvent.setDeviceId(deviceId);
+            paramAdjustEvent.setEventType("設備參數調整");
+            Map<String, Object> detail = new HashMap<>();
+            if (!Objects.equals(dehumidifier.getCurrent_humidity(), existingDehumidifier.getCurrent_humidity())) {
+                detail.put("current_temp", dehumidifier.getCurrent_humidity());
+            }
+            if (!Objects.equals(dehumidifier.getTarget_humidity(), existingDehumidifier.getTarget_humidity())) {
+                detail.put("target_temp", dehumidifier.getTarget_humidity());
+            }
+            if (dehumidifier.getTank_capacity() != existingDehumidifier.getTank_capacity()) {
+                detail.put("mode", dehumidifier.getTank_capacity().toString());
+            }
+            if (dehumidifier.getFanSpeed() != existingDehumidifier.getFanSpeed()) {
+                detail.put("fan_speed", dehumidifier.getFanSpeed().toString());
+            }
+            paramAdjustEvent.setDetail(detail);
+            historyService.createHistory(paramAdjustEvent);
+        }
 
         return new ResponseEntity<>(savedDehumidifier, HttpStatus.OK);
     }
@@ -160,6 +198,23 @@ public class DehumidifierServiceImpl implements DehumidifierService {
         }
 
         Dehumidifier savedDehumidifier = dehumidifierRepository.save(dehumidifier);
+
+                // 記錄歷史紀錄
+                Map<String, Object> changes = new HashMap<>();
+                for (Map.Entry<String, Object> entry : updates.entrySet()) {
+                    if (!entry.getKey().equals("status") || statusChanged) {
+                        changes.put(entry.getKey(), entry.getValue());
+                    }
+                }
+                if (!changes.isEmpty()) {
+                    History history = new History();
+                    history.setDeviceId(id);
+                    history.setEventType("設備參數調整");
+                    history.setDetail(changes);
+                    historyService.createHistory(history);
+                }
+        
+
         return new ResponseEntity<>(savedDehumidifier, HttpStatus.OK);
     }
 
