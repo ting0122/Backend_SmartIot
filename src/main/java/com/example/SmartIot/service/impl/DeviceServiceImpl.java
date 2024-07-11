@@ -78,6 +78,8 @@ public class DeviceServiceImpl implements DeviceService {
     public Device saveDevice(DeviceReq deviceReq) {
 
         Device device;
+        boolean isNew = false;
+
         //如果有 id 就更新設備
         if (deviceReq.getId() != null) {
             device = deviceRepository.findById(deviceReq.getId())
@@ -116,6 +118,7 @@ public class DeviceServiceImpl implements DeviceService {
                 //沒有就 null
                 device.setRoom(null);
             }
+            isNew = true;
         }
 
         Device savedDevice = deviceRepository.save(device);
@@ -129,36 +132,56 @@ public class DeviceServiceImpl implements DeviceService {
         // 根據設備類型在相關表中新增資訊
         switch(device.getType()) {
             case "空氣清淨機":
-                AirPurifier airPurifier = airPurifierRepository.findByDeviceId(savedDevice.getId());
-                airPurifier.setDevice(savedDevice);
-                airPurifier.setAir_quality(0);
-                airPurifier.setFan_speed(0);
-                airPurifier.setOperating_time(0.0);
+                AirPurifier airPurifier;
+                if (isNew) {
+                    airPurifier = new AirPurifier();
+                    airPurifier.setDevice(savedDevice);
+                    airPurifier.setAir_quality(0);
+                    airPurifier.setFan_speed(0);
+                    airPurifier.setOperating_time(0.0);
+                } else {
+                    airPurifier = airPurifierRepository.findByDeviceId(savedDevice.getId());
+                }
                 airPurifierRepository.save(airPurifier);
                 break;
 
             case "除濕機":
-                Dehumidifier dehumidifier = dehumidifierRepository.findByDeviceId(savedDevice.getId());
-                dehumidifier.setDevice(savedDevice);
-                dehumidifier.setCurrent_humidity(0.0);
-                dehumidifier.setTarget_humidity(0.0);
-                dehumidifier.setTank_capacity(0.0);
+                Dehumidifier dehumidifier;
+                if (isNew) {
+                    dehumidifier = new Dehumidifier();
+                    dehumidifier.setDevice(savedDevice);
+                    dehumidifier.setCurrent_humidity(0.0);
+                    dehumidifier.setTarget_humidity(0.0);
+                    dehumidifier.setTank_capacity(0.0);
+                } else {
+                    dehumidifier = dehumidifierRepository.findByDeviceId(savedDevice.getId());
+                }
                 dehumidifierRepository.save(dehumidifier);
                 break;
 
             case "燈":
-                Light light = lightRepository.findByDeviceId(savedDevice.getId());
-                light.setDevice(savedDevice);
-                light.setBrightness(0);
-                light.setColor_temp(0);
+                Light light;
+                if (isNew) {
+                    light = new Light();
+                    light.setDevice(savedDevice);
+                    light.setBrightness(0);
+                    light.setColor_temp(0);
+                } else {
+                    light = lightRepository.findByDeviceId(savedDevice.getId());
+                }
                 lightRepository.save(light);
                 break;
 
             case "冷氣機":
-                AirConditioner airConditioner = airConditionerRepository.findByDeviceId(savedDevice.getId());
-                airConditioner.setDevice(savedDevice);
-                airConditioner.setCurrent_temp(0.0);
-                airConditioner.setTarget_temp(0.0);
+                AirConditioner airConditioner;
+                if (isNew) {
+                    airConditioner = new AirConditioner();
+                    airConditioner.setDevice(savedDevice);
+                    airConditioner.setCurrent_temp(0.0);
+                    airConditioner.setTarget_temp(0.0);
+                } else {
+                    airConditioner = airConditionerRepository.findByDeviceId(savedDevice.getId());
+                }
                 airConditionerRepository.save(airConditioner);
                 break;
 
