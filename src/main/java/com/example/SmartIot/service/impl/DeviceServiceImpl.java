@@ -193,6 +193,12 @@ public class DeviceServiceImpl implements DeviceService {
             default:
                 throw new RuntimeException("Unsupported device type: " + device.getType());
         }
+
+        if (isNew) {
+            // 新增設備的歷史紀錄
+            saveHistoryRecord(savedDevice.getId(), "新增設備", Map.of("name", savedDevice.getName(), "type", savedDevice.getType()));
+        }
+
         return savedDevice;
     }
 
@@ -217,6 +223,8 @@ public class DeviceServiceImpl implements DeviceService {
                 throw new RuntimeException("Unsupported device type: " + device.getType());
         }
         deviceRepository.delete(device);
+        // 刪除設備的歷史紀錄
+        saveHistoryRecord(id, "刪除設備", Map.of("name", device.getName(), "type", device.getType()));
     }
 
     //刪除多台設備
@@ -248,6 +256,9 @@ public class DeviceServiceImpl implements DeviceService {
             }
             // 刪除主設備表中的記錄
             deviceRepository.delete(device);
+            // 刪除設備的歷史紀錄
+            saveHistoryRecord(id, "刪除設備", Map.of("name", device.getName(), "type", device.getType()));
+            
             }
         }
 

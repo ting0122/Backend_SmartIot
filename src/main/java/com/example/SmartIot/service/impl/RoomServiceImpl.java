@@ -6,12 +6,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
+import java.util.UUID;
+import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.SmartIot.entity.Device;
+import com.example.SmartIot.entity.History;
 import com.example.SmartIot.entity.Room;
+import com.example.SmartIot.repository.HistoryRepository;
 import com.example.SmartIot.repository.RoomRepository;
 import com.example.SmartIot.service.ifs.RoomService;
 import com.example.SmartIot.vo.RoomReq;
@@ -22,10 +25,12 @@ import jakarta.transaction.Transactional;
 public class RoomServiceImpl implements RoomService {
 
     private final RoomRepository roomRepository;
+    private final HistoryRepository historyRepository;
 
     @Autowired
-    public RoomServiceImpl(RoomRepository roomRepository) {
+    public RoomServiceImpl(RoomRepository roomRepository, HistoryRepository historyRepository) {
         this.roomRepository = roomRepository;
+        this.historyRepository = historyRepository;
     }
 
     @Override
@@ -59,6 +64,7 @@ public class RoomServiceImpl implements RoomService {
     @Transactional
     public Room createRoom(RoomReq roomReq) {
         Room room;
+        boolean isNew = false;
         if (roomReq.getId() != null) {
             room = roomRepository.findById(roomReq.getId())
                     .orElseThrow(() -> new RuntimeException("Room not found"));
@@ -94,7 +100,7 @@ public class RoomServiceImpl implements RoomService {
                         throw new RuntimeException("Devices not found");
                     }
                 }
-                return roomRepository.save(existingRoom);
+                room = roomRepository.save(existingRoom);
             } else {
                 // 創建新房間
                 room = new Room();
@@ -107,17 +113,28 @@ public class RoomServiceImpl implements RoomService {
                 if (room.getDevices() == null) {
                     room.setDevices(new LinkedHashSet<>());
                 }
+                isNew = true;
             }
         }
     
-        return roomRepository.save(room);
+        Room savedRoom = roomRepository.save(room);
+
+        if (isNew) {
+            saveHistoryRecord(savedRoom.getId(), "新增房間", Map.of("name", savedRoom.getName(), "type", savedRoom.getType()));
+        }
+
+        return savedRoom;
  
     }
 
     @Override
     @Transactional
     public void deleteRoom(Long id) {
+        Room room = roomRepository.findById(id).orElseThrow(() -> new RuntimeException("Room not found"));
         roomRepository.deleteById(id);
+        
+        // 記錄刪除房間的歷史紀錄
+        saveHistoryRecord(room.getId(), "刪除房間", Map.of("name", room.getName(), "type", room.getType()));
     }
 
     private void sortAndGroupDevices(Room room) {
@@ -131,5 +148,16 @@ public class RoomServiceImpl implements RoomService {
                 .collect(Collectors.toCollection(LinkedHashSet::new));
 
         room.setDevices(sortedDevices);
+    }
+
+    private void saveHistoryRecord(Long entityId, String eventType, Map<String, Object> detail) {
+        History history = new History();
+        history.setEventId(UUID.randomUUID().toString());
+        history.setDeviceId(entityId); // or roomId, depending on your schema
+        history.setEventTime(LocalDateTime.now());
+        history.setEventType(eventType);
+        history.setDetail(detail);
+
+        historyRepository.save(history);
     }
 }
