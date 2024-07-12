@@ -8,6 +8,9 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.Comparator;
 import java.util.Set;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import com.example.SmartIot.entity.AirConditioner;
 import com.example.SmartIot.entity.AirPurifier;
@@ -221,41 +224,11 @@ public class DeviceServiceImpl implements DeviceService {
 
      // 刪除指定 ID 的設備
     @Override
-    public void deleteDevice(Long id) {
-        Device device = deviceRepository.findById(id).orElseThrow(() -> new RuntimeException("Device not found"));
-        switch (device.getType()) {
-            case "空氣清淨機":
-                airPurifierRepository.deleteById(id);
-                break;
-            case "除濕機":
-                dehumidifierRepository.deleteById(id);
-                break;
-            case "燈":
-                lightRepository.deleteById(id);
-                break;
-            case "冷氣機":
-                airConditionerRepository.deleteById(id);
-                break;
-            default:
-                throw new RuntimeException("Unsupported device type: " + device.getType());
-        }
-        deviceRepository.delete(device);
-        // 刪除設備的歷史紀錄
-        saveHistoryRecord(id, "刪除設備", Map.of("name", device.getName(), "type", device.getType()));
-    }
-
-    //刪除多台設備
-    @Override
     @Transactional
-    public void deleteDevices(List<Long> ids) {
-        // 遍歷所有要刪除的設備 ID
-        for (Long id : ids) {
-            Device device = deviceRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Device not found with id: " + id));
-            String deviceType = device.getType();
-
-            // 根據設備類型刪除對應的子表記錄
-            switch (deviceType) {
+    public ResponseEntity<String> deleteDevice(Long id) {
+        try{
+            Device device = deviceRepository.findById(id).orElseThrow(() -> new RuntimeException("Device not found"));
+            switch (device.getType()) {
                 case "空氣清淨機":
                     airPurifierRepository.deleteById(id);
                     break;
@@ -269,20 +242,65 @@ public class DeviceServiceImpl implements DeviceService {
                     airConditionerRepository.deleteById(id);
                     break;
                 default:
-                    throw new RuntimeException("Unsupported device type: " + deviceType);
+                    throw new RuntimeException("Unsupported device type: " + device.getType());
             }
-            // 刪除主設備表中的記錄
             deviceRepository.delete(device);
             // 刪除設備的歷史紀錄
             saveHistoryRecord(id, "刪除設備", Map.of("name", device.getName(), "type", device.getType()));
-            
-            }
+            return ResponseEntity.ok("Device deleted successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete device: " + e.getMessage());
         }
+    }
+
+    //刪除多台設備
+    @Override
+    @Transactional
+    public ResponseEntity<String> deleteDevices(List<Long> ids) {
+        try{
+            // 遍歷所有要刪除的設備 ID
+            for (Long id : ids) {
+                Device device = deviceRepository.findById(id)
+                        .orElseThrow(() -> new RuntimeException("Device not found with id: " + id));
+                String deviceType = device.getType();
+
+                // 根據設備類型刪除對應的子表記錄
+                switch (deviceType) {
+                    case "空氣清淨機":
+                        airPurifierRepository.deleteById(id);
+                        break;
+                    case "除濕機":
+                        dehumidifierRepository.deleteById(id);
+                        break;
+                    case "燈":
+                        lightRepository.deleteById(id);
+                        break;
+                    case "冷氣機":
+                        airConditionerRepository.deleteById(id);
+                        break;
+                    default:
+                        throw new RuntimeException("Unsupported device type: " + deviceType);
+                }
+                // 刪除主設備表中的記錄
+                deviceRepository.delete(device);
+                // 刪除設備的歷史紀錄
+                saveHistoryRecord(id, "刪除設備", Map.of("name", device.getName(), "type", device.getType()));
+            }
+            return ResponseEntity.ok("Devices deleted successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete devices: " + e.getMessage());
+    }
+}
 
         @Override
         @Transactional
-        public void saveDevices(Set<Device> devices) {
-            deviceRepository.saveAll(devices);
+        public ResponseEntity<String> saveDevices(Set<Device> devices) {
+            try {
+                deviceRepository.saveAll(devices);
+                return ResponseEntity.ok("Devices saved successfully");
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to save devices: " + e.getMessage());
+            }
         }
 
         

@@ -4,6 +4,8 @@ import java.util.List;
 
 import java.util.Set;
 
+import org.springframework.http.ResponseEntity;
+
 import com.example.SmartIot.entity.Device;
 import com.example.SmartIot.vo.DeviceReq;
 
@@ -23,10 +25,10 @@ public interface DeviceService {
     List<Device> searchDevices(String name, String type, String area, Boolean status);
 
     //刪除設備
-    void deleteDevice(Long id);
+    ResponseEntity<String> deleteDevice(Long id);
 
     //刪除一組設備
-    void deleteDevices(List<Long> ids);
+    ResponseEntity<String> deleteDevices(List<Long> ids);
 
-    void saveDevices(Set<Device> devices);
+    ResponseEntity<String> saveDevices(Set<Device> devices);
 }

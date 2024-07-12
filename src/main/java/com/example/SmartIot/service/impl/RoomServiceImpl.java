@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 import java.util.UUID;
 import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.example.SmartIot.entity.Device;
@@ -133,40 +135,51 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     @Transactional
-    public void deleteRoom(Long id) {
-        Room room = roomRepository.findById(id).orElseThrow(() -> new RuntimeException("Room not found"));
-    
-        // 清除房間內所有設備的關聯
-        for (Device device : room.getDevices()) {
-            device.setRoom(null);
-        }
-        deviceService.saveDevices(room.getDevices());
+    public ResponseEntity<String> deleteRoom(Long id) {
+        try{
+            Room room = roomRepository.findById(id).orElseThrow(() -> new RuntimeException("Room not found"));
+        
+            // 清除房間內所有設備的關聯
+            for (Device device : room.getDevices()) {
+                device.setRoom(null);
+            }
+            deviceService.saveDevices(room.getDevices());
 
-        roomRepository.deleteById(id);
-    
-        // 記錄刪除房間的歷史紀錄
-        saveHistoryRecord(room.getId(), "刪除房間", Map.of("name", room.getName(), "type", room.getType()));
+            roomRepository.deleteById(id);
+        
+            // 記錄刪除房間的歷史紀錄
+            saveHistoryRecord(room.getId(), "刪除房間", Map.of("name", room.getName(), "type", room.getType()));
+        
+            return ResponseEntity.ok("Room deleted successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete room: " + e.getMessage());
+        }
     }
 
     //刪除多台設備
     @Override
     @Transactional
-    public void deleteRooms(List<Long> ids) {
-        List<Room> rooms = roomRepository.findAllById(ids);
-    
-        // 清除房間內所有設備的關聯
-        for (Room room : rooms) {
-            for (Device device : room.getDevices()) {
-                device.setRoom(null);
+    public ResponseEntity<String> deleteRooms(List<Long> ids) {
+        try{
+            List<Room> rooms = roomRepository.findAllById(ids);
+        
+            // 清除房間內所有設備的關聯
+            for (Room room : rooms) {
+                for (Device device : room.getDevices()) {
+                    device.setRoom(null);
+                }
+                deviceService.saveDevices(room.getDevices());
             }
-            deviceService.saveDevices(room.getDevices());
-        }
-        
-        roomRepository.deleteAll(rooms);
-        
-        // 記錄刪除房間的歷史紀錄
-        for (Room room : rooms) {
-            saveHistoryRecord(room.getId(), "刪除房間", Map.of("name", room.getName(), "type", room.getType()));
+            
+            roomRepository.deleteAll(rooms);
+            
+            // 記錄刪除房間的歷史紀錄
+            for (Room room : rooms) {
+                saveHistoryRecord(room.getId(), "刪除房間", Map.of("name", room.getName(), "type", room.getType()));
+            }
+            return ResponseEntity.ok("Rooms deleted successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete rooms: " + e.getMessage());
         }
     }
 

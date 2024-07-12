@@ -7,6 +7,8 @@ import jakarta.validation.Valid;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
+
 public interface RoomService {
 
     List<Room> getAllRooms();
@@ -17,7 +19,7 @@ public interface RoomService {
 
     Room createRoom(@Valid RoomReq roomReq);
 
-    void deleteRoom(Long id);
+    ResponseEntity<String> deleteRoom(Long id);
 
-    void deleteRooms(List<Long> ids);
+    ResponseEntity<String> deleteRooms(List<Long> ids);
 }

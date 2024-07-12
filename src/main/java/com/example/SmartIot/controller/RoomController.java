@@ -3,6 +3,7 @@ package com.example.SmartIot.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -58,14 +59,14 @@ public class RoomController {
 
     //刪除房間
     @DeleteMapping("/{id}")
-    public void deleteRoom(@PathVariable("id") Long id) {
-        roomService.deleteRoom(id);
+    public ResponseEntity<String> deleteRoom(@PathVariable("id") Long id) {
+        return roomService.deleteRoom(id);
     }
 
     //刪除房間群
     @DeleteMapping
-    public void deleteRooms(@RequestBody List<Long> ids){
-        roomService.deleteRooms(ids);
+    public ResponseEntity<String> deleteRooms(@RequestBody List<Long> ids){
+        return roomService.deleteRooms(ids);
     }
 
 }
