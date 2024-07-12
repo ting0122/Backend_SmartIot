@@ -120,9 +120,25 @@ public class AirConditionerServiceImpl implements AirConditionerService {
             airConditioner.setCurrent_temp((Double) updates.get("current_temp"));
         }
 
-        // 更新目標溫度
+        // 更新目標溫度；
         if (updates.containsKey("target_temp")) {
-            airConditioner.setTarget_temp((Double) updates.get("target_temp"));
+            Object targetTempObj = updates.get("target_temp");
+            Double targetTemp;
+
+            if (targetTempObj instanceof Integer) {
+                targetTemp = ((Integer) targetTempObj).doubleValue();
+            } else if (targetTempObj instanceof Double) {
+                targetTemp = (Double) targetTempObj;
+            } else {
+                return new ResponseEntity<>("Invalid target temperature format", HttpStatus.BAD_REQUEST);
+            }
+
+            // 可以根據需要添加溫度範圍檢查
+            if (targetTemp < 16 || targetTemp > 30) {
+                return new ResponseEntity<>("Target temperature must be between 16 and 30", HttpStatus.BAD_REQUEST);
+            }
+
+            airConditioner.setTarget_temp(targetTemp);
         }
 
         // 更新模式
