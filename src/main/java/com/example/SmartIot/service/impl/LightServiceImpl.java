@@ -14,6 +14,7 @@ import com.example.SmartIot.constant.ResMsg;
 import com.example.SmartIot.entity.Device;
 import com.example.SmartIot.entity.History;
 import com.example.SmartIot.entity.Light;
+import com.example.SmartIot.entity.Room;
 import com.example.SmartIot.repository.DeviceRepository;
 import com.example.SmartIot.repository.LightRepository;
 import com.example.SmartIot.service.ifs.HistoryService;

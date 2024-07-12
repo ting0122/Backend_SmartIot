@@ -15,6 +15,7 @@ import com.example.SmartIot.constant.ResMsg;
 import com.example.SmartIot.entity.AirConditioner;
 import com.example.SmartIot.entity.Device;
 import com.example.SmartIot.entity.History;
+import com.example.SmartIot.entity.Room;
 import com.example.SmartIot.repository.AirConditionerRepository;
 import com.example.SmartIot.repository.DeviceRepository;    
 import com.example.SmartIot.service.ifs.AirConditionerService;
@@ -87,12 +88,20 @@ public class AirConditionerServiceImpl implements AirConditionerService {
         // 保存空調機的設定
         AirConditioner savedAirConditioner = airConditionerRepository.save(existingAirConditioner);
 
+        // 保存詳細訊息
+        Map<String, Object> detail = new HashMap<>();
+        detail.put("status", newStatus);
+        detail.put("roomArea", device.getRoom().getArea());
+        detail.put("roomName", device.getRoom().getName());
+        detail.put("deviceType", device.getType());
+        detail.put("deviceName", device.getName());
+
         // 創建歷史紀錄 - 開關空調機事件
         if (device.isStatusChanged()) {
             History history = new History();
             history.setDeviceId(deviceId);
             history.setEventType("設備開關");
-            history.setDetail(Map.of("status", newStatus));
+            history.setDetail(detail);
             historyService.createHistory(history);
         }
 
@@ -104,20 +113,20 @@ public class AirConditionerServiceImpl implements AirConditionerService {
             History paramAdjustEvent = new History();
             paramAdjustEvent.setDeviceId(deviceId);
             paramAdjustEvent.setEventType("設備參數調整");
-            Map<String, Object> detail = new HashMap<>();
+            Map<String, Object> paramDetail = new HashMap<>();
             if (!Objects.equals(airConditioner.getCurrent_temp(), existingAirConditioner.getCurrent_temp())) {
-                detail.put("current_temp", airConditioner.getCurrent_temp());
+                paramDetail.put("current_temp", airConditioner.getCurrent_temp());
             }
             if (!Objects.equals(airConditioner.getTarget_temp(), existingAirConditioner.getTarget_temp())) {
-                detail.put("target_temp", airConditioner.getTarget_temp());
+                paramDetail.put("target_temp", airConditioner.getTarget_temp());
             }
             if (airConditioner.getMode() != existingAirConditioner.getMode()) {
-                detail.put("mode", airConditioner.getMode().toString());
+                paramDetail.put("mode", airConditioner.getMode().toString());
             }
             if (airConditioner.getFanSpeed() != existingAirConditioner.getFanSpeed()) {
-                detail.put("fan_speed", airConditioner.getFanSpeed().toString());
+                paramDetail.put("fan_speed", airConditioner.getFanSpeed().toString());
             }
-            paramAdjustEvent.setDetail(detail);
+            paramAdjustEvent.setDetail(paramDetail);
             historyService.createHistory(paramAdjustEvent);
         }
 
@@ -139,6 +148,8 @@ public class AirConditionerServiceImpl implements AirConditionerService {
 
         boolean statusChanged = false;
 
+        Map<String, Object> detail = new HashMap<>();
+
         // 開關空調機
         if (updates.containsKey("status")) {
             Object statusValue = updates.get("status");
@@ -151,6 +162,7 @@ public class AirConditionerServiceImpl implements AirConditionerService {
                 return new ResponseEntity<>("Invalid status value. Use 0, 1, true, or false", HttpStatus.BAD_REQUEST);
             }
             device.setStatus(newStatus);
+            detail.put("status", newStatus);
             statusChanged = true;
         }
 
@@ -190,7 +202,7 @@ public class AirConditionerServiceImpl implements AirConditionerService {
         AirConditioner savedAirConditioner = airConditionerRepository.save(airConditioner);
 
         // 記錄歷史紀錄
-        Map<String, Object> changes = new HashMap<>();
+        Map<String, Object> changes = new HashMap<>(detail);
         for (Map.Entry<String, Object> entry : updates.entrySet()) {
             if (!entry.getKey().equals("status") || statusChanged) {
                 changes.put(entry.getKey(), entry.getValue());

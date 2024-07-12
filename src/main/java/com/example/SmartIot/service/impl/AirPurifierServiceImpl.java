@@ -14,6 +14,7 @@ import com.example.SmartIot.constant.ResMsg;
 import com.example.SmartIot.entity.AirPurifier;
 import com.example.SmartIot.entity.Device;
 import com.example.SmartIot.entity.History;
+import com.example.SmartIot.entity.Room;
 import com.example.SmartIot.repository.AirPurifierRepository;
 import com.example.SmartIot.repository.DeviceRepository;
 import com.example.SmartIot.service.ifs.AirPurifierService;
@@ -188,20 +189,20 @@ public class AirPurifierServiceImpl implements AirPurifierService {
 
         AirPurifier savedAirPurifier = airPurifierRepository.save(airPurifier);
 
-                // 記錄歷史紀錄
-                Map<String, Object> changes = new HashMap<>();
-                for (Map.Entry<String, Object> entry : updates.entrySet()) {
-                    if (!entry.getKey().equals("status") || statusChanged) {
-                        changes.put(entry.getKey(), entry.getValue());
-                    }
-                }
-                if (!changes.isEmpty()) {
-                    History history = new History();
-                    history.setDeviceId(id);
-                    history.setEventType("設備參數調整");
-                    history.setDetail(changes);
-                    historyService.createHistory(history);
-                }
+        // 記錄歷史紀錄
+        Map<String, Object> changes = new HashMap<>();
+        for (Map.Entry<String, Object> entry : updates.entrySet()) {
+            if (!entry.getKey().equals("status") || statusChanged) {
+                changes.put(entry.getKey(), entry.getValue());
+            }
+        }
+        if (!changes.isEmpty()) {
+            History history = new History();
+            history.setDeviceId(id);
+            history.setEventType("設備參數調整");
+            history.setDetail(changes);
+            historyService.createHistory(history);
+        }
         
 
         return new ResponseEntity<>(savedAirPurifier, HttpStatus.OK);

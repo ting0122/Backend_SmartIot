@@ -15,6 +15,7 @@ import com.example.SmartIot.constant.ResMsg;
 import com.example.SmartIot.entity.Dehumidifier;
 import com.example.SmartIot.entity.Device;
 import com.example.SmartIot.entity.History;
+import com.example.SmartIot.entity.Room;
 import com.example.SmartIot.repository.DehumidifierRepository;
 import com.example.SmartIot.repository.DeviceRepository;
 import com.example.SmartIot.service.ifs.DehumidifierService;

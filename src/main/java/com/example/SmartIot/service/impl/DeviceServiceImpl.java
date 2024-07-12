@@ -3,12 +3,11 @@ package com.example.SmartIot.service.impl;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.Comparator;
 import java.util.Set;
-
+import java.util.HashMap;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -127,7 +126,14 @@ public class DeviceServiceImpl implements DeviceService {
                 }
                 //如果開關狀態有更新就紀錄
                 if (device.isStatusChanged()) {
-                    saveHistoryRecord(device.getId(), "設備開關", Map.of("status", device.getStatus() ? "開" : "關"));
+                    Map<String, Object> historyDetail = new HashMap<>();
+                    historyDetail.put("device_name", device.getName());
+                    historyDetail.put("status", device.getStatus() ? "開" : "關");
+                    if (device.getRoom() != null) {
+                        historyDetail.put("room_name", device.getRoom().getName());
+                        historyDetail.put("room_area", device.getRoom().getArea());
+                    }
+                    saveHistoryRecord(device.getId(), "設備開關", historyDetail);
                     device.setStatusChanged(false);
                 }
         } else {
@@ -150,7 +156,6 @@ public class DeviceServiceImpl implements DeviceService {
         }
 
         Device savedDevice = deviceRepository.save(device);
-
 
         // 根據設備類型在相關表中新增資訊
         switch(device.getType()) {
@@ -215,6 +220,20 @@ public class DeviceServiceImpl implements DeviceService {
         }
 
         if (isNew) {
+            // 新增設備的歷史紀錄
+            Map<String, Object> detail = new HashMap<>();
+            detail.put("name", savedDevice.getName());
+            detail.put("type", savedDevice.getType());
+            
+            // 如果有房間信息，添加到歷史紀錄中
+            Room room = savedDevice.getRoom();
+            if (room != null) {
+                detail.put("room_name", room.getName());
+                detail.put("room_area", room.getArea());
+            } else {
+                detail.put("room_name", "未使用設備");
+                detail.put("room_area", "暫存空間");
+            }
             // 新增設備的歷史紀錄
             saveHistoryRecord(savedDevice.getId(), "新增設備", Map.of("name", savedDevice.getName(), "type", savedDevice.getType()));
         }
