@@ -3,8 +3,11 @@ package com.example.SmartIot.service.impl;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
-
+import java.util.stream.Collectors;
+import java.util.Comparator;
+import org.hibernate.mapping.Set;
 import org.springframework.stereotype.Service;
 
 import com.example.SmartIot.entity.AirConditioner;
@@ -50,13 +53,28 @@ public class DeviceServiceImpl implements DeviceService {
     // 返回所有設備的列表
     @Override
     public List<Device> getAllDevices() {
-        return deviceRepository.findAll();
+
+        List<Device> devices = deviceRepository.findAll();
+        // 按照設備類型分群
+        Map<String, List<Device>> groupedDevices = devices.stream()
+            .collect(Collectors.groupingBy(Device::getType));
+
+        // 對每個設備類型的群組按照ID排序
+        groupedDevices.values().forEach(list -> list.sort(Comparator.comparing(Device::getId)));
+
+        // 按照設備類型排序後的結果
+        List<Device> sortedDevices = groupedDevices.values().stream()
+            .flatMap(List::stream)
+            .collect(Collectors.toList());
+
+        return sortedDevices;
     }
 
      // 根據設備 ID 返回相應的設備，如果找不到則拋出異常
     @Override
     public Device getDeviceById(Long id) {
-        return deviceRepository.findById(id).orElseThrow(() -> new RuntimeException("Device not found"));
+        return deviceRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Device not found"));
     }
 
     // 搜尋設備 名稱及種類 
@@ -262,15 +280,16 @@ public class DeviceServiceImpl implements DeviceService {
             }
         }
 
+        
 
-    private void saveHistoryRecord(Long deviceId, String eventType, Map<String, Object> detail) {
-        History history = new History();
-        history.setEventId(UUID.randomUUID().toString());
-        history.setDeviceId(deviceId);
-        history.setEventTime(LocalDateTime.now());
-        history.setEventType(eventType);
-        history.setDetail(detail);
+        private void saveHistoryRecord(Long deviceId, String eventType, Map<String, Object> detail) {
+            History history = new History();
+            history.setEventId(UUID.randomUUID().toString());
+            history.setDeviceId(deviceId);
+            history.setEventTime(LocalDateTime.now());
+            history.setEventType(eventType);
+            history.setDetail(detail);
 
-        historyRepository.save(history);
-    }
+            historyRepository.save(history);
+        }
 }
