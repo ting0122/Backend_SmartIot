@@ -62,4 +62,10 @@ public class RoomController {
         roomService.deleteRoom(id);
     }
 
+    //刪除房間群
+    @DeleteMapping
+    public void deleteRooms(@RequestBody List<Long> ids){
+        roomService.deleteRooms(ids);
+    }
+
 }

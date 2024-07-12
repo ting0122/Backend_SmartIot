@@ -2,6 +2,8 @@ package com.example.SmartIot.service.ifs;
 
 import java.util.List;
 
+import java.util.Set;
+
 import com.example.SmartIot.entity.Device;
 import com.example.SmartIot.vo.DeviceReq;
 
@@ -25,4 +27,6 @@ public interface DeviceService {
 
     //刪除一組設備
     void deleteDevices(List<Long> ids);
+
+    void saveDevices(Set<Device> devices);
 }

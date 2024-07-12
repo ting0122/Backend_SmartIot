@@ -14,8 +14,10 @@ import org.springframework.stereotype.Service;
 import com.example.SmartIot.entity.Device;
 import com.example.SmartIot.entity.History;
 import com.example.SmartIot.entity.Room;
+import com.example.SmartIot.repository.DeviceRepository;
 import com.example.SmartIot.repository.HistoryRepository;
 import com.example.SmartIot.repository.RoomRepository;
+import com.example.SmartIot.service.ifs.DeviceService;
 import com.example.SmartIot.service.ifs.RoomService;
 import com.example.SmartIot.vo.RoomReq;
 
@@ -26,11 +28,13 @@ public class RoomServiceImpl implements RoomService {
 
     private final RoomRepository roomRepository;
     private final HistoryRepository historyRepository;
+    private final DeviceService deviceService;
 
     @Autowired
-    public RoomServiceImpl(RoomRepository roomRepository, HistoryRepository historyRepository) {
+    public RoomServiceImpl(RoomRepository roomRepository, HistoryRepository historyRepository,DeviceService deviceService) {
         this.roomRepository = roomRepository;
         this.historyRepository = historyRepository;
+        this.deviceService = deviceService;
     }
 
     @Override
@@ -131,11 +135,41 @@ public class RoomServiceImpl implements RoomService {
     @Transactional
     public void deleteRoom(Long id) {
         Room room = roomRepository.findById(id).orElseThrow(() -> new RuntimeException("Room not found"));
+    
+        // 清除房間內所有設備的關聯
+        for (Device device : room.getDevices()) {
+            device.setRoom(null);
+        }
+        deviceService.saveDevices(room.getDevices());
+
         roomRepository.deleteById(id);
-        
+    
         // 記錄刪除房間的歷史紀錄
         saveHistoryRecord(room.getId(), "刪除房間", Map.of("name", room.getName(), "type", room.getType()));
     }
+
+    //刪除多台設備
+    @Override
+    @Transactional
+    public void deleteRooms(List<Long> ids) {
+        List<Room> rooms = roomRepository.findAllById(ids);
+    
+        // 清除房間內所有設備的關聯
+        for (Room room : rooms) {
+            for (Device device : room.getDevices()) {
+                device.setRoom(null);
+            }
+            deviceService.saveDevices(room.getDevices());
+        }
+        
+        roomRepository.deleteAll(rooms);
+        
+        // 記錄刪除房間的歷史紀錄
+        for (Room room : rooms) {
+            saveHistoryRecord(room.getId(), "刪除房間", Map.of("name", room.getName(), "type", room.getType()));
+        }
+    }
+
 
     private void sortAndGroupDevices(Room room) {
         Map<String, List<Device>> groupedDevices = room.getDevices().stream()

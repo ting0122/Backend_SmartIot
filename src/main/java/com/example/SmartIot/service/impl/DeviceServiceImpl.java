@@ -7,9 +7,8 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.Comparator;
-import org.hibernate.mapping.Set;
+import java.util.Set;
 import org.springframework.stereotype.Service;
-
 import com.example.SmartIot.entity.AirConditioner;
 import com.example.SmartIot.entity.AirPurifier;
 import com.example.SmartIot.entity.Dehumidifier;
@@ -278,6 +277,12 @@ public class DeviceServiceImpl implements DeviceService {
             saveHistoryRecord(id, "刪除設備", Map.of("name", device.getName(), "type", device.getType()));
             
             }
+        }
+
+        @Override
+        @Transactional
+        public void saveDevices(Set<Device> devices) {
+            deviceRepository.saveAll(devices);
         }
 
         

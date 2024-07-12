@@ -18,4 +18,6 @@ public interface RoomService {
     Room createRoom(@Valid RoomReq roomReq);
 
     void deleteRoom(Long id);
+
+    void deleteRooms(List<Long> ids);
 }
