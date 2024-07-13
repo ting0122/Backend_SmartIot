@@ -174,10 +174,21 @@ public class DehumidifierServiceImpl implements DehumidifierService {
 
         // 更新目標濕度
         if (updates.containsKey("target_humidity")) {
-            Double targetHumidity = (Double) updates.get("target_humidity");
+            Object targetHumidityObj = updates.get("target_humidity");
+            Double targetHumidity;
+
+            if (targetHumidityObj instanceof Integer) {
+                targetHumidity = ((Integer) targetHumidityObj).doubleValue();
+            } else if (targetHumidityObj instanceof Double) {
+                targetHumidity = (Double) targetHumidityObj;
+            } else {
+                return new ResponseEntity<>("Invalid target humidity format", HttpStatus.BAD_REQUEST);
+            }
+
             if (targetHumidity < 0 || targetHumidity > 100) {
                 return new ResponseEntity<>("Target humidity must be between 0 and 100", HttpStatus.BAD_REQUEST);
             }
+
             dehumidifier.setTarget_humidity(targetHumidity);
         }
 
