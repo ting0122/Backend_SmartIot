@@ -4,9 +4,6 @@ import jakarta.persistence.*;
 import com.example.SmartIot.constant.AirConditionerConstants.Mode;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-
 import com.example.SmartIot.constant.AirConditionerConstants.FanSpeed;
 
 @Entity
@@ -104,6 +101,12 @@ public class AirConditioner {
         // 預設設備為關閉
         if (this.target_temp == null) {
             this.target_temp = 17.0;
+        }
+        if (this.mode == null) {
+            this.mode = Mode.COOL;
+        }
+        if (this.fanSpeed == null) {
+            this.fanSpeed = FanSpeed.LOW;
         }
     }
 

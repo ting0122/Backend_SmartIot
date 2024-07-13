@@ -210,7 +210,7 @@ public class DeviceServiceImpl implements DeviceService {
                     airConditioner = new AirConditioner();
                     airConditioner.setDevice(savedDevice);
                     airConditioner.setCurrent_temp(0.0);
-                    airConditioner.setTarget_temp(0.0);
+                    airConditioner.setTarget_temp(17.0);
                 } else {
                     airConditioner = airConditionerRepository.findByDeviceId(savedDevice.getId());
                 }
