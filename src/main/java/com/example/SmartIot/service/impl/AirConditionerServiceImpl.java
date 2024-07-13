@@ -149,6 +149,10 @@ public class AirConditionerServiceImpl implements AirConditionerService {
         boolean statusChanged = false;
 
         Map<String, Object> detail = new HashMap<>();
+        detail.put("roomArea", device.getRoom().getArea());
+        detail.put("roomName", device.getRoom().getName());
+        detail.put("deviceType", device.getType());
+        detail.put("deviceName", device.getName());
 
         // 開關空調機
         if (updates.containsKey("status")) {
