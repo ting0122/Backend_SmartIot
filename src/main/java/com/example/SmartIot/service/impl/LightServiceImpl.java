@@ -145,6 +145,13 @@ public class LightServiceImpl implements LightService {
         }
 
         boolean statusChanged = false;
+
+        Map<String, Object> detail = new HashMap<>();
+        detail.put("roomArea", device.getRoom().getArea());
+        detail.put("roomName", device.getRoom().getName());
+        detail.put("deviceType", device.getType());
+        detail.put("deviceName", device.getName());
+
         // 開關燈
         if (updates.containsKey("status")) {
             Object statusValue = updates.get("status");
@@ -198,7 +205,7 @@ public class LightServiceImpl implements LightService {
         Light savedLight = lightRepository.save(light);
 
         // 記錄歷史紀錄
-       Map<String, Object> changes = new HashMap<>();
+       Map<String, Object> changes = new HashMap<>(detail);
         for (Map.Entry<String, Object> entry : updates.entrySet()) {
             if (!entry.getKey().equals("status") || statusChanged) {
                 changes.put(entry.getKey(), entry.getValue());
