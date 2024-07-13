@@ -3,6 +3,10 @@ package com.example.SmartIot.entity;
 import jakarta.persistence.*;
 import com.example.SmartIot.constant.AirConditionerConstants.Mode;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+
 import com.example.SmartIot.constant.AirConditionerConstants.FanSpeed;
 
 @Entity
@@ -91,6 +95,16 @@ public class AirConditioner {
 
     public void setDevice(Device device) {
         this.device = device;
+    }
+
+    //溫度起始值
+    @PrePersist
+    @PreUpdate
+    private void ensureDefaults() {
+        // 預設設備為關閉
+        if (this.target_temp == null) {
+            this.target_temp = 17.0;
+        }
     }
 
 }
