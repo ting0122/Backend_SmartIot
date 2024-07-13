@@ -231,11 +231,11 @@ public class DeviceServiceImpl implements DeviceService {
                 detail.put("room_name", room.getName());
                 detail.put("room_area", room.getArea());
             } else {
-                detail.put("room_name", "未使用設備");
+                detail.put("room_name", "無使用房間");
                 detail.put("room_area", "暫存空間");
             }
             // 新增設備的歷史紀錄
-            saveHistoryRecord(savedDevice.getId(), "新增設備", Map.of("name", savedDevice.getName(), "type", savedDevice.getType()));
+            saveHistoryRecord(savedDevice.getId(), "新增設備", detail);
         }
 
         return savedDevice;
@@ -264,8 +264,23 @@ public class DeviceServiceImpl implements DeviceService {
                     throw new RuntimeException("Unsupported device type: " + device.getType());
             }
             deviceRepository.delete(device);
+            // 歷史紀錄欄位區
+            Map<String, Object> detail = new HashMap<>();
+            detail.put("name", device.getName());
+            detail.put("type", device.getType());
+            
+            // 如果有房間信息，添加到歷史紀錄中
+            Room room = device.getRoom();
+            if (room != null) {
+                detail.put("room_name", room.getName());
+                detail.put("room_area", room.getArea());
+            } else {
+                detail.put("room_name", "無使用房間");
+                detail.put("room_area", "暫存空間");
+            }
+
             // 刪除設備的歷史紀錄
-            saveHistoryRecord(id, "刪除設備", Map.of("name", device.getName(), "type", device.getType()));
+            saveHistoryRecord(id, "刪除設備", detail);
             return ResponseEntity.ok("Device deleted successfully");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete device: " + e.getMessage());
@@ -302,8 +317,21 @@ public class DeviceServiceImpl implements DeviceService {
                 }
                 // 刪除主設備表中的記錄
                 deviceRepository.delete(device);
+                // 歷史紀錄欄位區
+                Map<String, Object> detail = new HashMap<>();
+                detail.put("name", device.getName());
+                detail.put("type", device.getType()); 
+                // 如果有房間信息，添加到歷史紀錄中
+                Room room = device.getRoom();
+                if (room != null) {
+                    detail.put("room_name", room.getName());
+                    detail.put("room_area", room.getArea());
+                } else {
+                    detail.put("room_name", "無使用房間");
+                    detail.put("room_area", "暫存空間");
+                }
                 // 刪除設備的歷史紀錄
-                saveHistoryRecord(id, "刪除設備", Map.of("name", device.getName(), "type", device.getType()));
+                saveHistoryRecord(id, "刪除設備", detail);
             }
             return ResponseEntity.ok("Devices deleted successfully");
         } catch (RuntimeException e) {
