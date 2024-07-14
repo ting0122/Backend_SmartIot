@@ -31,16 +31,19 @@ public class HistoryController {
         this.historyService = historyService;
     }
 
+    //取得所有歷史資料
     @GetMapping
     public List<History> getAllHistories() {
         return historyService.getAllHistories();
     }
 
+    //電力模組使用 : 取回特定設備id的歷史紀錄
     @GetMapping("/{id}")
     public List<History> getHistoriesByDeviceId(@PathVariable("id") Long id) {
         return historyService.getHistoriesByDeviceId(id);
     }
 
+    //電力模組使用 : 取得設備開關狀態用
     @GetMapping("/search")
     public List<History> getHistoriesByEventType(@RequestParam(name = "type",required = false) String eventType) {
         return historyService.getHistoriesByEventType(eventType);

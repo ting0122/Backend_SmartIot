@@ -4,13 +4,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import java.util.stream.Collectors;
 import java.time.Duration;
 import com.example.SmartIot.entity.Device;
 import com.example.SmartIot.entity.History;
@@ -115,14 +112,25 @@ public class PowerServiceImpl implements PowerService {
         LocalDate startOfMonth = yearMonth.atDay(1);
         LocalDate endOfMonth = yearMonth.atEndOfMonth();
 
+        //為了讓他排序好日期
+        Map<String, Double> monthlyConsumption = new LinkedHashMap<>();
+
         //每一天的使用情況
-        Map<String, Double> monthlyConsumption = new HashMap<>();
         for (LocalDate date = startOfMonth; !date.isAfter(endOfMonth); date = date.plusDays(1)) {
             double dailyConsumption = calculateTotalDailyPowerConsumption(date).stream()
                     .mapToDouble(entry -> (Double) entry.get("consumption"))
                     .sum();
             monthlyConsumption.put(date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), dailyConsumption);
         }
+
+        // 排序
+        monthlyConsumption = monthlyConsumption.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new));
 
         return monthlyConsumption;
     }

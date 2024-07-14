@@ -35,8 +35,8 @@ Github : [Backend_SmartIot](https://github.com/ting0122/Backend_SmartIot.git)
 7. [Remote Explorer](https://marketplace.visualstudio.com/items?itemName=xyz.remote.explorer)
 
 ## :chart_with_upwards_trend: 更新 - 狀態
-- 目前版本：`無法考究`
-- 上次更新日期：`2024-07-07`
+- 目前版本：`勉強可用版`
+- 上次更新日期：`2024-07-14`
 
 ## :bug: BUGS
 - 如果遇到任何問題，請通過 [GitHub Issues](https://github.com/ting0122/Backend_SmartIot/issues) 回報。
