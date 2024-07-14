@@ -20,4 +20,5 @@ public interface DeviceRepository extends JpaRepository<Device, Long>{
                                 @Param("area") String area,
                                 @Param("status") Boolean status);
 
+       List<Device> findByRoomId(Long roomId);
 }

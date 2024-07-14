@@ -26,18 +26,20 @@ public class HistoryServiceImpl implements HistoryService {
     }
 
     @Override
-    public List<History> getHistoriesByDeviceId(Long deviceId) {
-        return historyRepository.findByDeviceId(deviceId);
+    public History createHistory(History history) {
+        return historyRepository.save(history);
+    }
+
+    @Override
+    public List<History> getHistoriesByDeviceId(Long id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getHistoriesByDeviceId'");
     }
 
     @Override
     public List<History> getHistoriesByEventType(String eventType) {
-        return historyRepository.findByEventType(eventType);
-    }
-
-    @Override
-    public History createHistory(History history) {
-        return historyRepository.save(history);
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getHistoriesByEventType'");
     }
 
 }
