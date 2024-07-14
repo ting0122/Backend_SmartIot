@@ -71,7 +71,7 @@ public class PowerServiceImpl implements PowerService {
     public double calculateRoomDailyPowerConsumption(Long roomId, LocalDate date) {
 
         //找房間內所有電器
-        List<Device> devices = deviceRepository.findByRoomId(roomId);
+        List<Device> devices = deviceRepository.findByRoom_Id(roomId);
 
         //總設備使用時長
         double totalUsageTime = 0;
