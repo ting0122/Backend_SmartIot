@@ -80,6 +80,13 @@ public class Device {
     @Transient
     private Long roomId;
 
+    private Double powerConsumptionRate; //每分鐘的耗電量(瓦特數)
+
+    // 初始化塊，用於設置默認的功率消耗率
+    {
+        setDefaultPowerConsumptionRate();
+    }
+
     // constructor
     public Device() {
 
@@ -97,6 +104,7 @@ public class Device {
         this.airPurifier = airPurifier;
         this.dehumidifier = dehumidifier;
         this.light = light;
+        setDefaultPowerConsumptionRate();
     }
 
     // @PrePersist 註解的方法會在新實體被持久化到數據庫之前被調用。
@@ -111,6 +119,36 @@ public class Device {
         // 如果沒有時間 預設為當前時間
         if (this.time == null) {
             this.time = Timestamp.valueOf(LocalDateTime.now());
+        }
+        // 設置默認的功率消耗率
+        if (this.powerConsumptionRate == null) {
+            setDefaultPowerConsumptionRate();
+        }
+    }
+
+    private void setDefaultPowerConsumptionRate() {
+
+        if (this.type == null) {
+            this.powerConsumptionRate = 0.0; // 或者其他適當的默認值
+            return;
+        }
+
+        switch (this.type) {
+            case "冷氣機":
+                this.powerConsumptionRate = 1.43; // 冷氣機消耗功率 1.43 kW，即 1430 W
+                break;
+            case "空氣清淨機":
+                this.powerConsumptionRate = 0.048; // 空氣清淨機消耗功率 48 W
+                break;
+            case "除濕機":
+                this.powerConsumptionRate = 0.19; // 除濕機消耗功率 190 W
+                break;
+            case "燈":
+                this.powerConsumptionRate = 0.04; // 燈消耗功率 40 W
+                break;
+            default:
+                this.powerConsumptionRate = 0.0; // 默認值
+                break;
         }
     }
 
@@ -193,5 +231,13 @@ public class Device {
 
     public void setRoomId(Long roomId) {
         this.roomId = roomId;
+    }
+
+    public double getPowerConsumptionRate() {
+        return powerConsumptionRate;
+    }
+
+    public void setPowerConsumptionRate(Double powerConsumptionRate) {
+        this.powerConsumptionRate = powerConsumptionRate;
     }
 }

@@ -31,10 +31,10 @@ public class PowerServiceImpl implements PowerService {
     @Autowired
     private RoomRepository roomRepository;
 
-    //特定設備特定日期的使用時間
+    //特定設備特定日期的用電量
     @Override
     @Transactional
-    public double calculateDeviceUsageTime(Long deviceId, LocalDate date) {
+    public double calculateDevicePowerConsumption(Long deviceId, LocalDate date) {
 
         //起始時間和結束時間
         LocalDateTime startOfDay = date.atStartOfDay();
@@ -43,26 +43,29 @@ public class PowerServiceImpl implements PowerService {
         List<History> histories = historyRepository.findByDeviceIdAndEventTypeAndEventTimeBetween(
                 deviceId, "設備開關", startOfDay, endOfDay);
 
-        //總使用時間
-        double totalUsageTime = 0;
+        //總使用電量
+        double totalPowerConsumption = 0;
         //最後一次開啟的時間,用來計算每次開啟和關閉的時長
         LocalDateTime lastOnTime = null;
+        //找尋該設備
+        Device device = deviceRepository.findById(deviceId).orElseThrow(() -> new IllegalArgumentException("設備未找到"));
+
         //計算時長
         for (History history : histories) {
             if (history.getDetail().get("status").equals("開")) {
                 lastOnTime = history.getEventTime();
             } else if (history.getDetail().get("status").equals("關") && lastOnTime != null) {
                 Duration duration = Duration.between(lastOnTime, history.getEventTime());
-                //累積總使用時長
-                totalUsageTime += duration.toMinutes() / 60.0;
+                //累積總使用時間 * 功率
+                totalPowerConsumption += duration.toMinutes() * device.getPowerConsumptionRate();
                 lastOnTime = null;
             }
         }
 
-        return totalUsageTime;
+        return totalPowerConsumption;
     }
 
-    //計算特定房間特定日期的設備使用時間
+    //計算特定房間特定日期的設備消耗電量
     @Override
     @Transactional
     public double calculateRoomDailyPowerConsumption(Long roomId, LocalDate date) {
@@ -70,16 +73,16 @@ public class PowerServiceImpl implements PowerService {
         //找房間內所有電器
         List<Device> devices = deviceRepository.findByRoom_Id(roomId);
 
-        //總設備使用時長
-        double totalUsageTime = 0;
+        //全設備耗電量
+        double totalConsumption = 0;
         for (Device device : devices) {
-            totalUsageTime += calculateDeviceUsageTime(device.getId(), date);
+            totalConsumption += calculateDevicePowerConsumption(device.getId(), date);
         }
 
-        return totalUsageTime;
+        return totalConsumption;
     }
 
-    //所有房間加總的設備使用時長
+    //所有房間加總的耗電量
     @Override
     @Transactional
     public List<Map<String, Object>> calculateTotalDailyPowerConsumption(LocalDate date) {
@@ -102,7 +105,7 @@ public class PowerServiceImpl implements PowerService {
         return totalDailyConsumption;
     }
 
-    //特定年月的使用狀況
+    //特定年月的耗電量
     @Override
     @Transactional
     public Map<String, Double> calculateMonthlyPowerConsumption(int year, int month) {

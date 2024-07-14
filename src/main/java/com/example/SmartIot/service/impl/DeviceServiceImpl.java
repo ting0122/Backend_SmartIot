@@ -156,6 +156,9 @@ public class DeviceServiceImpl implements DeviceService {
                 // 沒有就 null
                 device.setRoom(null);
             }
+            // 設置默認的功率消耗率
+            setDefaultPowerConsumptionRate(device);
+
             isNew = true;
         }
 
@@ -365,5 +368,31 @@ public class DeviceServiceImpl implements DeviceService {
             history.setDetail(detail);
 
             historyRepository.save(history);
+        }
+
+        //設置設備功率
+        private void setDefaultPowerConsumptionRate(Device device) {
+            if (device.getType() == null) {
+                device.setPowerConsumptionRate(0.0);
+                return;
+            }
+        
+            switch (device.getType()) {
+                case "冷氣機":
+                    device.setPowerConsumptionRate(1.43); // 冷氣機消耗功率 1.43 kW，即 1430 W
+                    break;
+                case "空氣清淨機":
+                    device.setPowerConsumptionRate(0.048); // 空氣清淨機消耗功率 48 W
+                    break;
+                case "除濕機":
+                    device.setPowerConsumptionRate(0.19); // 除濕機消耗功率 190 W
+                    break;
+                case "燈":
+                    device.setPowerConsumptionRate(0.04); // 燈消耗功率 40 W
+                    break;
+                default:
+                    device.setPowerConsumptionRate(0.0); // 默認值
+                    break;
+            }
         }
 }

@@ -6,15 +6,15 @@ import java.util.Map;
 
 public interface PowerService {
 
-    //特定設備在特定日期的使用時間,以小時為單位
-    double calculateDeviceUsageTime(Long deviceId, LocalDate date);
+    //特定設備在特定日期的耗電量,以分鐘為單位
+    double calculateDevicePowerConsumption(Long deviceId, LocalDate date);
 
-    //特定房間特定日期的總使用時間
+    //特定房間特定日期的總耗電量
     double calculateRoomDailyPowerConsumption(Long roomId, LocalDate date);
 
-    //所有房間的特定日期使用時間
+    //所有房間的特定日期 耗電量
     List<Map<String, Object>> calculateTotalDailyPowerConsumption(LocalDate date);
 
-    //特定年月使用時間
+    //特定月的每日耗電量
     Map<String, Double> calculateMonthlyPowerConsumption(int year, int month);
 }
