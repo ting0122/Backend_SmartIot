@@ -132,6 +132,7 @@ public class DeviceServiceImpl implements DeviceService {
                 if (device.isStatusChanged()) {
                     Map<String, Object> historyDetail = new HashMap<>();
                     historyDetail.put("device_name", device.getName());
+                    historyDetail.put("device_type", device.getType());
                     historyDetail.put("status", device.getStatus() ? "開" : "關");
                     if (device.getRoom() != null) {
                         historyDetail.put("room_name", device.getRoom().getName());
