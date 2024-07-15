@@ -10,8 +10,11 @@ public interface AnnouncementService {
 
     AnnouncementRes createAnnouncement(AnnouncementReq request);
 
-    List<Announcement> getAnnouncementsByRoomId(Long roomId);
+    List<Announcement> getAnnouncementsByRoomIdWithRoomInfo(Long roomId);
 
     void deleteAnnouncement(Long id);
 
+    List<Announcement> getAllAnnouncementsWithRoomInfo();
+
+    void deleteMultipleAnnouncements(List<Long> ids);
 }
