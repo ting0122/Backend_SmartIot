@@ -2,11 +2,12 @@ package com.example.SmartIot.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import java.time.LocalDateTime;
 import com.example.SmartIot.entity.History;
 import com.example.SmartIot.repository.HistoryRepository;
 import com.example.SmartIot.service.ifs.HistoryService;
 import java.util.List;
+import java.time.LocalDate;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -40,6 +41,12 @@ public class HistoryServiceImpl implements HistoryService {
     public List<History> getHistoriesByEventType(String eventType) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getHistoriesByEventType'");
+    }
+
+    //歷史紀錄搜尋欄位 日期、設備名稱、空間編號、設備類型
+    @Override
+    public List<History> searchHistories(String deviceName, String deviceType, LocalDate date, String roomArea) {
+        return historyRepository.searchHistories(deviceName, deviceType, date, roomArea);
     }
 
 }

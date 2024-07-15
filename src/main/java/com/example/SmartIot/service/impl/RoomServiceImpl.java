@@ -126,7 +126,7 @@ public class RoomServiceImpl implements RoomService {
         Room savedRoom = roomRepository.save(room);
 
         if (isNew) {
-            saveHistoryRecord(savedRoom.getId(), "新增房間", Map.of("name", savedRoom.getName(), "type", savedRoom.getType(), "area", savedRoom.getArea()));
+            saveHistoryRecord(savedRoom.getId(), "新增房間", Map.of("roomName", savedRoom.getName(), "roomType", savedRoom.getType(), "roomArea", savedRoom.getArea()));
         }
 
         return savedRoom;
@@ -148,7 +148,7 @@ public class RoomServiceImpl implements RoomService {
             roomRepository.deleteById(id);
         
             // 記錄刪除房間的歷史紀錄
-            saveHistoryRecord(room.getId(), "刪除房間", Map.of("name", room.getName(), "type", room.getType(), "area", room.getArea()));
+            saveHistoryRecord(room.getId(), "刪除房間", Map.of("roomName", room.getName(), "roomType", room.getType(), "roomArea", room.getArea()));
         
             return ResponseEntity.ok("Room deleted successfully");
         } catch (RuntimeException e) {
@@ -175,7 +175,7 @@ public class RoomServiceImpl implements RoomService {
             
             // 記錄刪除房間的歷史紀錄
             for (Room room : rooms) {
-                saveHistoryRecord(room.getId(), "刪除房間", Map.of("name", room.getName(), "type", room.getType(), "area", room.getArea()));
+                saveHistoryRecord(room.getId(), "刪除房間", Map.of("roomName", room.getName(), "roomType", room.getType(), "roomArea", room.getArea()));
             }
             return ResponseEntity.ok("Rooms deleted successfully");
         } catch (RuntimeException e) {

@@ -1,6 +1,7 @@
 package com.example.SmartIot.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import com.example.SmartIot.entity.History;
@@ -38,13 +39,13 @@ public class HistoryController {
     }
 
     //電力模組使用 : 取回特定設備id的歷史紀錄
-    @GetMapping("/{id}")
+    @GetMapping("/for-power1")
     public List<History> getHistoriesByDeviceId(@PathVariable("id") Long id) {
         return historyService.getHistoriesByDeviceId(id);
     }
 
     //電力模組使用 : 取得設備開關狀態用
-    @GetMapping("/search")
+    @GetMapping("/for-power2")
     public List<History> getHistoriesByEventType(@RequestParam(name = "type",required = false) String eventType) {
         return historyService.getHistoriesByEventType(eventType);
     }
@@ -66,4 +67,15 @@ public class HistoryController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    //歷史紀錄搜尋欄位 日期、設備名稱、空間編號、設備類型
+    @GetMapping("/search")
+    public List<History> searchHistories(
+        @RequestParam(value = "deviceName", required = false) String deviceName,
+        @RequestParam(value = "deviceType", required = false) String deviceType,
+        @RequestParam(value = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+        @RequestParam(value = "roomArea", required = false) String roomArea) {
+        return historyService.searchHistories(deviceName, deviceType, date, roomArea);
+    }
+
 }

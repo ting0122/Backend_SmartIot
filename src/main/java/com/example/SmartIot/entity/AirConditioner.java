@@ -100,7 +100,7 @@ public class AirConditioner {
     private void ensureDefaults() {
         // 預設設備為關閉
         if (this.target_temp == null) {
-            this.target_temp = 17.0;
+            this.target_temp = 26.0;
         }
         if (this.mode == null) {
             this.mode = Mode.COOL;

@@ -131,12 +131,12 @@ public class DeviceServiceImpl implements DeviceService {
                 //如果開關狀態有更新就紀錄
                 if (device.isStatusChanged()) {
                     Map<String, Object> historyDetail = new HashMap<>();
-                    historyDetail.put("device_name", device.getName());
-                    historyDetail.put("device_type", device.getType());
+                    historyDetail.put("deviceName", device.getName());
+                    historyDetail.put("deviceType", device.getType());
                     historyDetail.put("status", device.getStatus() ? "開" : "關");
                     if (device.getRoom() != null) {
-                        historyDetail.put("room_name", device.getRoom().getName());
-                        historyDetail.put("room_area", device.getRoom().getArea());
+                        historyDetail.put("roomName", device.getRoom().getName());
+                        historyDetail.put("roomArea", device.getRoom().getArea());
                     }
                     saveHistoryRecord(device.getId(), "設備開關", historyDetail);
                     device.setStatusChanged(false);
@@ -230,17 +230,17 @@ public class DeviceServiceImpl implements DeviceService {
         if (isNew) {
             // 新增設備的歷史紀錄
             Map<String, Object> detail = new HashMap<>();
-            detail.put("name", savedDevice.getName());
-            detail.put("type", savedDevice.getType());
+            detail.put("deviceName", savedDevice.getName());
+            detail.put("deviceType", savedDevice.getType());
             
             // 如果有房間信息，添加到歷史紀錄中
             Room room = savedDevice.getRoom();
             if (room != null) {
-                detail.put("room_name", room.getName());
-                detail.put("room_area", room.getArea());
+                detail.put("roomName", room.getName());
+                detail.put("roomArea", room.getArea());
             } else {
-                detail.put("room_name", "無使用房間");
-                detail.put("room_area", "暫存空間");
+                detail.put("roomName", "無使用房間");
+                detail.put("roomArea", "暫存空間");
             }
             // 新增設備的歷史紀錄
             saveHistoryRecord(savedDevice.getId(), "新增設備", detail);
@@ -274,17 +274,17 @@ public class DeviceServiceImpl implements DeviceService {
             deviceRepository.delete(device);
             // 歷史紀錄欄位區
             Map<String, Object> detail = new HashMap<>();
-            detail.put("name", device.getName());
-            detail.put("type", device.getType());
+            detail.put("deviceName", device.getName());
+            detail.put("deviceType", device.getType());
             
             // 如果有房間信息，添加到歷史紀錄中
             Room room = device.getRoom();
             if (room != null) {
-                detail.put("room_name", room.getName());
-                detail.put("room_area", room.getArea());
+                detail.put("roomName", room.getName());
+                detail.put("roomArea", room.getArea());
             } else {
-                detail.put("room_name", "無使用房間");
-                detail.put("room_area", "暫存空間");
+                detail.put("roomName", "無使用房間");
+                detail.put("roomArea", "暫存空間");
             }
 
             // 刪除設備的歷史紀錄
@@ -327,16 +327,16 @@ public class DeviceServiceImpl implements DeviceService {
                 deviceRepository.delete(device);
                 // 歷史紀錄欄位區
                 Map<String, Object> detail = new HashMap<>();
-                detail.put("name", device.getName());
-                detail.put("type", device.getType()); 
+                detail.put("deviceName", device.getName());
+                detail.put("deviceType", device.getType()); 
                 // 如果有房間信息，添加到歷史紀錄中
                 Room room = device.getRoom();
                 if (room != null) {
-                    detail.put("room_name", room.getName());
-                    detail.put("room_area", room.getArea());
+                    detail.put("roomName", room.getName());
+                    detail.put("roomArea", room.getArea());
                 } else {
-                    detail.put("room_name", "無使用房間");
-                    detail.put("room_area", "暫存空間");
+                    detail.put("roomName", "無使用房間");
+                    detail.put("roomArea", "暫存空間");
                 }
                 // 刪除設備的歷史紀錄
                 saveHistoryRecord(id, "刪除設備", detail);
