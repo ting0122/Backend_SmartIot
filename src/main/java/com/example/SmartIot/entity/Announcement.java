@@ -2,6 +2,7 @@ package com.example.SmartIot.entity;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -10,6 +11,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "announcement")
@@ -28,6 +30,9 @@ public class Announcement {
 
     @Column(name = "publish_time")
     private LocalDate publishTime;
+
+    @Transient
+    private List<Map<String, String>> roomInfo;
 
     // constructor
     public Announcement() {
@@ -82,4 +87,11 @@ public class Announcement {
         this.publishTime = publishTime;
     }
 
+    public List<Map<String, String>> getRoomInfo() {
+        return roomInfo;
+    }
+
+    public void setRoomInfo(List<Map<String, String>> roomInfo) {
+        this.roomInfo = roomInfo;
+    }
 }

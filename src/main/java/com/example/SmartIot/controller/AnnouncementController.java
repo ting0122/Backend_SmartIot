@@ -35,7 +35,7 @@ public class AnnouncementController {
 
     @GetMapping("/{id}")
     public ResponseEntity<List<Announcement>> getAnnouncementsByRoomId(@PathVariable("id") Long id) {
-        List<Announcement> announcements = announcementService.getAnnouncementsByRoomId(id);
+        List<Announcement> announcements = announcementService.getAnnouncementsByRoomIdWithRoomInfo(id);
         if (announcements.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(announcements);
         }
@@ -49,6 +49,22 @@ public class AnnouncementController {
             return ResponseEntity.ok("公告已成功刪除");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Announcement>> getAllAnnouncements() {
+        List<Announcement> announcements = announcementService.getAllAnnouncementsWithRoomInfo();
+        return ResponseEntity.ok(announcements);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<String> deleteMultipleAnnouncements(@RequestBody List<Long> ids) {
+        try {
+            announcementService.deleteMultipleAnnouncements(ids);
+            return ResponseEntity.ok("選定的公告已成功刪除");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 }

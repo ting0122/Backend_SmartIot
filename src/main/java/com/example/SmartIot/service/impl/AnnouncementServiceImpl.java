@@ -1,12 +1,16 @@
 package com.example.SmartIot.service.impl;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.SmartIot.entity.Announcement;
+import com.example.SmartIot.entity.Room;
 import com.example.SmartIot.repository.AnnouncementRepository;
 import com.example.SmartIot.repository.RoomRepository;
 import com.example.SmartIot.service.ifs.AnnouncementService;
@@ -45,8 +49,9 @@ public class AnnouncementServiceImpl implements AnnouncementService {
     }
 
     @Override
-    public List<Announcement> getAnnouncementsByRoomId(Long roomId) {
-        return announcementRepository.findByRoomIdsContaining(roomId);
+    public List<Announcement> getAnnouncementsByRoomIdWithRoomInfo(Long roomId) {
+        List<Announcement> announcements = announcementRepository.findByRoomIdsContaining(roomId);
+        return addRoomInfoToAnnouncements(announcements);
     }
 
     @Override
@@ -55,5 +60,38 @@ public class AnnouncementServiceImpl implements AnnouncementService {
             throw new RuntimeException("找不到 ID 為 " + id + " 的公告");
         }
         announcementRepository.deleteById(id);
+    }
+
+    @Override
+    public List<Announcement> getAllAnnouncementsWithRoomInfo() {
+        List<Announcement> announcements = announcementRepository.findAll();
+        return addRoomInfoToAnnouncements(announcements);
+    }
+
+    @Override
+    public void deleteMultipleAnnouncements(List<Long> ids) {
+        List<Announcement> announcements = announcementRepository.findAllById(ids);
+        if (announcements.size() != ids.size()) {
+            throw new RuntimeException("部分公告不存在");
+        }
+        announcementRepository.deleteAllById(ids);
+    }
+
+    private List<Announcement> addRoomInfoToAnnouncements(List<Announcement> announcements) {
+        for (Announcement announcement : announcements) {
+            List<Map<String, String>> roomInfo = new ArrayList<>();
+            for (Long roomId : announcement.getRoomIds()) {
+                Room room = roomRepository.findById(roomId).orElse(null);
+                if (room != null) {
+                    Map<String, String> info = new HashMap<>();
+                    info.put("id", room.getId().toString());
+                    info.put("name", room.getName());
+                    info.put("area", room.getArea());
+                    roomInfo.add(info);
+                }
+            }
+            announcement.setRoomInfo(roomInfo);
+        }
+        return announcements;
     }
 }
