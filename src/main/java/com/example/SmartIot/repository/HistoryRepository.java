@@ -19,11 +19,13 @@ public interface HistoryRepository extends JpaRepository<History, Long>{
     @Query(value = "SELECT * FROM history h WHERE " +
            "(:deviceName IS NULL OR JSON_UNQUOTE(JSON_EXTRACT(h.detail, '$.deviceName')) LIKE CONCAT('%', :deviceName, '%')) AND " +
            "(:deviceType IS NULL OR JSON_UNQUOTE(JSON_EXTRACT(h.detail, '$.deviceType')) LIKE CONCAT('%', :deviceType, '%')) AND " +
-           "(:date IS NULL OR DATE(h.event_time) = :date) AND " +
+           "(:startDate IS NULL OR DATE(h.event_time) >= :startDate) AND " +
+           "(:endDate IS NULL OR DATE(h.event_time) <= :endDate) AND " +
            "(:roomArea IS NULL OR JSON_UNQUOTE(JSON_EXTRACT(h.detail, '$.roomArea')) LIKE CONCAT('%', :roomArea, '%'))",
            nativeQuery = true)
     List<History> searchHistories(@Param("deviceName") String deviceName,
                                   @Param("deviceType") String deviceType,
-                                  @Param("date") LocalDate date,
+                                  @Param("startDate") LocalDate startDate,
+                                  @Param("endDate") LocalDate endDate,
                                   @Param("roomArea") String roomArea);
 }

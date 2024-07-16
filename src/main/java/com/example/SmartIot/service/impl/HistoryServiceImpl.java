@@ -45,8 +45,8 @@ public class HistoryServiceImpl implements HistoryService {
 
     //歷史紀錄搜尋欄位 日期、設備名稱、空間編號、設備類型
     @Override
-    public List<History> searchHistories(String deviceName, String deviceType, LocalDate date, String roomArea) {
-        return historyRepository.searchHistories(deviceName, deviceType, date, roomArea);
+    public List<History> searchHistories(String deviceName, String deviceType, LocalDate startDate, LocalDate endDate, String roomArea) {
+        return historyRepository.searchHistories(deviceName, deviceType, startDate, endDate, roomArea);
     }
 
 }

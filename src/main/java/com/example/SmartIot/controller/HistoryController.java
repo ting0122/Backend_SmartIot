@@ -73,9 +73,10 @@ public class HistoryController {
     public List<History> searchHistories(
         @RequestParam(value = "deviceName", required = false) String deviceName,
         @RequestParam(value = "deviceType", required = false) String deviceType,
-        @RequestParam(value = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+        @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+        @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
         @RequestParam(value = "roomArea", required = false) String roomArea) {
-        return historyService.searchHistories(deviceName, deviceType, date, roomArea);
+        return historyService.searchHistories(deviceName, deviceType, startDate, endDate, roomArea);
     }
 
 }
