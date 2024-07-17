@@ -24,7 +24,7 @@ public class PowerController {
     @Autowired
     private PowerService powerService;
 
-    //目前以每分鐘為主,才看得到東西
+    //改成以小時
 
     // 特定設備,特定日期消耗電量
     @GetMapping("/device/{deviceId}")

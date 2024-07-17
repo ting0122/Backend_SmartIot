@@ -57,7 +57,7 @@ public class PowerServiceImpl implements PowerService {
             } else if (history.getDetail().get("status").equals("關") && lastOnTime != null) {
                 Duration duration = Duration.between(lastOnTime, history.getEventTime());
                 //累積總使用時間 * 功率
-                totalPowerConsumption += duration.toMinutes() * device.getPowerConsumptionRate();
+                totalPowerConsumption += (duration.toMinutes()/60.0) * device.getPowerConsumptionRate();
                 lastOnTime = null;
             }
         }
