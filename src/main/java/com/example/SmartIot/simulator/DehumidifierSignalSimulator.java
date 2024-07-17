@@ -16,7 +16,10 @@ public class DehumidifierSignalSimulator {
     @Autowired
     private DehumidifierRepository dehumidifierRepository;
     private Random random = new Random();
+    private static final double HUMIDITY_INERTIA_FACTOR = 0.9; // 慣性因子，越高越不容易改變
+    private static final double MAX_HUMIDITY_CHANGE = 0.5; // 最大變化
     private static final double DEFAULT_HUMIDITY = 80.0; // 預設濕度
+    private static final double MAX_HUMIDITY = 90.0; // 最大濕度
 
     @Scheduled(fixedRate = 5000) // 每5秒更新一次
     public void simulateSignals() {
@@ -30,6 +33,9 @@ public class DehumidifierSignalSimulator {
                 updateCurrentHumidity(dh);
                 // 更新水箱容量
                 updateTankCapacity(dh);
+            } else {
+                // 如果設備關閉，濕度慢慢增加到90
+                increaseHumidity(dh);
             }
             // 模擬環境濕度的微小變化
             simulateEnvironmentHumidity(dh);
@@ -41,9 +47,16 @@ public class DehumidifierSignalSimulator {
     private void updateCurrentHumidity(Dehumidifier dh) {
         double currentHumidity = dh.getCurrent_humidity();
         double targetHumidity = dh.getTarget_humidity();
-        // 根據目標濕度調整當前濕度
-        // 假設除濕機每5秒能將濕度降低0.1-0.5個百分點
-        double reduction = 0.1 + random.nextDouble() * 0.4;
+
+        // 計算濕度差
+        double humidityDifference = targetHumidity - currentHumidity;
+        // 基礎降低速率
+        double baseReduction = 0.1 + random.nextDouble() * 0.4;
+        // 應用慣性因子
+        double reduction = baseReduction * HUMIDITY_INERTIA_FACTOR + Math.abs(humidityDifference) * 0.01;
+        // 限制最大變化
+        reduction = Math.min(reduction, MAX_HUMIDITY_CHANGE);
+
         if (currentHumidity > targetHumidity) {
             dh.setCurrent_humidity(Math.max(targetHumidity, currentHumidity - reduction));
         }
@@ -63,5 +76,23 @@ public class DehumidifierSignalSimulator {
         double newHumidity = dh.getCurrent_humidity() + environmentalChange;
         // 確保濕度在 0-100 的範圍內
         dh.setCurrent_humidity(Math.max(0, Math.min(100, newHumidity)));
+    }
+
+    private void increaseHumidity(Dehumidifier dh) {
+        double currentHumidity = dh.getCurrent_humidity();
+
+        // 計算濕度差
+        double humidityDifference = MAX_HUMIDITY - currentHumidity;
+        // 基礎增加速率
+        double baseIncrease = 0.1 + random.nextDouble() * 0.4;
+        // 應用慣性因子
+        double increase = baseIncrease * HUMIDITY_INERTIA_FACTOR + humidityDifference * 0.01;
+        // 限制最大變化
+        increase = Math.min(increase, MAX_HUMIDITY_CHANGE);
+
+        if (currentHumidity < MAX_HUMIDITY) {
+            double newHumidity = Math.min(MAX_HUMIDITY, currentHumidity + increase);
+            dh.setCurrent_humidity(newHumidity);
+        }
     }
 }
