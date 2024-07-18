@@ -12,6 +12,9 @@ public interface PowerService {
     //特定房間特定日期的總耗電量
     double calculateRoomDailyPowerConsumption(Long roomId, LocalDate date);
 
+    // 特定房間特定月份的每日耗電量
+    Map<String, Double> calculateRoomMonthlyPowerConsumption(Long roomId, int year, int month);
+
     //所有房間的特定日期 耗電量
     List<Map<String, Object>> calculateTotalDailyPowerConsumption(LocalDate date);
 

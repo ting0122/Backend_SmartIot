@@ -82,6 +82,23 @@ public class PowerServiceImpl implements PowerService {
         return totalConsumption;
     }
 
+    @Override
+    @Transactional
+    public Map<String, Double> calculateRoomMonthlyPowerConsumption(Long roomId, int year, int month) {
+        Map<String, Double> monthlyConsumption = new LinkedHashMap<>();
+
+        YearMonth yearMonth = YearMonth.of(year, month);
+        LocalDate startOfMonth = yearMonth.atDay(1);
+        LocalDate endOfMonth = yearMonth.atEndOfMonth();
+
+        for (LocalDate date = startOfMonth; !date.isAfter(endOfMonth); date = date.plusDays(1)) {
+            double dailyConsumption = calculateRoomDailyPowerConsumption(roomId, date);
+            monthlyConsumption.put(date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), dailyConsumption);
+        }
+
+        return monthlyConsumption;
+    }
+
     //所有房間加總的耗電量
     @Override
     @Transactional

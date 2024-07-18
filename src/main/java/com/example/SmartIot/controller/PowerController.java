@@ -40,6 +40,16 @@ public class PowerController {
         return new ResponseEntity<>(consumption, HttpStatus.OK);
     }
 
+    // 特定房間特定月份的每日耗電量
+    @GetMapping("/room/{roomId}/monthly")
+    public ResponseEntity<?> getRoomMonthlyConsumption(
+            @PathVariable Long roomId,
+            @RequestParam int year,
+            @RequestParam int month) {
+        Map<String, Double> consumption = powerService.calculateRoomMonthlyPowerConsumption(roomId, year, month);
+        return new ResponseEntity<>(consumption, HttpStatus.OK);
+    }
+
     // 特定日期，總設備消耗電量
     @GetMapping("/total")
     public ResponseEntity<?> getTotalDailyConsumption(@RequestParam LocalDate date) {
