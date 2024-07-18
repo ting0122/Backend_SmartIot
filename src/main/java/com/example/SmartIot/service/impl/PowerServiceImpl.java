@@ -57,7 +57,7 @@ public class PowerServiceImpl implements PowerService {
             } else if (history.getDetail().get("status").equals("關") && lastOnTime != null) {
                 Duration duration = Duration.between(lastOnTime, history.getEventTime());
                 //累積總使用時間 * 功率
-                totalPowerConsumption += duration.toMinutes() * device.getPowerConsumptionRate();
+                totalPowerConsumption += (duration.toMinutes()/60.0) * device.getPowerConsumptionRate();
                 lastOnTime = null;
             }
         }
@@ -80,6 +80,23 @@ public class PowerServiceImpl implements PowerService {
         }
 
         return totalConsumption;
+    }
+
+    @Override
+    @Transactional
+    public Map<String, Double> calculateRoomMonthlyPowerConsumption(Long roomId, int year, int month) {
+        Map<String, Double> monthlyConsumption = new LinkedHashMap<>();
+
+        YearMonth yearMonth = YearMonth.of(year, month);
+        LocalDate startOfMonth = yearMonth.atDay(1);
+        LocalDate endOfMonth = yearMonth.atEndOfMonth();
+
+        for (LocalDate date = startOfMonth; !date.isAfter(endOfMonth); date = date.plusDays(1)) {
+            double dailyConsumption = calculateRoomDailyPowerConsumption(roomId, date);
+            monthlyConsumption.put(date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), dailyConsumption);
+        }
+
+        return monthlyConsumption;
     }
 
     //所有房間加總的耗電量
@@ -136,5 +153,37 @@ public class PowerServiceImpl implements PowerService {
                         LinkedHashMap::new));
 
         return monthlyConsumption;
+    }
+
+    //整年每個月的耗電量
+    @Override
+    @Transactional
+    public Map<String, Double> calculateYearlyPowerConsumption(int year) {
+        Map<String, Double> yearlyConsumption = new LinkedHashMap<>();
+
+        for (int month = 1; month <= 12; month++) {
+            double monthlyConsumption = calculateMonthlyPowerConsumption(year, month).values().stream()
+                    .mapToDouble(Double::doubleValue)
+                    .sum();
+            yearlyConsumption.put(String.format("%d-%02d", year, month), monthlyConsumption);
+        }
+
+        return yearlyConsumption;
+    }
+
+    //特定房間一年每個月用電量
+    @Override
+    @Transactional
+    public Map<String, Double> calculateRoomYearlyPowerConsumption(Long roomId, int year) {
+        Map<String, Double> yearlyConsumption = new LinkedHashMap<>();
+
+        for (int month = 1; month <= 12; month++) {
+            double monthlyConsumption = calculateRoomMonthlyPowerConsumption(roomId, year, month).values().stream()
+                    .mapToDouble(Double::doubleValue)
+                    .sum();
+            yearlyConsumption.put(String.format("%d-%02d", year, month), monthlyConsumption);
+        }
+
+        return yearlyConsumption;
     }
 }

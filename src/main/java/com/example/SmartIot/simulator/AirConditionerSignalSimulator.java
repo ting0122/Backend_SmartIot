@@ -19,7 +19,7 @@ public class AirConditionerSignalSimulator {
     private Random random = new Random();
 
     private static final double MAX_TEMP_CHANGE = 0.5; // 每次最大溫度變化
-    private static final double INERTIA_FACTOR = 0.8; // 溫度變化的慣性因子
+    private static final double INERTIA_FACTOR = 0.9; // 慣性因子，越高越不容易改變
 
     @Scheduled(fixedRate = 5000) // 每5秒更新一次
     public void simulateSignals() {
@@ -28,6 +28,9 @@ public class AirConditionerSignalSimulator {
             if (ac.getDevice().getStatus()) { // 如果空調機是開啟的
                 // 更新溫度
                 updateTemperature(ac);
+            } else {
+                // 如果設備關閉，溫度慢慢增加到35度
+                increaseTemperature(ac);
             }
             // 模拟環境溫度的微小變化
             simulateEnvironmentTemperature(ac);
@@ -97,5 +100,24 @@ public class AirConditionerSignalSimulator {
         double newTemp = ac.getCurrent_temp() + environmentalChange;
         // 確保溫度在合理範圍內，例如 10 到 40 度
         ac.setCurrent_temp(Math.max(10, Math.min(40, newTemp)));
+    }
+
+    private void increaseTemperature(AirConditioner ac) {
+        double currentTemp = ac.getCurrent_temp();
+        double targetTemp = 35.0;
+
+        if (currentTemp < targetTemp) {
+            // 計算溫度差
+            double tempDifference = targetTemp - currentTemp;
+            // 基礎升溫速率
+            double baseIncrease = 0.01 + random.nextDouble() * 0.02;
+            // 應用慣性因子
+            double increase = baseIncrease * INERTIA_FACTOR + tempDifference * 0.01;
+            // 限制最大變化
+            increase = Math.min(increase, MAX_TEMP_CHANGE);
+
+            double newTemp = Math.min(targetTemp, currentTemp + increase);
+            ac.setCurrent_temp(newTemp);
+        }
     }
 }
