@@ -17,4 +17,7 @@ public interface PowerService {
 
     //特定月的每日耗電量
     Map<String, Double> calculateMonthlyPowerConsumption(int year, int month);
+
+    // 特定年份每個月的耗電量
+    Map<String, Double> calculateYearlyPowerConsumption(int year);
 }

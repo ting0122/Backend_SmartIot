@@ -53,4 +53,11 @@ public class PowerController {
         Map<String, Double> consumption = powerService.calculateMonthlyPowerConsumption(year, month);
         return new ResponseEntity<>(consumption, HttpStatus.OK);
     }
+
+    // 特定年份每個月的耗電量
+    @GetMapping("/yearly")
+    public ResponseEntity<?> getYearlyConsumption(@RequestParam int year) {
+        Map<String, Double> consumption = powerService.calculateYearlyPowerConsumption(year);
+        return new ResponseEntity<>(consumption, HttpStatus.OK);
+    }
 }

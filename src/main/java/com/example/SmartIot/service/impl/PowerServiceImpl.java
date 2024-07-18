@@ -137,4 +137,20 @@ public class PowerServiceImpl implements PowerService {
 
         return monthlyConsumption;
     }
+
+    //整年每個月的耗電量
+    @Override
+    @Transactional
+    public Map<String, Double> calculateYearlyPowerConsumption(int year) {
+        Map<String, Double> yearlyConsumption = new LinkedHashMap<>();
+
+        for (int month = 1; month <= 12; month++) {
+            double monthlyConsumption = calculateMonthlyPowerConsumption(year, month).values().stream()
+                    .mapToDouble(Double::doubleValue)
+                    .sum();
+            yearlyConsumption.put(String.format("%d-%02d", year, month), monthlyConsumption);
+        }
+
+        return yearlyConsumption;
+    }
 }
