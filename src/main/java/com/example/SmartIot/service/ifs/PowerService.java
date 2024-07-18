@@ -23,4 +23,7 @@ public interface PowerService {
 
     // 特定年份每個月的耗電量
     Map<String, Double> calculateYearlyPowerConsumption(int year);
+
+    // 特定房間一年中每个月的用電量
+    Map<String, Double> calculateRoomYearlyPowerConsumption(Long roomId, int year);
 }
