@@ -23,7 +23,7 @@ public class AirPurifierSignalSimulator {
     private static final int BASE_WORST_AIR_QUALITY = 200; // 最差空氣品質
     private static final int WORST_AIR_QUALITY_RANGE = 20; // 最差空氣品質範圍
 
-    @Scheduled(fixedRate = 5000) // 每5秒更新一次
+    // @Scheduled(fixedRate = 5000) // 每5秒更新一次
     public void simulateSignals() {
         List<AirPurifier> airPurifiers = airPurifierRepository.findAll();
 

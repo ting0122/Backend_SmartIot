@@ -21,7 +21,7 @@ public class DehumidifierSignalSimulator {
     private static final double DEFAULT_HUMIDITY = 80.0; // 預設濕度
     private static final double MAX_HUMIDITY = 90.0; // 最大濕度
 
-    @Scheduled(fixedRate = 5000) // 每5秒更新一次
+    // @Scheduled(fixedRate = 5000) // 每5秒更新一次
     public void simulateSignals() {
         List<Dehumidifier> dehumidifiers = dehumidifierRepository.findAll();
         for (Dehumidifier dh : dehumidifiers) {
