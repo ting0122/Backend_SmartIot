@@ -186,4 +186,31 @@ public class PowerServiceImpl implements PowerService {
 
         return yearlyConsumption;
     }
+
+    //特定月份每個房間耗電量
+    @Override
+    @Transactional
+    public List<Map<String, Object>> calculateMonthlyRoomPowerConsumption(int year, int month) {
+        List<Map<String, Object>> monthlyRoomConsumption = new ArrayList<>();
+
+        YearMonth yearMonth = YearMonth.of(year, month);
+        LocalDate startOfMonth = yearMonth.atDay(1);
+        LocalDate endOfMonth = yearMonth.atEndOfMonth();
+
+        List<Room> rooms = roomRepository.findAll();
+
+        for (Room room : rooms) {
+            double monthlyConsumption = 0;
+            for (LocalDate date = startOfMonth; !date.isAfter(endOfMonth); date = date.plusDays(1)) {
+                monthlyConsumption += calculateRoomDailyPowerConsumption(room.getId(), date);
+            }
+            Map<String, Object> consumptionData = new HashMap<>();
+            consumptionData.put("roomId", room.getId());
+            consumptionData.put("roomName", room.getName());
+            consumptionData.put("consumption", monthlyConsumption);
+            monthlyRoomConsumption.add(consumptionData);
+        }
+
+        return monthlyRoomConsumption;
+    }
 }
