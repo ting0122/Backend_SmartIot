@@ -70,4 +70,13 @@ public class PowerController {
         Map<String, Double> consumption = powerService.calculateYearlyPowerConsumption(year);
         return new ResponseEntity<>(consumption, HttpStatus.OK);
     }
+
+    // 特定房間一年每月用電量
+    @GetMapping("/room/{roomId}/yearly")
+    public ResponseEntity<?> getRoomYearlyConsumption(
+            @PathVariable Long roomId,
+            @RequestParam int year) {
+        Map<String, Double> consumption = powerService.calculateRoomYearlyPowerConsumption(roomId, year);
+        return new ResponseEntity<>(consumption, HttpStatus.OK);
+    }
 }
