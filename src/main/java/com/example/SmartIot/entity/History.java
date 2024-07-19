@@ -106,7 +106,7 @@ public class History {
     @PrePersist
     public void prePersist() {
         this.eventId = UUID.randomUUID().toString();
-        // this.eventTime = LocalDateTime.now();
+        this.eventTime = LocalDateTime.now();
     }
     
 }
