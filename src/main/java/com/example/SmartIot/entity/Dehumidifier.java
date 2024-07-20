@@ -2,6 +2,7 @@ package com.example.SmartIot.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.example.SmartIot.constant.AirConditionerConstants.FanSpeed;
+import com.example.SmartIot.constant.AirConditionerConstants.Mode;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,6 +13,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
 @Entity
@@ -97,4 +100,11 @@ public class Dehumidifier {
         this.fanSpeed = fanSpeed;
     }
 
+    @PrePersist
+    @PreUpdate
+    private void ensureDefaults() {
+        if (this.fanSpeed == null) {
+            this.fanSpeed = FanSpeed.AUTO;
+        }
+    }
 }
