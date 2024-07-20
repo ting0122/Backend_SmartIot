@@ -21,7 +21,7 @@ public class AirConditionerSignalSimulator {
     private static final double MAX_TEMP_CHANGE = 0.5; // 每次最大溫度變化
     private static final double INERTIA_FACTOR = 0.9; // 慣性因子，越高越不容易改變
 
-    // @Scheduled(fixedRate = 5000) // 每5秒更新一次
+    @Scheduled(fixedRate = 5000) // 每5秒更新一次
     public void simulateSignals() {
         List<AirConditioner> airConditioners = airConditionerRepository.findAll();
         for (AirConditioner ac : airConditioners) {
