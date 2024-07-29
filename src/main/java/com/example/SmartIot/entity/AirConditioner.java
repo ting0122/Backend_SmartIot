@@ -103,7 +103,7 @@ public class AirConditioner {
             this.target_temp = 26.0;
         }
         if (this.mode == null) {
-            this.mode = Mode.COOL;
+            this.mode = Mode.AUTO;
         }
         if (this.fanSpeed == null) {
             this.fanSpeed = FanSpeed.LOW;

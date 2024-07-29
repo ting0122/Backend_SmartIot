@@ -51,11 +51,11 @@ public class PowerController {
     }
 
     // 特定日期，總設備消耗電量
-    @GetMapping("/total")
-    public ResponseEntity<?> getTotalDailyConsumption(@RequestParam LocalDate date) {
-        List<Map<String, Object>> consumption = powerService.calculateTotalDailyPowerConsumption(date);
-        return new ResponseEntity<>(consumption, HttpStatus.OK);
-    }
+    // @GetMapping("/total")
+    // public ResponseEntity<?> getTotalDailyConsumption(@RequestParam LocalDate date) {
+    //     List<Map<String, Object>> consumption = powerService.calculateTotalDailyPowerConsumption(date);
+    //     return new ResponseEntity<>(consumption, HttpStatus.OK);
+    // }
 
     // 該月的每日設備消耗電量
     @GetMapping("/monthly")
@@ -68,6 +68,24 @@ public class PowerController {
     @GetMapping("/yearly")
     public ResponseEntity<?> getYearlyConsumption(@RequestParam int year) {
         Map<String, Double> consumption = powerService.calculateYearlyPowerConsumption(year);
+        return new ResponseEntity<>(consumption, HttpStatus.OK);
+    }
+
+    // 特定房間一年每月用電量
+    @GetMapping("/room/{roomId}/yearly")
+    public ResponseEntity<?> getRoomYearlyConsumption(
+            @PathVariable Long roomId,
+            @RequestParam int year) {
+        Map<String, Double> consumption = powerService.calculateRoomYearlyPowerConsumption(roomId, year);
+        return new ResponseEntity<>(consumption, HttpStatus.OK);
+    }
+
+    //特定月份每個房間耗電量
+    @GetMapping("/total")
+    public ResponseEntity<?> getMonthlyRoomConsumption(
+            @RequestParam int year,
+            @RequestParam int month) {
+        List<Map<String, Object>> consumption = powerService.calculateMonthlyRoomPowerConsumption(year, month);
         return new ResponseEntity<>(consumption, HttpStatus.OK);
     }
 }
